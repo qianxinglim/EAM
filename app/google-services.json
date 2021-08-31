@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "913441135295",
+    "firebase_url": "https://eam-app-qx-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "eam-app-qx",
+    "storage_bucket": "eam-app-qx.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913441135295:android:0d7936f96913363741440a",
+        "android_client_info": {
+          "package_name": "com.example.eam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913441135295-9kjeassqs2rjte02ahic9ddijo2j6mno.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.eam",
+            "certificate_hash": "c28e4e8d8733c4f2b88dfe140915054f208c23d6"
+          }
+        },
+        {
+          "client_id": "913441135295-47fiiu0glhp7jfjom2u64fp1mlhh6he4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZoukR4H8m8e_BbUEtGJdBsNhrzU0cFow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913441135295-47fiiu0glhp7jfjom2u64fp1mlhh6he4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_assets"
+        android:icon="@drawable/ic_baseline_widgets_24"
+        android:title="Assets" />
+
+    <item
+        android:id="@+id/nav_chat"
+        android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
+        android:title="Messages" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Profile" />
+
+    <item
+        android:id="@+id/nav_admin"
+        android:visible="false"
+        android:icon="@drawable/ic_baseline_admin_panel_settings_24"
+        android:title="Admin" />
+
+</menu>

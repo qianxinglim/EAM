@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">EAM</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back"><![CDATA[<-]]></string>
+    <string name="forward"><![CDATA[->]]></string>
+    <string name="select_type">Select Absence Type</string>
+
+    <string-array name="absence_arrays">
+        <item>Vacation</item>
+        <item>Non Paid Absence</item>
+        <item>Sick Leave</item>
+    </string-array>
+</resources>
