@@ -84,27 +84,33 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else {
-            sessionManager.checkLogin();
+            boolean isLoggin = sessionManager.checkLogin();
 
-            HashMap<String, String> userDetail = sessionManager.getUserDetail();
-            companyID = userDetail.get(sessionManager.COMPANYID);
+            if(isLoggin){
+                HashMap<String, String> userDetail = sessionManager.getUserDetail();
+                companyID = userDetail.get(sessionManager.COMPANYID);
 
-            firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(true);
+                firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(true);
+                            } else {
+                                binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(false);
+                                binding.bottomNavigation.getMenu().removeItem(R.id.nav_admin);
+                            }
                         } else {
-                            binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(false);
-                            binding.bottomNavigation.getMenu().removeItem(R.id.nav_admin);
+                            Log.d(TAG, "Failed with: " + task.getException());
                         }
-                    } else {
-                        Log.d(TAG, "Failed with: " + task.getException());
                     }
-                }
-            });
+                });
+            }
+            else{
+                startActivity(new Intent(MainActivity.this, PhoneLoginActivity.class));
+                finish();
+            }
 
             //----------------------------------------------------------------------------
             /*firebaseUser.getIdToken(true)

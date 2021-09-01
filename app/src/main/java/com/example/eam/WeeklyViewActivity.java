@@ -1,26 +1,39 @@
 package com.example.eam;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.eam.adapter.CalendarAdapter;
-import com.example.eam.adapter.EventAdapter;
+import com.example.eam.adapter.RecordAdapter;
 import com.example.eam.common.CalendarUtils;
-import com.example.eam.databinding.ActivityAttendanceRecordBinding;
 import com.example.eam.databinding.ActivityWeeklyViewBinding;
+import com.example.eam.managers.SessionManager;
+import com.example.eam.model.Attendance;
+import com.example.eam.model.Chats;
 import com.example.eam.model.Event;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
-import static com.example.eam.common.CalendarUtils.daysInMonthArray;
 import static com.example.eam.common.CalendarUtils.daysInWeekArray;
 import static com.example.eam.common.CalendarUtils.monthYearFromDate;
 
@@ -28,12 +41,27 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
     private static final String TAG = "WeeklyViewActivity";
     private ActivityWeeklyViewBinding binding;
     private CalendarAdapter adapter;
+    private RecordAdapter recordAdapter;
+    private List<Attendance> list = new ArrayList<>();
+    private FirebaseUser firebaseUser;
+    private FirebaseFirestore firestore;
+    private SessionManager sessionManager;
+    private String companyID;
+    private DatabaseReference reference;
     //private ListView eventListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_weekly_view);
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firestore = FirebaseFirestore.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference();
+
+        sessionManager = new SessionManager(this);
+        HashMap<String, String> userDetail = sessionManager.getUserDetail();
+        companyID = userDetail.get(sessionManager.COMPANYID);
 
         CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
@@ -71,7 +99,7 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
         //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         binding.calendarRecyclerView.setLayoutManager(new GridLayoutManager(WeeklyViewActivity.this, 7));
         binding.calendarRecyclerView.setAdapter(adapter);
-        //setEventAdpater();
+        setEventAdpater();
     }
 
     @Override
@@ -92,8 +120,45 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
     }
 
     private void setEventAdpater() {
-        ArrayList<Event> dailyEvents = Event.eventsForDate(CalendarUtils.selectedDate);
-        EventAdapter eventAdapter = new EventAdapter(getApplicationContext(), dailyEvents);
-        binding.eventListView.setAdapter(eventAdapter);
+        //ArrayList<Event> dailyEvents = Event.eventsForDate(CalendarUtils.selectedDate);
+        //RecordAdapter recordAdapter = new RecordAdapter(getApplicationContext(), dailyEvents);
+        //binding.recyclerView.setAdapter(recordAdapter);
+        LocalDate date = CalendarUtils.selectedDate;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        //date.format(formatter)
+
+        reference.child(companyID).child("Attendance").orderByChild("userId").equalTo(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list.clear();
+
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Attendance attendance = snapshot.getValue(Attendance.class);
+
+                    /*try {
+                        if (attendance != null && attendance.getClockInDate().equals(date)){
+                            list.add(attendance);
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }*/
+
+                    //attendance.setClockInTime();
+                    //String userID = Objects.requireNonNull(snapshot.child("chatID").getValue()).toString();
+                    //Log.d(TAG, "onDataChange: userid" + userID);
+
+                    //list.add(userID);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        recordAdapter = new RecordAdapter(list, WeeklyViewActivity.this);
+        binding.recyclerView.setAdapter(adapter);
     }
 }

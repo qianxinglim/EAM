@@ -1,11 +1,7 @@
 package com.example.eam.managers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-
-import com.example.eam.MainActivity;
-import com.example.eam.PhoneLoginActivity;
 
 import java.util.HashMap;
 
@@ -42,11 +38,15 @@ public class SessionManager {
         return sharedPreferences.getBoolean(LOGIN, false);
     }
 
-    public void checkLogin(){
+    public boolean checkLogin(){
         if(!this.isLoggin()){
-            Intent i = new Intent(context, PhoneLoginActivity.class);
+            /*Intent i = new Intent(context, PhoneLoginActivity.class);
             context.startActivity(i);
-            ((MainActivity)context).finish();
+            ((MainActivity)context).finish();*/
+            return false;
+        }
+        else{
+            return true;
         }
     }
 

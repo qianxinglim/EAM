@@ -8,12 +8,16 @@ import androidx.databinding.DataBindingUtil;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +31,9 @@ import com.example.eam.model.Attendance;
 import com.example.eam.model.Chats;
 import com.example.eam.service.FirebaseService;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -67,7 +74,6 @@ public class ClockActivity extends AppCompatActivity {
     private String companyID, attendanceID;
     FusedLocationProviderClient fusedLocationProviderClient;
     //String userID, userName;
-    double latitude=0, longitude=0;
     private DatabaseReference reference;
     private boolean clockOut = false;
     private boolean clockOutToday = false, clockOutYtd = false;
@@ -101,8 +107,16 @@ public class ClockActivity extends AppCompatActivity {
         checkLastNode();
 
         binding.btnClock.setOnClickListener(view -> {
+            final ProgressDialog progressDialog = new ProgressDialog(ClockActivity.this);
+            progressDialog.setMessage("Adding Record...");
+            progressDialog.show();
+
             checkLastNode();
-            recordAttendance();
+            //getCurrentDateTime();
+            getPermission();
+            //recordAttendance();
+
+            progressDialog.dismiss();
         });
 
         binding.btnClockin.setOnClickListener(view -> {
@@ -118,21 +132,16 @@ public class ClockActivity extends AppCompatActivity {
         });
     }
 
-    private void recordAttendance() {
-        final ProgressDialog progressDialog = new ProgressDialog(ClockActivity.this);
-        progressDialog.setMessage("Adding Record...");
+    private void recordAttendance(double latitude, double longitude, String address) {
+        getCurrentDateTime();
 
         if(clockOut){
-            getCurrentDateTime();
+            //getCurrentDateTime();
 
-            Log.d(TAG, "lastClockinDate" + lastClockinDate);
-
-            if(currDate.equals(lastClockinDate)){
+            if(currDate.equals(lastClockinDate) && lastClockinDate != null){
                 Toast.makeText(this, "You already clocked in today", Toast.LENGTH_SHORT).show();
             }
             else {
-                progressDialog.show();
-
                 Log.d(TAG, "date: " + currDate + ", time: " + currTime);
                 Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
 
@@ -143,6 +152,9 @@ public class ClockActivity extends AppCompatActivity {
                 attendance.put("duration", 9);
                 attendance.put("oriClockOutTimestamp", newtsLong);
                 attendance.put("userId", firebaseUser.getUid());
+                attendance.put("clockInLat", latitude);
+                attendance.put("clockInLong", longitude);
+                //attendance.put("clockInAddress", address);
 
                 reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -150,26 +162,25 @@ public class ClockActivity extends AppCompatActivity {
                         clockOut = false;
                         binding.btnClock.setText("Clock out");
                         Log.d("addAttendance", "onSuccess: ");
-                        progressDialog.dismiss();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d("addAttendance", "onFailure: " + e.getMessage());
-                        progressDialog.dismiss();
                     }
                 });
             }
         }
         else{
-            progressDialog.show();
-
-            getCurrentDateTime();
+            //getCurrentDateTime();
 
             Map<String,Object> attendance = new HashMap<>();
             attendance.put("clockOutTimestamp", tsLong);
             attendance.put("clockOutDate", currDate);
             attendance.put("clockOutTime", currTime);
+            attendance.put("clockOutLat", latitude);
+            attendance.put("clockOutLong", longitude);
+            //attendance.put("clockOutAddress", address);
 
             reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
@@ -177,14 +188,12 @@ public class ClockActivity extends AppCompatActivity {
                     Log.d("addAttendance", "onSuccess: ");
                     clockOut = true;
                     binding.btnClock.setText("Clock in");
-                    progressDialog.dismiss();
                     Toast.makeText(ClockActivity.this, "Successfully clockout.", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.d("addAttendance", "onFailure: " + e.getMessage());
-                    progressDialog.dismiss();
                     Toast.makeText(ClockActivity.this, "Fail to clockOut. Try again later.", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -198,27 +207,33 @@ public class ClockActivity extends AppCompatActivity {
         reference.child(companyID).child("Attendance").orderByChild("userId").equalTo(firebaseUser.getUid()).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot children: snapshot.getChildren()) {
-                    attendanceID = children.getKey();
-                    lastClockinDate = children.child("clockInDate").getValue().toString();
+                if(snapshot.exists()){
+                    for (DataSnapshot children: snapshot.getChildren()) {
+                        attendanceID = children.getKey();
+                        lastClockinDate = children.child("clockInDate").getValue().toString();
 
-                    if(children.hasChild("clockOutTime") && children.hasChild("clockOutDate") && children.hasChild("clockOutTimestamp")){
-                        clockOut = true;
-                        binding.btnClock.setText("Clock in");
-                        //binding.btnClockin.setVisibility(View.VISIBLE);
-                        //binding.btnClockout.setVisibility(View.GONE);
+                        if(children.hasChild("clockOutTime") && children.hasChild("clockOutDate") && children.hasChild("clockOutTimestamp")){
+                            clockOut = true;
+                            binding.btnClock.setText("Clock in");
+                            //binding.btnClockin.setVisibility(View.VISIBLE);
+                            //binding.btnClockout.setVisibility(View.GONE);
+                        }
+                        else{
+                            clockOut = false;
+                            binding.btnClock.setText("Clock out");
+                            //binding.btnClockout.setVisibility(View.VISIBLE);
+                            //binding.btnClockin.setVisibility(View.GONE);
+                        }
+
+                        //Log.d("key", attendanceID);
+
+                        Log.d(TAG, "lastClockinDate" + lastClockinDate);
+                        Log.d("val", children.child("clockInTime").getValue().toString());
                     }
-                    else{
-                        clockOut = false;
-                        binding.btnClock.setText("Clock out");
-                        //binding.btnClockout.setVisibility(View.VISIBLE);
-                        //binding.btnClockin.setVisibility(View.GONE);
-                    }
-
-                    //Log.d("key", attendanceID);
-
-                    Log.d(TAG, "lastClockinDate" + lastClockinDate);
-                    Log.d("val", children.child("clockInTime").getValue().toString());
+                }
+                else{
+                    clockOut = true;
+                    binding.btnClock.setText("Clock in");
                 }
             }
 
@@ -549,48 +564,51 @@ public class ClockActivity extends AppCompatActivity {
     private void getPermission(){
         if (ActivityCompat.checkSelfPermission(ClockActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             //When permission granted
-            Toast.makeText(this, "permission granted", Toast.LENGTH_SHORT).show();
             getLocation();
         }
         else {
             //When permission denied
-            Toast.makeText(this, "permission not granted", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(ClockActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
     }
 
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == 100 && grantResults.length > 0 && (grantResults[0] + grantResults[1]) == PackageManager.PERMISSION_GRANTED){
+            getLocation();
+        }
+        else{
+            Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show();
+        }
+    }*/
+
+    @SuppressLint("MissingPermission")
     private void getLocation() {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
-                //Initialize location
-                Location location = task.getResult();
-                if (location != null) {
-                    try {
-                        Geocoder geocoder = new Geocoder(ClockActivity.this, Locale.getDefault());
-                        //Initialize address list
-                        List<Address> addresses = geocoder.getFromLocation(
-                                location.getLatitude(), location.getLongitude(), 1
-                        );
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+            Location location = task.getResult();
 
-                        latitude = addresses.get(0).getLatitude();
-                        longitude = addresses.get(0).getLongitude();
+            if (location != null) {
 
-                        Toast.makeText(ClockActivity.this, "Lat: " + latitude + ", Long: " + longitude, Toast.LENGTH_SHORT).show();
+                try {
+                    Geocoder geocoder = new Geocoder(ClockActivity.this, Locale.getDefault());
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                    double latitude = addresses.get(0).getLatitude();
+                    double longitude = addresses.get(0).getLongitude();
+                    String address = addresses.get(0).getAddressLine(0);
+
+                    Log.d(TAG, "Lat: " + latitude + ", Long: " + longitude + ", Address: " + address);
+
+                    recordAttendance(latitude, longitude, address);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            });
+            }
+        });
     }
 
     /*private String[] getCurrentDateTime() {

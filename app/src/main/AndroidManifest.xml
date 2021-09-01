@@ -15,7 +15,9 @@
         <activity android:name=".AdminUserActivity">
 
         </activity>
-        <activity android:name=".WeeklyViewActivity" />
+        <activity android:name=".WeeklyViewActivity">
+
+        </activity>
         <activity android:name=".AttendanceRecordActivity" />
         <activity android:name=".SelectCompanyActivity" />
         <activity android:name=".CreateCompanyActivity"></activity>
@@ -63,7 +65,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
 </manifest>
