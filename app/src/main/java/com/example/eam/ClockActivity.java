@@ -47,6 +47,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -82,6 +83,9 @@ public class ClockActivity extends AppCompatActivity {
     private String lastClockinDate;
     private String currentDate, currentTime, currTime, currDate, newTime, newDate;
     private long tsLong, newtsLong;
+    private double companyLat, companyLong;
+    private double latitude, longitude;
+    private String address;
 
 
     @Override
@@ -105,6 +109,12 @@ public class ClockActivity extends AppCompatActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         checkLastNode();
+        getLocation();
+        getCompanyLocation();
+
+        Log.d(TAG, "myLat: " + latitude + ", myLong: " + longitude + ", compLat: " + companyLat + ", compLong: " + companyLong);
+        //String inRange = calcDistance();
+        //Toast.makeText(this, "InRange: " + inRange, Toast.LENGTH_SHORT).show();
 
         binding.btnClock.setOnClickListener(view -> {
             final ProgressDialog progressDialog = new ProgressDialog(ClockActivity.this);
@@ -114,7 +124,7 @@ public class ClockActivity extends AppCompatActivity {
             checkLastNode();
             //getCurrentDateTime();
             getPermission();
-            //recordAttendance();
+            recordAttendance();
 
             progressDialog.dismiss();
         });
@@ -132,7 +142,44 @@ public class ClockActivity extends AppCompatActivity {
         });
     }
 
-    private void recordAttendance(double latitude, double longitude, String address) {
+    private void getCompanyLocation(){
+        firestore.collection("Companies").document(companyID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+
+                    if(document.exists()){
+                        Map<String, Object> location = document.getData();
+
+                        for(Map.Entry<String, Object> entry : location.entrySet()){
+                            if(entry.getKey().equals("companyLocation")){
+                                Map<String, Object> latlong = (Map<String, Object>) entry.getValue();
+                                for (Map.Entry<String, Object> dataEntry : latlong.entrySet()) {
+                                    if (dataEntry.getKey().equals("latitude")) {
+                                        companyLat = (double) dataEntry.getValue();
+                                        Log.d(TAG, "companyLat: " + companyLat);
+                                    }
+                                    else if(dataEntry.getKey().equals("longitude")){
+                                        companyLong = (double) dataEntry.getValue();
+                                        Log.d(TAG, "companyLong: " + companyLong);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        Log.d(TAG, "company does not have location");
+                    }
+                }
+                else{
+                    Log.d(TAG, "get Failed with: " + task.getException());
+                }
+            }
+        });
+    }
+
+    private void recordAttendance() {
         getCurrentDateTime();
 
         if(clockOut){
@@ -242,6 +289,42 @@ public class ClockActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    /*private String calcDistance() {
+        double longDiff = longitude - companyLong;
+
+        //Calculate distance
+        double distance = Math.sin(deg2rad(latitude))
+                * Math.sin(deg2rad(companyLat))
+                + Math.cos(deg2rad(latitude))
+                * Math.cos(deg2rad(companyLat))
+                + Math.cos(deg2rad(longDiff));
+
+        distance = Math.acos(distance);
+        //Convert distance radian to degree
+        distance = rad2deg(distance);
+        //Distance in miles
+        distance = distance * 60 * 1.1515;
+        //Distance in kilometers
+        distance = distance * 1.609344;
+
+        Log.d(TAG, "distance: " + distance + "latitude: " + latitude + "longitude: " + longitude);
+
+        if(distance > 3){
+            return "Not within company";
+        }
+        else{
+            return "Within company";
+        }
+    }*/
+
+    private double rad2deg(double distance) {
+        return (distance*180.0 / Math.PI);
+    }
+
+    private double deg2rad(double lat1) {
+        return (lat1*Math.PI/180.0);
     }
 
     private void dk(){
@@ -596,13 +679,13 @@ public class ClockActivity extends AppCompatActivity {
 
                     List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
-                    double latitude = addresses.get(0).getLatitude();
-                    double longitude = addresses.get(0).getLongitude();
-                    String address = addresses.get(0).getAddressLine(0);
+                    latitude = addresses.get(0).getLatitude();
+                    longitude = addresses.get(0).getLongitude();
+                    address = addresses.get(0).getAddressLine(0);
 
                     Log.d(TAG, "Lat: " + latitude + ", Long: " + longitude + ", Address: " + address);
 
-                    recordAttendance(latitude, longitude, address);
+                    //recordAttendance(latitude, longitude, address);
 
                 } catch (IOException e) {
                     e.printStackTrace();
