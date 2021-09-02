@@ -14,13 +14,11 @@ public class Attendance {
     private double clockInLong;
     private double clockOutLat;
     private double clockOutLong;
-    private String clockInAddress;
-    private String clockOutAddress;
 
     public Attendance() {
     }
 
-    public Attendance(String userId, String clockInDate, String clockInTime, long clockInTimestamp, String clockOutDate, String clockOutTime, long clockOutTimestamp, int duration, long oriClockOutTimestamp, double clockInLat, double clockInLong, double clockOutLat, double clockOutLong, String clockInAddress, String clockOutAddress) {
+    public Attendance(String userId, String clockInDate, String clockInTime, long clockInTimestamp, String clockOutDate, String clockOutTime, long clockOutTimestamp, int duration, long oriClockOutTimestamp, double clockInLat, double clockInLong, double clockOutLat, double clockOutLong) {
         this.userId = userId;
         this.clockInDate = clockInDate;
         this.clockInTime = clockInTime;
@@ -34,8 +32,6 @@ public class Attendance {
         this.clockInLong = clockInLong;
         this.clockOutLat = clockOutLat;
         this.clockOutLong = clockOutLong;
-        this.clockInAddress = clockInAddress;
-        this.clockOutAddress = clockOutAddress;
     }
 
     public String getUserId() {
@@ -140,21 +136,5 @@ public class Attendance {
 
     public void setClockOutLong(double clockOutLong) {
         this.clockOutLong = clockOutLong;
-    }
-
-    public String getClockInAddress() {
-        return clockInAddress;
-    }
-
-    public void setClockInAddress(String clockInAddress) {
-        this.clockInAddress = clockInAddress;
-    }
-
-    public String getClockOutAddress() {
-        return clockOutAddress;
-    }
-
-    public void setClockOutAddress(String clockOutAddress) {
-        this.clockOutAddress = clockOutAddress;
     }
 }

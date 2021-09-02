@@ -1,27 +1,20 @@
 package com.example.eam.adapter;
 
 import android.content.Context;
-import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.example.eam.IndvChatActivity;
 import com.example.eam.R;
-import com.example.eam.common.CalendarUtils;
 import com.example.eam.model.Attendance;
-import com.example.eam.model.Event;
-import com.example.eam.model.Users;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 /*public class RecordAdapter extends ArrayAdapter<Attendance> {
@@ -49,7 +42,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder>{
     private List<Attendance> list;
-    private LocalDate selectedDate;
     private Context context;
 
     public RecordAdapter(List<Attendance> list, Context context) {
@@ -60,7 +52,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_contact_item, parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.attendance_item, parent,false);
 
         return new ViewHolder(view);
     }
@@ -68,6 +60,17 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Attendance attendance = list.get(position);
+
+        holder.tvClockInTime.setText(attendance.getClockInTime());
+
+        if(attendance.getClockOutTime() == null){
+
+        }
+        else{
+            holder.tvClockOutTime.setText(attendance.getClockOutTime());
+        }
+
+        Log.d("TAG", "clockInTime: " + attendance.getClockInTime() + ", cloclOutTime: " + attendance.getClockOutTime());
 
         /*holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,15 +89,16 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private ImageView imageProfile;
-        private TextView username, desc;
+        private TextView tvClockInTime, tvClockOutTime, tvDuration, tvClockInLocation, tvClockOutLocation;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            /*imageProfile = itemView.findViewById(R.id.image_profile);
-            username = itemView.findViewById(R.id.tv_username);
-            desc = itemView.findViewById(R.id.tv_desc);*/
+            tvClockInTime = itemView.findViewById(R.id.tvClockInTime);
+            tvClockOutTime = itemView.findViewById(R.id.tvClockOutTime);
+            tvClockInLocation = itemView.findViewById(R.id.tvClockInLocation);
+            tvClockOutLocation = itemView.findViewById(R.id.tvClockOutLocation);
+            tvDuration = itemView.findViewById(R.id.tvDuration);
         }
     }
 }

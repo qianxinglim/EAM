@@ -1,25 +1,34 @@
-package com.example.eam;
+package com.example.eam.menu;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.eam.R;
+import com.example.eam.WeeklyViewActivity;
 import com.example.eam.adapter.CalendarAdapter;
-import com.example.eam.adapter.ChatListAdapter;
 import com.example.eam.adapter.RecordAdapter;
 import com.example.eam.common.CalendarUtils;
-import com.example.eam.databinding.ActivityWeeklyViewBinding;
+import com.example.eam.databinding.FragmentCalendarBinding;
+import com.example.eam.databinding.FragmentPunchBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Attendance;
-import com.example.eam.model.Chats;
-import com.example.eam.model.Event;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,21 +36,41 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import static com.example.eam.common.CalendarUtils.daysInWeekArray;
 import static com.example.eam.common.CalendarUtils.monthYearFromDate;
 
-public class WeeklyViewActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
-    private static final String TAG = "WeeklyViewActivity";
-    private ActivityWeeklyViewBinding binding;
+public class CalendarFragment extends Fragment {
+
+    private static final String TAG = "PunchFragment";
+
+    public CalendarFragment() {
+        // Required empty public constructor
+    }
+
+    private FragmentCalendarBinding binding;
     private CalendarAdapter adapter;
     //private RecordAdapter recordAdapter;
     private List<Attendance> list = new ArrayList<>();
@@ -50,24 +79,24 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
     private SessionManager sessionManager;
     private String companyID;
     private DatabaseReference reference;
-    //private ListView eventListView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_weekly_view);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_calendar, container, false);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
 
-        sessionManager = new SessionManager(this);
+        sessionManager = new SessionManager(getContext());
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
 
         CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
         initBtnClick();
+
+        return binding.getRoot();
     }
 
     private void initBtnClick() {
@@ -85,40 +114,27 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
                 setWeekView();
             }
         });
-        binding.btnNewEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //startActivity(new Intent(this, EventEditActivity.class));
-            }
-        });
     }
 
     private void setWeekView() {
         binding.monthYearTV.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
 
-        adapter = new CalendarAdapter(days, WeeklyViewActivity.this, this);
-        //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
-        binding.calendarRecyclerView.setLayoutManager(new GridLayoutManager(WeeklyViewActivity.this, 7));
+        adapter = new CalendarAdapter(days, getContext(), new CalendarAdapter.OnItemListener() {
+            @Override
+            public void onItemClick(int position, LocalDate date) {
+                CalendarUtils.selectedDate = date;
+                if(!date.equals("")) {
+                    String message = "Selected Date " + date;
+                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                }
+                setWeekView();
+            }
+        });
+
+        binding.calendarRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7));
         binding.calendarRecyclerView.setAdapter(adapter);
         setEventAdpater();
-    }
-
-    @Override
-    public void onItemClick(int position, LocalDate date) {
-        CalendarUtils.selectedDate = date;
-        if(!date.equals("")) {
-            String message = "Selected Date " + date;
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        }
-        setWeekView();
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        //setEventAdpater();
     }
 
     private void setEventAdpater() {
@@ -159,9 +175,18 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
 
                 Log.d(TAG, "listSize: " + list.size());
 
-                binding.recyclerView.setLayoutManager(new LinearLayoutManager(WeeklyViewActivity.this));
-                RecordAdapter recordAdapter = new RecordAdapter(list, WeeklyViewActivity.this);
-                binding.recyclerView.setAdapter(recordAdapter);
+                if(list.size() > 0){
+                    binding.tvNoRecord.setVisibility(View.GONE);
+                    binding.recyclerView.setVisibility(View.VISIBLE);
+
+                    binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    RecordAdapter recordAdapter = new RecordAdapter(list, getContext());
+                    binding.recyclerView.setAdapter(recordAdapter);
+                }
+                else{
+                    binding.tvNoRecord.setVisibility(View.VISIBLE);
+                    binding.recyclerView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -170,4 +195,6 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
             }
         });
     }
+
+
 }
