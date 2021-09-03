@@ -3,7 +3,6 @@ package com.example.eam.menu;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,11 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.eam.AdminUserActivity;
-import com.example.eam.ClockActivity;
-import com.example.eam.Login;
 import com.example.eam.R;
-import com.example.eam.databinding.FragmentAdminBinding;
 import com.example.eam.databinding.FragmentPunchBinding;
 import com.example.eam.managers.SessionManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -682,6 +677,9 @@ public class PunchFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+            else{
+                Toast.makeText(getContext(), "Fail to get location. Please try again", Toast.LENGTH_SHORT).show();
             }
         });
     }
