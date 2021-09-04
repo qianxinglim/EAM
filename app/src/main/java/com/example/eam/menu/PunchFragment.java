@@ -3,11 +3,13 @@ package com.example.eam.menu;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +19,16 @@ import android.widget.Toast;
 import com.example.eam.R;
 import com.example.eam.databinding.FragmentPunchBinding;
 import com.example.eam.managers.SessionManager;
+import com.example.eam.service.FirebaseService;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,7 +41,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -43,7 +55,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
@@ -62,17 +78,15 @@ public class PunchFragment extends Fragment {
     private SessionManager sessionManager;
     private String companyID, attendanceID;
     FusedLocationProviderClient fusedLocationProviderClient;
-    //String userID, userName;
-    private DatabaseReference reference;
-    private boolean clockOut = false;
-    private boolean clockOutToday = false, clockOutYtd = false;
-    private boolean todayHasRecord = false;
-    private boolean clockInYtd = false;
-    private String lastClockinDate;
-    private String currentDate, currentTime, currTime, currDate, newTime, newDate;
-    private long tsLong, newtsLong;
+    LocationRequest locationRequest;
     private static double companyLat, companyLong;
     private static double latitude, longitude;
+    LocationCallback locationCallback;
+    private DatabaseReference reference;
+    private boolean clockOut = false;
+    private String lastClockinDate;
+    private String currTime, currDate, newTime, newDate;
+    private long tsLong, newtsLong;
     private String address;
 
     @Override
@@ -89,47 +103,160 @@ public class PunchFragment extends Fragment {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(4000);
+        locationRequest.setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
         checkLastNode();
 
-        getPermission();
         getCompanyLocation();
 
-        Log.d(TAG, "myLat: " + latitude + ", myLong: " + longitude + ", compLat: " + companyLat + ", compLong: " + companyLong);
-        //String inRange = calcDistance();
-        //Toast.makeText(this, "InRange: " + inRange, Toast.LENGTH_SHORT).show();
+        locationCallback = new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult){
+                if(locationResult == null){
+                    return;
+                }
+                for(Location location: locationResult.getLocations()){
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
 
-        binding.btnClock.setOnClickListener(view -> {
-            final ProgressDialog progressDialog = new ProgressDialog(getContext());
-            progressDialog.setMessage("Adding Record...");
-            progressDialog.show();
+                    calcDistance();
+                    Log.d(TAG, "myLat: " + latitude + ", myLong: " + longitude + ", compLat: " + companyLat + ", compLong: " + companyLong);
 
-            checkLastNode();
-            //getCurrentDateTime();
-            getPermission();
-            recordAttendance();
+                    //Log.d(TAG, "onLocationResult: " + location.toString() + ", latitude: " + latitude + ", longitude: " + longitude);
+                }
+            }
+        };
 
-            progressDialog.dismiss();
-        });
-
-        binding.btnClockin.setOnClickListener(view -> {
-            //getPermission();
-
-            clockin();
-        });
-
-        binding.btnClockout.setOnClickListener(view -> {
-            //getPermission();
-
-            clockout();
-        });
-
-
+        initBtnClick();
 
         return binding.getRoot();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        getPermission();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        stopLocationUpdates();
+    }
+
+    private void getPermission(){
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            checkSettingsAndStartLocationUpdates();
+        }
+        else {
+            mPermissionResult.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            //ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
+    }
+
+    private ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+            @Override
+            public void onActivityResult(Boolean result) {
+                if(result) {
+                    checkSettingsAndStartLocationUpdates();
+                    Log.e(TAG, "onActivityResult: PERMISSION GRANTED");
+                } else {
+                    Toast.makeText(getContext(), "PERMISSION DENIED", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "onActivityResult: PERMISSION DENIED");
+                }
+            }
+    });
+
+    private void checkSettingsAndStartLocationUpdates(){
+        LocationSettingsRequest request = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
+        SettingsClient client = LocationServices.getSettingsClient(getContext());
+        Task<LocationSettingsResponse> locationSettingsResponseTask = client.checkLocationSettings(request);
+        locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(@NonNull LocationSettingsResponse locationSettingsResponse) {
+                startLocationUpdates();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if(e instanceof ResolvableApiException){
+                    ResolvableApiException apiException = (ResolvableApiException) e;
+                    try {
+                        apiException.startResolutionForResult(getActivity(), 1001);
+                    } catch (IntentSender.SendIntentException sendIntentException) {
+                        sendIntentException.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates(){
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+    }
+
+    private void stopLocationUpdates(){
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    private void initBtnClick() {
+        binding.btnClock.setOnClickListener(view -> {
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                progressDialog.setMessage("Adding Record...");
+                progressDialog.show();
+
+                checkLastNode();
+                recordAttendance();
+
+                progressDialog.dismiss();
+            }
+            else {
+                mPermissionResult.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+        });
+    }
+
     private void getCompanyLocation(){
-        firestore.collection("Companies").document(companyID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        firestore.collection("Companies").document(companyID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.d(TAG, "Listen failed: " + error);
+                    return;
+                }
+
+                if (value != null && value.exists()) {
+                    Map<String, Object> location = value.getData();
+
+                    for(Map.Entry<String, Object> entry : location.entrySet()){
+                        if(entry.getKey().equals("companyLocation")){
+                            Map<String, Object> latlong = (Map<String, Object>) entry.getValue();
+                            for (Map.Entry<String, Object> dataEntry : latlong.entrySet()) {
+                                if (dataEntry.getKey().equals("latitude")) {
+                                    companyLat = (double) dataEntry.getValue();
+                                    Log.d(TAG, "companyLat: " + companyLat);
+                                }
+                                else if(dataEntry.getKey().equals("longitude")){
+                                    companyLong = (double) dataEntry.getValue();
+                                    Log.d(TAG, "companyLong: " + companyLong);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "company does not have location");
+                }
+            }
+        });
+
+        /*firestore.collection("Companies").document(companyID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
@@ -162,14 +289,14 @@ public class PunchFragment extends Fragment {
                     Log.d(TAG, "get Failed with: " + task.getException());
                 }
             }
-        });
+        });*/
     }
 
     private void recordAttendance() {
         getCurrentDateTime();
+        boolean inRange = calcDistance();
 
         if(clockOut){
-            //getCurrentDateTime();
 
             if(currDate.equals(lastClockinDate) && lastClockinDate != null){
                 Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
@@ -187,6 +314,7 @@ public class PunchFragment extends Fragment {
                 attendance.put("userId", firebaseUser.getUid());
                 attendance.put("clockInLat", latitude);
                 attendance.put("clockInLong", longitude);
+                attendance.put("clockIninRange", inRange);
                 //attendance.put("clockInAddress", address);
 
                 reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -205,7 +333,6 @@ public class PunchFragment extends Fragment {
             }
         }
         else{
-            //getCurrentDateTime();
 
             Map<String,Object> attendance = new HashMap<>();
             attendance.put("clockOutTimestamp", tsLong);
@@ -213,6 +340,7 @@ public class PunchFragment extends Fragment {
             attendance.put("clockOutTime", currTime);
             attendance.put("clockOutLat", latitude);
             attendance.put("clockOutLong", longitude);
+            attendance.put("clockOutInRange", inRange);
             //attendance.put("clockOutAddress", address);
 
             reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -235,8 +363,6 @@ public class PunchFragment extends Fragment {
     }
 
     private void checkLastNode(){
-        //getCurrentDateTime();
-
         reference.child(companyID).child("Attendance").orderByChild("userId").equalTo(firebaseUser.getUid()).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -248,14 +374,10 @@ public class PunchFragment extends Fragment {
                         if(children.hasChild("clockOutTime") && children.hasChild("clockOutDate") && children.hasChild("clockOutTimestamp")){
                             clockOut = true;
                             binding.btnClock.setText("Clock in");
-                            //binding.btnClockin.setVisibility(View.VISIBLE);
-                            //binding.btnClockout.setVisibility(View.GONE);
                         }
                         else{
                             clockOut = false;
                             binding.btnClock.setText("Clock out");
-                            //binding.btnClockout.setVisibility(View.VISIBLE);
-                            //binding.btnClockin.setVisibility(View.GONE);
                         }
 
                         //Log.d("key", attendanceID);
@@ -278,43 +400,25 @@ public class PunchFragment extends Fragment {
         });
     }
 
-    /*private String calcDistance() {
-        double longDiff = longitude - companyLong;
+    private boolean calcDistance() {
+        float results[] = new float[10];
+        Location.distanceBetween(latitude, longitude, companyLat, companyLong, results);
+        double km = results[0]/1000;
+        Log.d(TAG, "Distance: " + km);
 
-        //Calculate distance
-        double distance = Math.sin(deg2rad(latitude))
-                * Math.sin(deg2rad(companyLat))
-                + Math.cos(deg2rad(latitude))
-                * Math.cos(deg2rad(companyLat))
-                + Math.cos(deg2rad(longDiff));
-
-        distance = Math.acos(distance);
-        //Convert distance radian to degree
-        distance = rad2deg(distance);
-        //Distance in miles
-        distance = distance * 60 * 1.1515;
-        //Distance in kilometers
-        distance = distance * 1.609344;
-
-        Log.d(TAG, "distance: " + distance + "latitude: " + latitude + "longitude: " + longitude);
-
-        if(distance > 3){
-            return "Not within company";
+        if(km > 1){
+            //Toast.makeText(getContext(), "Not within company", Toast.LENGTH_SHORT).show();
+            binding.tvLocation.setText("Not Within Company");
+            return false;
         }
         else{
-            return "Within company";
+            binding.tvLocation.setText("Within Company");
+            //Toast.makeText(getContext(), "Within company", Toast.LENGTH_SHORT).show();
+            return true;
         }
-    }*/
-
-    private double rad2deg(double distance) {
-        return (distance*180.0 / Math.PI);
     }
 
-    private double deg2rad(double lat1) {
-        return (lat1*Math.PI/180.0);
-    }
-
-    private void dk(){
+    /*private void dk(){
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -333,278 +437,7 @@ public class PunchFragment extends Fragment {
 
             }
         });
-    }
-
-    private void clockout() {
-
-        //checkLastNode();
-
-        //getCurrentDateTime();
-
-        //if(!clockOut){
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Adding Record...");
-        progressDialog.show();
-
-        reference.child(companyID).child("Attendance").orderByChild("userId").equalTo(firebaseUser.getUid()).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot children: snapshot.getChildren()) {
-                    attendanceID = children.getKey();
-
-                    Log.d("val2", children.child("clockInTime").getValue().toString());
-                }
-
-                getCurrentDateTime();
-
-                Map<String,Object> attendance = new HashMap<>();
-                attendance.put("clockOutTimestamp", tsLong);
-                attendance.put("clockOutDate", currDate);
-                attendance.put("clockOutTime", currTime);
-
-                    /*Map<String,Object> attendance = new HashMap<String,Object>();
-                    attendance.put("clockOutDate", currentDate);
-                    attendance.put("clockOutTime", currentTime);*/
-
-                reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(@NonNull Void aVoid) {
-                        Log.d("addAttendance", "onSuccess: ");
-                        progressDialog.dismiss();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("addAttendance", "onFailure: " + e.getMessage());
-                        progressDialog.dismiss();
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        //}
-
-        /*final ProgressDialog progressDialog = new ProgressDialog(ClockActivity.this);
-        progressDialog.setMessage("Adding Record...");
-        progressDialog.show();
-
-        getCurrentDateTime();
-
-//        Attendance attendance = new Attendance();
-//        attendance.setClockOutDate(localDate);
-//        attendance.setClockOutTime(localTime);
-
-        reference.child(companyID).child("Attendance").child(currentDate).orderByChild("user").equalTo(firebaseUser.getUid()).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot children: snapshot.getChildren()) {
-                    attendanceID = children.getKey();
-
-                    *//*if(snapshot.hasChild("clockOutTime") && snapshot.hasChild("clockOutDate")){
-                        clockOut = true;
-                    }*//*
-
-                    //Log.d("key", attendanceID);
-                    Log.d("val", children.child("clockInTime").getValue().toString());
-                }
-
-                Map<String,Object> attendance = new HashMap<String,Object>();
-                attendance.put("clockOutDate", currentDate);
-                attendance.put("clockOutTime", currentTime);
-
-                reference.child(companyID).child("Attendance").child(currentDate).child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(@NonNull Void aVoid) {
-                        Log.d("addAttendance", "onSuccess: ");
-                        progressDialog.dismiss();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("addAttendance", "onFailure: " + e.getMessage());
-                        progressDialog.dismiss();
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-
-
-
-
-
-
-
-        //Add to Chat
-        /*reference.child(companyID).child("Attendance").child(localDate).child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Log.d("addAttendance", "onSuccess: ");
-                progressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                progressDialog.dismiss();
-            }
-        });*/
-    }
-
-    private void clockin() {
-
-        //checkLastNode();
-        //getCurrentDateTime();
-
-        //if(clockOut){
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Adding Record...");
-        progressDialog.show();
-
-        getCurrentDateTime();
-
-        Log.d(TAG, "date: " + currDate + ", time: " + currTime);
-        Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
-
-
-        Map<String, Object> attendance = new HashMap<>();
-        attendance.put("clockInTimestamp", tsLong);
-        attendance.put("clockInDate", currDate);
-        attendance.put("clockInTime", currTime);
-        attendance.put("duration", 9);
-        attendance.put("oriClockOutTimestamp", newtsLong);
-        attendance.put("userId", firebaseUser.getUid());
-
-            /*Attendance attendance = new Attendance();
-            attendance.setUser(firebaseUser.getUid());
-            attendance.setClockInDate(ts);*/
-
-        //attendance.setClockInDate(currentDate);
-        //attendance.setClockInTime(currentTime);
-
-        //String attendanceId = reference.child("Attendance").child(attendance.getClockInDate()).push().getKey();
-
-
-
-        reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Log.d("addAttendance", "onSuccess: ");
-                progressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                progressDialog.dismiss();
-            }
-        });
-
-
-
-        //}
-
-        /*final ProgressDialog progressDialog = new ProgressDialog(ClockActivity.this);
-        progressDialog.setMessage("Adding Record...");
-        progressDialog.show();
-
-        getCurrentDateTime();
-
-//        Attendance attendance = new Attendance(
-//                firebaseUser.getUid(),
-//                //chatService.getCurrentDate(),
-//                localDate,
-//                localTime,
-//                "",
-//                "",
-//                ""
-//        );
-
-        //checkLastNode();
-
-        Attendance attendance = new Attendance();
-        attendance.setUser(firebaseUser.getUid());
-        attendance.setClockInDate(currentDate);
-        attendance.setClockInTime(currentTime);
-
-        //String attendanceId = reference.child("Attendance").child(attendance.getClockInDate()).push().getKey();
-
-        reference.child(companyID).child("Attendance").child(currentDate).push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Log.d("addAttendance", "onSuccess: ");
-                progressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                progressDialog.dismiss();
-            }
-        });*/
-
-
-
-
-
-        /*Attendance attendance = new Attendance();
-        attendance.setUser(firebaseUser.getUid());
-        attendance.setClockInDate(localDate);
-        attendance.setClockInTime(localTime);
-
-        String attendanceId = reference.child("Attendance").child(attendance.getClockInDate()).push().getKey();*/
-
-        /*reference.child(companyID).child("Attendance").child(attendance.getClockInDate()).child(attendanceId).setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Log.d("addAttendance", "onSuccess: " + attendanceId);
-                progressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                progressDialog.dismiss();
-            }
-        });*/
-
-        //Add to Chat
-        /*reference.child(companyID).child("Attendance").child(attendance.getClockInDate()).child(attendanceID).setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Log.d("addAttendance", "onSuccess: ");
-                progressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                progressDialog.dismiss();
-            }
-        });*/
-
-        /*reference.child(companyID).child("Attendance").child(attendance.getClockInDate()).push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Log.d("addAttendance", "onSuccess: ");
-                progressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                progressDialog.dismiss();
-            }
-        });*/
-    }
+    }*/
 
     public void getCurrentDateTime(){
         /*Date date = Calendar.getInstance().getTime();
@@ -631,30 +464,46 @@ public class PunchFragment extends Fragment {
         newDate = formatter.format(newdateTime);
     }
 
-    private void getPermission(){
+    /*private void getPermission(final OnCallBack onCallBack){
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             //When permission granted
-            getLocation();
+            //getLocation();
+
+            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                Location location = task.getResult();
+
+                if (location != null) {
+
+                    try {
+                        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                        latitude = addresses.get(0).getLatitude();
+                        longitude = addresses.get(0).getLongitude();
+                        address = addresses.get(0).getAddressLine(0);
+
+                        Log.d(TAG, "Lat: " + latitude + ", Long: " + longitude + ", Address: " + address);
+
+                        onCallBack.onSuccess();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        onCallBack.onFailed(e);
+                    }
+                }
+                else{
+                    Toast.makeText(getContext(), "Fail to get location. Please try again", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         else {
             //When permission denied
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-    }
-
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode == 100 && grantResults.length > 0 && (grantResults[0] + grantResults[1]) == PackageManager.PERMISSION_GRANTED){
-            getLocation();
-        }
-        else{
-            Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show();
-        }
     }*/
 
-    @SuppressLint("MissingPermission")
+    /*@SuppressLint("MissingPermission")
     private void getLocation() {
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
             Location location = task.getResult();
@@ -682,7 +531,7 @@ public class PunchFragment extends Fragment {
                 Toast.makeText(getContext(), "Fail to get location. Please try again", Toast.LENGTH_SHORT).show();
             }
         });
-    }
+    }*/
 
     /*private String[] getCurrentDateTime() {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+8:00"));
