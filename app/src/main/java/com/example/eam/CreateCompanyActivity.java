@@ -142,6 +142,12 @@ public class CreateCompanyActivity extends AppCompatActivity {
         //batch.set(ref2, addUserData);
         //Users user = new Users(firebaseUser.getUid(),"dan",firebaseUser.getPhoneNumber(),"","dan@gmail.com","","leader","bake");
 
+        DocumentReference ref3 = firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid());
+        Map<String,Object> addAdmin = new HashMap<>();
+        addAdmin.put("id", firebaseUser.getUid());
+        addAdmin.put("name", "dan");
+        addAdmin.put("role", "creator");
+
 
         DocumentReference userRef = firestore.collection("users").document(firebaseUser.getUid());
         Map<String, Object> addUser = new HashMap<>();
@@ -167,6 +173,7 @@ public class CreateCompanyActivity extends AppCompatActivity {
                         addUser.put("CompanyID", FieldValue.arrayUnion(companyID));
                         batch.set(userRef, addUser);
                         batch.set(ref, company);
+                        batch.set(ref3, addAdmin);
                         batch.set(ref2, addUserData);
 
                         batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -186,6 +193,7 @@ public class CreateCompanyActivity extends AppCompatActivity {
 
                         batch.set(ref, company);
                         batch.set(ref2, addUserData);
+                        batch.set(ref3, addAdmin);
                         batch.update(userRef, "CompanyID", FieldValue.arrayUnion(companyID));
                         //firestore.collection("users").document(firebaseUser.getUid()).update("CompanyID", FieldValue.arrayUnion(companyID));
 
