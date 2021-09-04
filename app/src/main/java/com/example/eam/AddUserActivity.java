@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,19 +18,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
-import java.util.Map;
 
-public class AdminUserActivity extends AppCompatActivity {
+public class AddUserActivity extends AppCompatActivity {
     private static final String TAG = "AdminUserActivity";
     private ActivityAdminUserBinding binding;
     private FirebaseUser firebaseUser;
@@ -106,7 +99,7 @@ public class AdminUserActivity extends AppCompatActivity {
                                     firestore.collection("tempUsers").document(phoneNo).collection("Companies").document(companyID).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(@NonNull Void aVoid) {
-                                            Toast.makeText(AdminUserActivity.this, "added to tempUsers successfully", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(AddUserActivity.this, "added to tempUsers successfully", Toast.LENGTH_SHORT).show();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
@@ -116,7 +109,7 @@ public class AdminUserActivity extends AppCompatActivity {
                                     });
                                 }
                                 else{
-                                    Toast.makeText(AdminUserActivity.this, "Invitation has already been sent to the user (Pending)", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AddUserActivity.this, "Invitation has already been sent to the user (Pending)", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -146,7 +139,7 @@ public class AdminUserActivity extends AppCompatActivity {
                     });*/
                 }
                 else{
-                    Toast.makeText(AdminUserActivity.this, "User already exists in your company", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddUserActivity.this, "User already exists in your company", Toast.LENGTH_SHORT).show();
                 }
             }
         });

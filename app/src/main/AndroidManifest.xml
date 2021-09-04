@@ -11,7 +11,7 @@
         android:theme="@style/Theme.EAM">
         <activity android:name=".EmployeeListActivity"></activity>
         <activity android:name=".LeaveFormActivity"></activity>
-        <activity android:name=".AdminUserActivity"></activity>
+        <activity android:name=".AddUserActivity"></activity>
         <activity android:name=".WeeklyViewActivity"></activity>
         <activity android:name=".AttendanceRecordActivity" />
         <activity android:name=".SelectCompanyActivity" />

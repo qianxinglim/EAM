@@ -2,29 +2,21 @@ package com.example.eam.menu;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.example.eam.AdminUserActivity;
-import com.example.eam.EditProfileActivity;
+import com.example.eam.AddUserActivity;
+import com.example.eam.EmployeeListActivity;
 import com.example.eam.R;
 import com.example.eam.databinding.FragmentAdminBinding;
-import com.example.eam.databinding.FragmentProfileBinding;
 import com.example.eam.managers.SessionManager;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
-import java.util.Objects;
 
-import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
@@ -53,10 +45,17 @@ public class AdminFragment extends Fragment {
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
 
-        binding.btnAdminUser.setOnClickListener(new View.OnClickListener() {
+        binding.btnAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), AdminUserActivity.class));
+                startActivity(new Intent(getActivity(), AddUserActivity.class));
+            }
+        });
+
+        binding.btnUserList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), EmployeeListActivity.class));
             }
         });
 
