@@ -88,6 +88,7 @@ public class PunchFragment extends Fragment {
     private String currTime, currDate, newTime, newDate;
     private long tsLong, newtsLong;
     private String address;
+    private int duration;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -293,73 +294,84 @@ public class PunchFragment extends Fragment {
     }
 
     private void recordAttendance() {
-        getCurrentDateTime();
-        boolean inRange = calcDistance();
+        getDuration(new OnCallBack() {
+            @Override
+            public void onSuccess() {
+                getCurrentDateTime();
 
-        if(clockOut){
+                boolean inRange = calcDistance();
 
-            if(currDate.equals(lastClockinDate) && lastClockinDate != null){
-                Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Log.d(TAG, "date: " + currDate + ", time: " + currTime);
-                Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
+                if(clockOut){
 
-                Map<String, Object> attendance = new HashMap<>();
-                attendance.put("clockInTimestamp", tsLong);
-                attendance.put("clockInDate", currDate);
-                attendance.put("clockInTime", currTime);
-                attendance.put("duration", 9);
-                attendance.put("oriClockOutTimestamp", newtsLong);
-                attendance.put("userId", firebaseUser.getUid());
-                attendance.put("clockInLat", latitude);
-                attendance.put("clockInLong", longitude);
-                attendance.put("clockIninRange", inRange);
-                //attendance.put("clockInAddress", address);
-
-                reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(@NonNull Void aVoid) {
-                        clockOut = false;
-                        binding.btnClock.setText("Clock out");
-                        Log.d("addAttendance", "onSuccess: ");
+                    if(currDate.equals(lastClockinDate) && lastClockinDate != null){
+                        Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("addAttendance", "onFailure: " + e.getMessage());
+                    else {
+                        Log.d(TAG, "date: " + currDate + ", time: " + currTime);
+                        Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
+
+                        Map<String, Object> attendance = new HashMap<>();
+                        attendance.put("clockInTimestamp", tsLong);
+                        attendance.put("clockInDate", currDate);
+                        attendance.put("clockInTime", currTime);
+                        attendance.put("duration", duration);
+                        attendance.put("oriClockOutTimestamp", newtsLong);
+                        attendance.put("userId", firebaseUser.getUid());
+                        attendance.put("clockInLat", latitude);
+                        attendance.put("clockInLong", longitude);
+                        attendance.put("clockIninRange", inRange);
+                        //attendance.put("clockInAddress", address);
+
+                        reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(@NonNull Void aVoid) {
+                                clockOut = false;
+                                binding.btnClock.setText("Clock out");
+                                Log.d("addAttendance", "onSuccess: ");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("addAttendance", "onFailure: " + e.getMessage());
+                            }
+                        });
                     }
-                });
+                }
+                else{
+
+                    Map<String,Object> attendance = new HashMap<>();
+                    attendance.put("clockOutTimestamp", tsLong);
+                    attendance.put("clockOutDate", currDate);
+                    attendance.put("clockOutTime", currTime);
+                    attendance.put("clockOutLat", latitude);
+                    attendance.put("clockOutLong", longitude);
+                    attendance.put("clockOutInRange", inRange);
+                    //attendance.put("clockOutAddress", address);
+
+                    reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(@NonNull Void aVoid) {
+                            Log.d("addAttendance", "onSuccess: ");
+                            clockOut = true;
+                            binding.btnClock.setText("Clock in");
+                            Toast.makeText(getContext(), "Successfully clockout.", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("addAttendance", "onFailure: " + e.getMessage());
+                            Toast.makeText(getContext(), "Fail to clockOut. Try again later.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
             }
-        }
-        else{
 
-            Map<String,Object> attendance = new HashMap<>();
-            attendance.put("clockOutTimestamp", tsLong);
-            attendance.put("clockOutDate", currDate);
-            attendance.put("clockOutTime", currTime);
-            attendance.put("clockOutLat", latitude);
-            attendance.put("clockOutLong", longitude);
-            attendance.put("clockOutInRange", inRange);
-            //attendance.put("clockOutAddress", address);
+            @Override
+            public void onFailed(Exception e) {
 
-            reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(@NonNull Void aVoid) {
-                    Log.d("addAttendance", "onSuccess: ");
-                    clockOut = true;
-                    binding.btnClock.setText("Clock in");
-                    Toast.makeText(getContext(), "Successfully clockout.", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d("addAttendance", "onFailure: " + e.getMessage());
-                    Toast.makeText(getContext(), "Fail to clockOut. Try again later.", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }
+            }
+        });
     }
 
     private void checkLastNode(){
@@ -457,11 +469,24 @@ public class PunchFragment extends Fragment {
         currTime = df.format(dateTime);
         currDate = formatter.format(dateTime);
 
-        newtsLong = tsLong + TimeUnit.HOURS.toMillis(9);
+        //newtsLong = tsLong + TimeUnit.HOURS.toMillis(9);
+
+        newtsLong = tsLong + TimeUnit.MINUTES.toMillis(duration);
         Date newdateTime = new Date(newtsLong);
 
         newTime = df.format(newdateTime);
         newDate = formatter.format(newdateTime);
+    }
+
+    private void getDuration(final OnCallBack onCallBack){
+        firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+                duration = documentSnapshot.getLong("minutesOfWork").intValue();
+                Log.d(TAG, "duration: " + duration);
+                onCallBack.onSuccess();
+            }
+        });
     }
 
     /*private void getPermission(final OnCallBack onCallBack){
@@ -550,4 +575,9 @@ public class PunchFragment extends Fragment {
 
         return dateTime;
     }*/
+
+    public interface OnCallBack{
+        void onSuccess();
+        void onFailed(Exception e);
+    }
 }
