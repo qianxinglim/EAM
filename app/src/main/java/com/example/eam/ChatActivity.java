@@ -244,7 +244,7 @@ public class ChatActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void changeFabIcon(final int index){
+    /*private void changeFabIcon(final int index){
         binding.fabAction.hide();
         //binding.btnAddStatus.setVisibility(View.GONE);
 
@@ -283,5 +283,5 @@ public class ChatActivity extends AppCompatActivity {
         },400);
 
         //performOnClick(index);
-    }
+    }*/
 }

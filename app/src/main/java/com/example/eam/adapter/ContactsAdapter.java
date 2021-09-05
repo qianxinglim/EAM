@@ -2,7 +2,6 @@ package com.example.eam.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.eam.IndvChatActivity;
-import com.example.eam.ProfileActivity;
 import com.example.eam.R;
-import com.example.eam.model.Users;
+import com.example.eam.model.User;
 
 import java.util.List;
 
@@ -21,10 +19,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder>{
-    private List<Users> list;
+    private List<User> list;
     private Context context;
 
-    public ContactsAdapter(List<Users> list, Context context) {
+    public ContactsAdapter(List<User> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -39,7 +37,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Users user = list.get(position);
+        User user = list.get(position);
 
         holder.username.setText(user.getName());
         //holder.desc.setText(user.getUserID());

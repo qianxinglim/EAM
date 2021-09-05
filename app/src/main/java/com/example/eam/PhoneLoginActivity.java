@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.eam.databinding.ActivityPhoneLoginBinding;
-import com.example.eam.model.Users;
+import com.example.eam.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,7 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-import com.hbb20.CountryCodePicker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -311,11 +310,14 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
                                                                 String title = documentSnapshot.getString("title");
                                                                 String status = documentSnapshot.getString("status");
                                                                 String profilepic = documentSnapshot.getString("profilePic");
+                                                                String clockInTime = documentSnapshot.getString("clockInTime");
+                                                                String clockOutTime = documentSnapshot.getString("clockOutTime");
+                                                                int minutesOfWork = documentSnapshot.getLong("minutesOfWork").intValue();
 
                                                                 WriteBatch batch = firestore.batch();
 
                                                                 DocumentReference nycRef = firestore.collection("Companies").document(companyID).collection("Users").document(user.getUid());
-                                                                batch.set(nycRef, new Users(user.getUid(), name, user.getPhoneNumber(),"", email,"",title,department));
+                                                                batch.set(nycRef, new User(user.getUid(), name, user.getPhoneNumber(),"", email,"",title,department,clockInTime, clockOutTime, minutesOfWork));
 
                                                                 Log.d(TAG, "companyID: " + companyID);
 
@@ -476,11 +478,14 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
                                                                 String title = documentSnapshot.getString("title");
                                                                 String status = documentSnapshot.getString("status");
                                                                 String profilepic = documentSnapshot.getString("profilePic");
+                                                                String clockInTime = documentSnapshot.getString("clockInTime");
+                                                                String clockOutTime = documentSnapshot.getString("clockOutTime");
+                                                                int minutesOfWork = documentSnapshot.getLong("minutesOfWork").intValue();
 
                                                                 WriteBatch batch = firestore.batch();
 
                                                                 DocumentReference nycRef = firestore.collection("Companies").document(companyID).collection("Users").document(user.getUid());
-                                                                batch.set(nycRef, new Users(user.getUid(), name, user.getPhoneNumber(),"", email,"",title,department));
+                                                                batch.set(nycRef, new User(user.getUid(), name, user.getPhoneNumber(),"", email,"",title,department,clockInTime,clockOutTime,minutesOfWork));
 
                                                                 Log.d(TAG, "companyID: " + companyID);
 

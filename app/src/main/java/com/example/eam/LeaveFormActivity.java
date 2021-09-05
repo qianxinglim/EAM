@@ -35,7 +35,7 @@ import android.widget.Toast;
 import com.example.eam.databinding.ActivityLeaveFormBinding;
 import com.example.eam.managers.ChatService;
 import com.example.eam.managers.SessionManager;
-import com.example.eam.model.Users;
+import com.example.eam.model.User;
 import com.example.eam.service.FirebaseService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -76,8 +76,8 @@ public class LeaveFormActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private int IMAGE_GALLERY_REQUEST = 111;
     private String companyID;
-    private List<Users> list = new ArrayList<>();
-    private ArrayAdapter<Users> adapter;
+    private List<User> list = new ArrayList<>();
+    private ArrayAdapter<User> adapter;
     private boolean toggle = true;
     private String chosenDate, chosenTime;
     private boolean isActionShown = false;
@@ -128,7 +128,7 @@ public class LeaveFormActivity extends AppCompatActivity {
                         String userID = doc.getString("id");
                         String userName = doc.getString("name");
 
-                        Users user = new Users();
+                        User user = new User();
                         user.setID(userID);
                         user.setName(userName);
 
@@ -146,7 +146,7 @@ public class LeaveFormActivity extends AppCompatActivity {
         binding.spReviewer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                Users users = (Users) parent.getSelectedItem();
+                User user = (User) parent.getSelectedItem();
                 //displayUserData(users);
             }
 
@@ -161,9 +161,9 @@ public class LeaveFormActivity extends AppCompatActivity {
 
     }
 
-    private void displayUserData(Users users){
-        String userName = users.getName();
-        String userID = users.getID();
+    private void displayUserData(User user){
+        String userName = user.getName();
+        String userID = user.getID();
 
         String userData = "userID: " + userID + ", Name: " + userName;
 

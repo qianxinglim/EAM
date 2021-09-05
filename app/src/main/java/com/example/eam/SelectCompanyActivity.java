@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.example.eam.adapter.CompanyListAdapter;
 import com.example.eam.databinding.ActivitySelectCompanyBinding;
-import com.example.eam.model.Companies;
+import com.example.eam.model.Company;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -27,7 +27,7 @@ import java.util.List;
 public class SelectCompanyActivity extends AppCompatActivity {
     private static final String TAG = "SelectCompanyActivity";
     private ActivitySelectCompanyBinding binding;
-    private List<Companies> list = new ArrayList<>();
+    private List<Company> list = new ArrayList<>();
     private CompanyListAdapter adapter;
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firestore;
@@ -81,7 +81,7 @@ public class SelectCompanyActivity extends AppCompatActivity {
                             public void onSuccess(@NonNull List<Object> objlist) {
                                 try {
                                     for (Object object : objlist) {
-                                        Companies company = ((DocumentSnapshot) object).toObject(Companies.class);
+                                        Company company = ((DocumentSnapshot) object).toObject(Company.class);
                                         list.add(company);
 
                                         Log.d(TAG, "companyID" + company.getCompanyID());

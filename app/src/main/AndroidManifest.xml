@@ -9,10 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EAM">
-        <activity android:name=".EmployeeListActivity"></activity>
-        <activity android:name=".LeaveFormActivity"></activity>
-        <activity android:name=".AddUserActivity"></activity>
-        <activity android:name=".WeeklyViewActivity"></activity>
+        <activity android:name=".EmployeeProfileActivity"></activity>
+        <activity android:name=".EmployeeListActivity" />
+        <activity android:name=".LeaveFormActivity" />
+        <activity android:name=".AddUserActivity" />
+        <activity android:name=".WeeklyViewActivity" />
         <activity android:name=".AttendanceRecordActivity" />
         <activity android:name=".SelectCompanyActivity" />
         <activity android:name=".CreateCompanyActivity" />
@@ -24,9 +25,9 @@
         <activity android:name=".display.ViewImageActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".PhoneLoginActivity"></activity>
+        <activity android:name=".PhoneLoginActivity" />
         <activity android:name=".SplashScreenActivity" />
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity" />
         <activity android:name=".ClockActivity" />
         <activity android:name=".Login" />
         <activity android:name=".Register" />

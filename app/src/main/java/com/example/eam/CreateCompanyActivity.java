@@ -12,12 +12,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.eam.databinding.ActivityCreateCompanyBinding;
-import com.example.eam.model.Users;
+import com.example.eam.model.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -38,7 +37,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class CreateCompanyActivity extends AppCompatActivity {
     private static final String TAG = "CreateCompanyActivity";
@@ -132,15 +130,15 @@ public class CreateCompanyActivity extends AppCompatActivity {
         //batch.set(ref, company);
 
         DocumentReference ref2 = firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid());
-        Map<String,Object> addUserData = new HashMap<>();
+        /*Map<String,Object> addUserData = new HashMap<>();
         addUserData.put("id", firebaseUser.getUid());
         addUserData.put("name", "dan");
         addUserData.put("email", "dan@gmail.com");
         addUserData.put("phoneNo", firebaseUser.getPhoneNumber());
         addUserData.put("title", "leader");
-        addUserData.put("department", "meme");
+        addUserData.put("department", "meme");*/
         //batch.set(ref2, addUserData);
-        //Users user = new Users(firebaseUser.getUid(),"dan",firebaseUser.getPhoneNumber(),"","dan@gmail.com","","leader","bake");
+        User user = new User(firebaseUser.getUid(),"dan",firebaseUser.getPhoneNumber(),"","dan@gmail.com","","leader","bake", "08:00","18:30",630);
 
         DocumentReference ref3 = firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid());
         Map<String,Object> addAdmin = new HashMap<>();
@@ -174,7 +172,7 @@ public class CreateCompanyActivity extends AppCompatActivity {
                         batch.set(userRef, addUser);
                         batch.set(ref, company);
                         batch.set(ref3, addAdmin);
-                        batch.set(ref2, addUserData);
+                        batch.set(ref2, user);
 
                         batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -192,7 +190,7 @@ public class CreateCompanyActivity extends AppCompatActivity {
                         WriteBatch batch = firestore.batch();
 
                         batch.set(ref, company);
-                        batch.set(ref2, addUserData);
+                        batch.set(ref2, user);
                         batch.set(ref3, addAdmin);
                         batch.update(userRef, "CompanyID", FieldValue.arrayUnion(companyID));
                         //firestore.collection("users").document(firebaseUser.getUid()).update("CompanyID", FieldValue.arrayUnion(companyID));

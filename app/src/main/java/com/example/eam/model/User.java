@@ -1,6 +1,13 @@
 package com.example.eam.model;
 
-public class Users {
+import com.bumptech.glide.Glide;
+import com.example.eam.EditProfileActivity;
+import com.example.eam.R;
+
+import java.lang.reflect.MalformedParameterizedTypeException;
+import java.time.Clock;
+
+public class User {
     private String ID;
     private String Name;
     private String PhoneNo;
@@ -9,11 +16,14 @@ public class Users {
     private String Status;
     private String Title;
     private String Department;
+    private String ClockInTime;
+    private String ClockOutTime;
+    private int MinutesOfWork;
 
-    public Users() {
+    public User() {
     }
 
-    public Users(String ID, String Name, String PhoneNo, String ProfilePic, String Email, String Status, String Title, String Department) {
+    public User(String ID, String Name, String PhoneNo, String ProfilePic, String Email, String Status, String Title, String Department, String ClockInTime, String ClockOutTime, int MinutesOfWork) {
         this.ID = ID;
         this.Name = Name;
         this.PhoneNo = PhoneNo;
@@ -22,6 +32,10 @@ public class Users {
         this.Status = Status;
         this.Title = Title;
         this.Department = Department;
+        this.ClockInTime = ClockInTime;
+        this.ClockOutTime = ClockOutTime;
+        this.MinutesOfWork = MinutesOfWork;
+
     }
 
     public String getID() {
@@ -84,8 +98,32 @@ public class Users {
         return Title;
     }
 
-    public void setTitle(String title) {
-        Title = title;
+    public void setTitle(String Title) {
+        this.Title = Title;
+    }
+
+    public String getClockInTime() {
+        return ClockInTime;
+    }
+
+    public void setClockInTime(String ClockInTime) {
+        this.ClockInTime = ClockInTime;
+    }
+
+    public String getClockOutTime() {
+        return ClockOutTime;
+    }
+
+    public void setClockOutTime(String ClockOutTime) {
+        this.ClockOutTime = ClockOutTime;
+    }
+
+    public int getMinutesOfWork() {
+        return MinutesOfWork;
+    }
+
+    public void setMinutesOfWork(int MinutesOfWork) {
+        this.MinutesOfWork = MinutesOfWork;
     }
 
     @Override

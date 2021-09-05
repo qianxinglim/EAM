@@ -1,6 +1,6 @@
 package com.example.eam.model;
 
-public class Companies {
+public class Company {
     private String companyID;
     private String companyName;
     private String industryType;
@@ -8,10 +8,10 @@ public class Companies {
     private String creatorID;
     //private String companyLocation;
 
-    public Companies() {
+    public Company() {
     }
 
-    public Companies(String companyID, String companyName, String industryType, int staffSize, String creatorID) {
+    public Company(String companyID, String companyName, String industryType, int staffSize, String creatorID) {
         this.companyID = companyID;
         this.companyName = companyName;
         this.industryType = industryType;

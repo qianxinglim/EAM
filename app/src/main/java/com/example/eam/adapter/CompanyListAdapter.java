@@ -8,12 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.eam.IndvChatActivity;
 import com.example.eam.MainActivity;
 import com.example.eam.R;
 import com.example.eam.managers.SessionManager;
-import com.example.eam.model.Chats;
-import com.example.eam.model.Companies;
+import com.example.eam.model.Company;
 
 import java.util.List;
 
@@ -21,16 +19,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class CompanyListAdapter extends RecyclerView.Adapter<CompanyListAdapter.Holder>{
-    private List<Companies> list;
+    private List<Company> list;
     private Context context;
     private SessionManager sessionManager;
 
-    public CompanyListAdapter(List<Companies> list, Context context) {
+    public CompanyListAdapter(List<Company> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
-    public void setList(List<Companies> list){
+    public void setList(List<Company> list){
         this.list = list;
         notifyDataSetChanged();
     }
@@ -44,7 +42,7 @@ public class CompanyListAdapter extends RecyclerView.Adapter<CompanyListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        Companies companylist = list.get(position);
+        Company companylist = list.get(position);
 
         holder.tvCompanyName.setText(companylist.getCompanyName());
         holder.tvCompanyID.setText(companylist.getCompanyID());

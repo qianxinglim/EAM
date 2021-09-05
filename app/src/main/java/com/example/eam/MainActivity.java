@@ -90,7 +90,25 @@ public class MainActivity extends AppCompatActivity {
                 HashMap<String, String> userDetail = sessionManager.getUserDetail();
                 companyID = userDetail.get(sessionManager.COMPANYID);
 
-                firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.w(TAG, "Listen failed.", error);
+                            return;
+                        }
+
+                        if(value != null && value.exists()){
+                            binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(true);
+                        }
+                        else{
+                            binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(false);
+                            binding.bottomNavigation.getMenu().removeItem(R.id.nav_admin);
+                        }
+                    }
+                });
+
+                /*firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
@@ -105,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "Failed with: " + task.getException());
                         }
                     }
-                });
+                });*/
             }
             else{
                 startActivity(new Intent(MainActivity.this, PhoneLoginActivity.class));

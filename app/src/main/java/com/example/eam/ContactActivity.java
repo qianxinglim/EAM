@@ -1,6 +1,5 @@
 package com.example.eam;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -12,23 +11,19 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.databinding.ActivityContactBinding;
 import com.example.eam.managers.SessionManager;
-import com.example.eam.model.Users;
+import com.example.eam.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +32,7 @@ import java.util.List;
 public class ContactActivity extends AppCompatActivity {
     private static final String TAG = "ContactActivity";
     private ActivityContactBinding binding;
-    private List<Users> list = new ArrayList<>();
+    private List<User> list = new ArrayList<>();
     private ContactsAdapter adapter;
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firestore;
@@ -174,7 +169,7 @@ public class ContactActivity extends AppCompatActivity {
                     String imageUrl = snapshots.getString("profilePic");
                     String phone = snapshots.getString("phoneNo");
 
-                    Users user = new Users();
+                    User user = new User();
                     user.setID(userID);
                     user.setName(userName);
                     user.setProfilePic(imageUrl);
