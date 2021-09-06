@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EAM">
-        <activity android:name=".EmployeeProfileActivity"></activity>
+        <activity android:name=".ReviewLeaveActivity"></activity>
+        <activity android:name=".EmployeeProfileActivity" />
         <activity android:name=".EmployeeListActivity" />
         <activity android:name=".LeaveFormActivity" />
         <activity android:name=".AddUserActivity" />

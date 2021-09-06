@@ -536,6 +536,7 @@ public class LeaveFormActivity extends AppCompatActivity {
         leave.put("duration", binding.tvTotal.getText().toString());
         leave.put("note", binding.etNote.getText().toString());
         leave.put("requester", firebaseUser.getUid());
+        leave.put("status", "pending");
         //leave.put("reviewer", );
 
         if(imageUri == null && pdfUri == null){
@@ -564,7 +565,7 @@ public class LeaveFormActivity extends AppCompatActivity {
                 new FirebaseService(LeaveFormActivity.this).uploadDocumentToFirebaseStorage(pdfUri, new FirebaseService.OnCallBack() {
                     @Override
                     public void onUploadSuccess(String pdfUrl) {
-                        leave.put("file", pdfUrl);
+                        leave.put("document", pdfUrl);
                     }
 
                     @Override

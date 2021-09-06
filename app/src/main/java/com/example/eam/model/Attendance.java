@@ -9,16 +9,20 @@ public class Attendance {
     private String clockOutTime;
     private long clockOutTimestamp;
     private int duration;
-    private long oriClockOutTimestamp;
+    //private long oriClockOutTimestamp;
     private double clockInLat;
     private double clockInLong;
     private double clockOutLat;
     private double clockOutLong;
+    private boolean clockIninRange;
+    private boolean clockOutInRange;
+    private String oriClockInTime;
+    private String oriClockOutTime;
 
     public Attendance() {
     }
 
-    public Attendance(String userId, String clockInDate, String clockInTime, long clockInTimestamp, String clockOutDate, String clockOutTime, long clockOutTimestamp, int duration, long oriClockOutTimestamp, double clockInLat, double clockInLong, double clockOutLat, double clockOutLong) {
+    public Attendance(String userId, String clockInDate, String clockInTime, long clockInTimestamp, String clockOutDate, String clockOutTime, long clockOutTimestamp, int duration, long oriClockOutTimestamp, double clockInLat, double clockInLong, double clockOutLat, double clockOutLong, boolean clockIninRange, boolean clockOutInRange, String oriClockInTime, String oriClockOutTime) {
         this.userId = userId;
         this.clockInDate = clockInDate;
         this.clockInTime = clockInTime;
@@ -27,11 +31,15 @@ public class Attendance {
         this.clockOutTime = clockOutTime;
         this.clockOutTimestamp = clockOutTimestamp;
         this.duration = duration;
-        this.oriClockOutTimestamp = oriClockOutTimestamp;
+        //this.oriClockOutTimestamp = oriClockOutTimestamp;
         this.clockInLat = clockInLat;
         this.clockInLong = clockInLong;
         this.clockOutLat = clockOutLat;
         this.clockOutLong = clockOutLong;
+        this.clockIninRange = clockIninRange;
+        this.clockOutInRange = clockOutInRange;
+        this.oriClockInTime = oriClockInTime;
+        this.oriClockOutTime = oriClockOutTime;
     }
 
     public String getUserId() {
@@ -98,13 +106,13 @@ public class Attendance {
         this.duration = duration;
     }
 
-    public long getOriClockOutTimestamp() {
+    /*public long getOriClockOutTimestamp() {
         return oriClockOutTimestamp;
     }
 
     public void setOriClockOutTimestamp(long oriClockOutTimestamp) {
         this.oriClockOutTimestamp = oriClockOutTimestamp;
-    }
+    }*/
 
     public double getClockInLat() {
         return clockInLat;
@@ -136,5 +144,37 @@ public class Attendance {
 
     public void setClockOutLong(double clockOutLong) {
         this.clockOutLong = clockOutLong;
+    }
+
+    public boolean isClockIninRange() {
+        return clockIninRange;
+    }
+
+    public void setClockIninRange(boolean clockIninRange) {
+        this.clockIninRange = clockIninRange;
+    }
+
+    public boolean isClockOutInRange() {
+        return clockOutInRange;
+    }
+
+    public void setClockOutInRange(boolean clockOutInRange) {
+        this.clockOutInRange = clockOutInRange;
+    }
+
+    public String getOriClockInTime() {
+        return oriClockInTime;
+    }
+
+    public void setOriClockInTime(String oriClockInTime) {
+        this.oriClockInTime = oriClockInTime;
+    }
+
+    public String getOriClockOutTime() {
+        return oriClockOutTime;
+    }
+
+    public void setOriClockOutTime(String oriClockOutTime) {
+        this.oriClockOutTime = oriClockOutTime;
     }
 }

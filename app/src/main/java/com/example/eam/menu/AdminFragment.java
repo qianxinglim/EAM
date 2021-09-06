@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import com.example.eam.AddUserActivity;
 import com.example.eam.EmployeeListActivity;
 import com.example.eam.R;
+import com.example.eam.ReviewLeaveActivity;
+import com.example.eam.adapter.LeaveReviewAdapter;
 import com.example.eam.databinding.FragmentAdminBinding;
 import com.example.eam.managers.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,6 +58,13 @@ public class AdminFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), EmployeeListActivity.class));
+            }
+        });
+
+        binding.btnLeaveRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), ReviewLeaveActivity.class));
             }
         });
 

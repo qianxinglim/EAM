@@ -85,7 +85,7 @@ public class PunchFragment extends Fragment {
     private DatabaseReference reference;
     private boolean clockOut = false;
     private String lastClockinDate;
-    private String currTime, currDate, newTime, newDate;
+    private String currTime, currDate, newTime, newDate, oriClockInTime, oriClockOutTime;
     private long tsLong, newtsLong;
     private String address;
     private int duration;
@@ -315,11 +315,13 @@ public class PunchFragment extends Fragment {
                         attendance.put("clockInDate", currDate);
                         attendance.put("clockInTime", currTime);
                         attendance.put("duration", duration);
-                        attendance.put("oriClockOutTimestamp", newtsLong);
+                        //attendance.put("oriClockOutTimestamp", newtsLong);
                         attendance.put("userId", firebaseUser.getUid());
                         attendance.put("clockInLat", latitude);
                         attendance.put("clockInLong", longitude);
                         attendance.put("clockIninRange", inRange);
+                        attendance.put("oriClockInTime", oriClockInTime);
+                        attendance.put("oriClockOutTime", newTime);
                         //attendance.put("clockInAddress", address);
 
                         reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -476,6 +478,8 @@ public class PunchFragment extends Fragment {
 
         newTime = df.format(newdateTime);
         newDate = formatter.format(newdateTime);
+
+        Log.d(TAG, "newTime: " + newTime);
     }
 
     private void getDuration(final OnCallBack onCallBack){
@@ -483,6 +487,8 @@ public class PunchFragment extends Fragment {
             @Override
             public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
                 duration = documentSnapshot.getLong("minutesOfWork").intValue();
+                oriClockInTime = documentSnapshot.getString("clockInTime");
+                oriClockOutTime = documentSnapshot.getString("clockOutTime");
                 Log.d(TAG, "duration: " + duration);
                 onCallBack.onSuccess();
             }
