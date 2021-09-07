@@ -18,11 +18,12 @@ public class Attendance {
     private boolean clockOutInRange;
     private String oriClockInTime;
     private String oriClockOutTime;
+    private String mustClockOutTime;
 
     public Attendance() {
     }
 
-    public Attendance(String userId, String clockInDate, String clockInTime, long clockInTimestamp, String clockOutDate, String clockOutTime, long clockOutTimestamp, int duration, long oriClockOutTimestamp, double clockInLat, double clockInLong, double clockOutLat, double clockOutLong, boolean clockIninRange, boolean clockOutInRange, String oriClockInTime, String oriClockOutTime) {
+    public Attendance(String userId, String clockInDate, String clockInTime, long clockInTimestamp, String clockOutDate, String clockOutTime, long clockOutTimestamp, int duration, long oriClockOutTimestamp, double clockInLat, double clockInLong, double clockOutLat, double clockOutLong, boolean clockIninRange, boolean clockOutInRange, String oriClockInTime, String oriClockOutTime, String mustClockOutTime) {
         this.userId = userId;
         this.clockInDate = clockInDate;
         this.clockInTime = clockInTime;
@@ -40,6 +41,7 @@ public class Attendance {
         this.clockOutInRange = clockOutInRange;
         this.oriClockInTime = oriClockInTime;
         this.oriClockOutTime = oriClockOutTime;
+        this.mustClockOutTime = mustClockOutTime;
     }
 
     public String getUserId() {
@@ -176,5 +178,13 @@ public class Attendance {
 
     public void setOriClockOutTime(String oriClockOutTime) {
         this.oriClockOutTime = oriClockOutTime;
+    }
+
+    public String getMustClockOutTime() {
+        return mustClockOutTime;
+    }
+
+    public void setMustClockOutTime(String mustClockOutTime) {
+        this.mustClockOutTime = mustClockOutTime;
     }
 }

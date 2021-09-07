@@ -45,8 +45,14 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -89,6 +95,7 @@ public class PunchFragment extends Fragment {
     private long tsLong, newtsLong;
     private String address;
     private int duration;
+    private double range;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -234,6 +241,8 @@ public class PunchFragment extends Fragment {
                 }
 
                 if (value != null && value.exists()) {
+                    range = (double) value.get("punchRange");
+
                     Map<String, Object> location = value.getData();
 
                     for(Map.Entry<String, Object> entry : location.entrySet()){
@@ -301,42 +310,105 @@ public class PunchFragment extends Fragment {
 
                 boolean inRange = calcDistance();
 
+                /*SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                DateTimeFormatter dtf = DateTimeFormat.forPattern("HH:mm");
+
+                //Date oriClockIn = null, currTimeNow = null;
+                DateTime oriClockIn = null;
+
+                //oriClockIn = df.parse(oriClockInTime);
+                //currTimeNow = df.parse(currTime);
+
+                oriClockIn = dtf.parseDateTime(oriClockInTime);
+                //currTimeNow = dtf.parseDateTime(currTime);
+
+                DateTime onehrb4 = oriClockIn.minusHours(1);
+
+                //String ori = dtf.print(onehrb4);
+
+                Date b4 = null, currTimeNow = null;
+
+                try {
+                    b4 = df.parse(dtf.print(onehrb4));
+                    currTimeNow = df.parse(currTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d(TAG, "onehrb4: " + onehrb4);
+
+                if (currTimeNow.after(b4)) {
+                    Toast.makeText(getContext(), "can clock in", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "can clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
+                }
+                else{
+                    Toast.makeText(getContext(), "Cannot clock in", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "cannot clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
+                }*/
+
                 if(clockOut){
+                    SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                    DateTimeFormatter dtf = DateTimeFormat.forPattern("HH:mm");
 
-                    if(currDate.equals(lastClockinDate) && lastClockinDate != null){
-                        Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
+                    DateTime oriClockIn = null;
+
+                    oriClockIn = dtf.parseDateTime(oriClockInTime);
+
+                    DateTime onehrb4 = oriClockIn.minusHours(1);
+
+                    Date b4 = null, currTimeNow = null;
+                    try {
+                        b4 = df.parse(dtf.print(onehrb4));
+                        currTimeNow = df.parse(currTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                    else {
-                        Log.d(TAG, "date: " + currDate + ", time: " + currTime);
-                        Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
 
-                        Map<String, Object> attendance = new HashMap<>();
-                        attendance.put("clockInTimestamp", tsLong);
-                        attendance.put("clockInDate", currDate);
-                        attendance.put("clockInTime", currTime);
-                        attendance.put("duration", duration);
-                        //attendance.put("oriClockOutTimestamp", newtsLong);
-                        attendance.put("userId", firebaseUser.getUid());
-                        attendance.put("clockInLat", latitude);
-                        attendance.put("clockInLong", longitude);
-                        attendance.put("clockIninRange", inRange);
-                        attendance.put("oriClockInTime", oriClockInTime);
-                        attendance.put("oriClockOutTime", newTime);
-                        //attendance.put("clockInAddress", address);
+                    //one hour before the oriClockInTime set by admin
+                    if (currTimeNow.after(b4)) {
+                        Toast.makeText(getContext(), "can clock in", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "can clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
 
-                        reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(@NonNull Void aVoid) {
-                                clockOut = false;
-                                binding.btnClock.setText("Clock out");
-                                Log.d("addAttendance", "onSuccess: ");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d("addAttendance", "onFailure: " + e.getMessage());
-                            }
-                        });
+                        if(currDate.equals(lastClockinDate) && lastClockinDate != null){
+                            Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            Log.d(TAG, "date: " + currDate + ", time: " + currTime);
+                            Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
+
+                            Map<String, Object> attendance = new HashMap<>();
+                            attendance.put("clockInTimestamp", tsLong);
+                            attendance.put("clockInDate", currDate);
+                            attendance.put("clockInTime", currTime);
+                            attendance.put("duration", duration);
+                            //attendance.put("oriClockOutTimestamp", newtsLong);
+                            attendance.put("userId", firebaseUser.getUid());
+                            attendance.put("clockInLat", latitude);
+                            attendance.put("clockInLong", longitude);
+                            attendance.put("clockIninRange", inRange);
+                            attendance.put("oriClockInTime", oriClockInTime);
+                            attendance.put("oriClockOutTime", oriClockOutTime);
+                            attendance.put("mustClockOutTime", newTime);
+                            //attendance.put("clockInAddress", address);
+
+                            reference.child(companyID).child("Attendance").push().setValue(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(@NonNull Void aVoid) {
+                                    clockOut = false;
+                                    binding.btnClock.setText("Clock out");
+                                    Log.d("addAttendance", "onSuccess: ");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("addAttendance", "onFailure: " + e.getMessage());
+                                }
+                            });
+                        }
+                    }
+                    else{
+                        Toast.makeText(getContext(), "Cannot clock in", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "cannot clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
                     }
                 }
                 else{
@@ -420,14 +492,12 @@ public class PunchFragment extends Fragment {
         double km = results[0]/1000;
         Log.d(TAG, "Distance: " + km);
 
-        if(km > 1){
-            //Toast.makeText(getContext(), "Not within company", Toast.LENGTH_SHORT).show();
+        if(km > range){
             binding.tvLocation.setText("Not Within Company");
             return false;
         }
         else{
             binding.tvLocation.setText("Within Company");
-            //Toast.makeText(getContext(), "Within company", Toast.LENGTH_SHORT).show();
             return true;
         }
     }

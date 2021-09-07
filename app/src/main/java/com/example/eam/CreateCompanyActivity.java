@@ -107,6 +107,7 @@ public class CreateCompanyActivity extends AppCompatActivity {
         String companyName = binding.etCompanyName.getText().toString();
         String industryType = binding.etIndustryType.getText().toString();
         int staffSize = Integer.parseInt(binding.etStaffSize.getText().toString());
+        double range = Double.parseDouble(binding.etRange.getText().toString());
         //String companyID = UUID.randomUUID().toString();
 
         //DocumentReference documentReference = firestore.collection("Companies").document();
@@ -127,6 +128,7 @@ public class CreateCompanyActivity extends AppCompatActivity {
         company.put("companyLocation", location);
         company.put("company_address", address);
         company.put("creatorID", firebaseUser.getUid());
+        company.put("punchRange", range);
         //batch.set(ref, company);
 
         DocumentReference ref2 = firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid());
