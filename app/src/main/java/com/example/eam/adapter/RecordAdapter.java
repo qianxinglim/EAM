@@ -1,13 +1,17 @@
 package com.example.eam.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.eam.IndvChatActivity;
+import com.example.eam.PunchDetailActivity;
 import com.example.eam.R;
 import com.example.eam.common.CalendarUtils;
 import com.example.eam.model.Attendance;
@@ -50,20 +54,15 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
 
-        //Calendar c = Calendar.getInstance();
-        //long tsLong = c.getTimeInMillis();
         Date dateTime = new Date();
         String currDate = formatter2.format(dateTime);
 
         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-
         Date clockInTime = null, oriClockInTime = null;
 
         try {
             oriClockInTime = df.parse(attendance.getOriClockInTime());
             clockInTime = df.parse(attendance.getClockInTime());
-
-            //Log.d("TAG", "currTime: " + oriClockInTime + ", oriClockInTime: " + clockInTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -72,7 +71,6 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
         //No punch out
         if (attendance.getClockOutDate() == null) {
-
             //If today
             if (date.format(formatter).equals(currDate)) {
                 if (clockInTime.after(oriClockInTime)) {
@@ -118,7 +116,6 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
                 }
 
                 //Punch missed
-
                 holder.tvClockOutStatus.setText("Punch missed");
                 holder.tvClockOutLocation.setVisibility(View.GONE);
             }
@@ -207,6 +204,32 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
             }
         }
 
+        holder.btnlnClockIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(context, PunchDetailActivity.class)
+                        .putExtra("type", "clockIn")
+                        .putExtra("clockInDate", attendance.getClockInDate())
+                        .putExtra("clockInTime", attendance.getClockInTime())
+                        .putExtra("clockInTimestamp", attendance.getClockInTimestamp())
+                        .putExtra("clockInLat", attendance.getClockInLat())
+                        .putExtra("clockInLong", attendance.getClockInLong()));
+            }
+        });
+
+        holder.btnlnClockOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(context, PunchDetailActivity.class)
+                        .putExtra("type", "clockOut")
+                        .putExtra("clockOutDate", attendance.getClockOutDate())
+                        .putExtra("clockOutTime", attendance.getClockOutTime())
+                        .putExtra("clockOutTimestamp", attendance.getClockOutTimestamp())
+                        .putExtra("clockOutLat", attendance.getClockOutLat())
+                        .putExtra("clockOutLong", attendance.getClockOutLong()));
+            }
+        });
+
         /*String currDateTime = df.format(new Date());
 
         Date currTime = null, oriClockOutTime = null;
@@ -265,6 +288,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView tvClockInTime, tvClockOutTime, tvDuration, tvClockInLocation, tvClockOutLocation, tvClockOutStatus;
+        private LinearLayout btnlnClockIn, btnlnClockOut;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -275,6 +299,8 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
             tvClockOutLocation = itemView.findViewById(R.id.tvClockOutLocation);
             tvDuration = itemView.findViewById(R.id.tvDuration);
             tvClockOutStatus = itemView.findViewById(R.id.tvClockOutStatus);
+            btnlnClockIn = itemView.findViewById(R.id.btnlnClockIn);
+            btnlnClockOut = itemView.findViewById(R.id.btnlnClockOut);
         }
     }
 }
