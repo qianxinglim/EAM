@@ -137,7 +137,7 @@
 
             <TextView
                 android:id="@+id/tvTimeFrom"
-                android:text="09:00 am"
+                android:text="09:00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -156,7 +156,7 @@
 
             <TextView
                 android:id="@+id/tvTimeTo"
-                android:text="12:00 pm"
+                android:text="12:00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

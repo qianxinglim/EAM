@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.example.eam.ClockActivity;
 import com.example.eam.CreateCompanyActivity;
 import com.example.eam.LeaveFormActivity;
+import com.example.eam.LeaveRecordActivity;
 import com.example.eam.PhoneLoginActivity;
 import com.example.eam.R;
 import com.example.eam.databinding.FragmentAssetsBinding;
@@ -85,6 +86,13 @@ public class AssetsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), LeaveFormActivity.class));
+            }
+        });
+
+        binding.btnLeaveRequests.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), LeaveRecordActivity.class));
             }
         });
 

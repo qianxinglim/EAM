@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="15dp"
-    android:background="@android:color/white"
+    android:background="@drawable/bgitem"
     android:orientation="vertical">
     <TextView
         android:layout_width="wrap_content"
@@ -18,8 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/ln_gallery"
@@ -54,6 +53,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Camera"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_doc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/google_docs"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Document"/>
+
         </LinearLayout>
 
     </LinearLayout>

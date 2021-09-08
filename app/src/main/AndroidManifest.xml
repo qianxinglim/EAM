@@ -9,12 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EAM">
+        <activity android:name=".LeaveRecordActivity"></activity>
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/map_key"/>
+        <activity android:name=".PunchDetailActivity" />
 
-        <activity android:name=".PunchDetailActivity"></activity>
         <activity android:name=".EditCompanyActivity" />
         <activity android:name=".ReviewLeaveActivity" />
         <activity android:name=".EmployeeProfileActivity" />
@@ -46,6 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/map_key" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -66,6 +67,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
 </manifest>

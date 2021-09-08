@@ -12,6 +12,7 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,6 +25,7 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -40,6 +42,7 @@ import com.example.eam.service.FirebaseService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -66,6 +69,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class LeaveFormActivity extends AppCompatActivity {
     private static final String TAG = "LeaveFormActivity";
@@ -84,6 +88,7 @@ public class LeaveFormActivity extends AppCompatActivity {
     private String defaultStart="9:00AM", defaultEnd="12:00AM";
     private Uri imageUri;
     private Uri pdfUri;
+    private BottomSheetDialog bottomSheetDialog;
     private ChatService chatService;
     private String receiverID;
 
@@ -187,7 +192,7 @@ public class LeaveFormActivity extends AppCompatActivity {
 
     private void calcTotal() {
         if(toggle){
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
             try{
                 Date dateFrom = sdf.parse(binding.tvDateFrom.getText().toString());
@@ -214,7 +219,7 @@ public class LeaveFormActivity extends AppCompatActivity {
 
         }
         else{
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm aa");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
             try{
                 Date timeFrom = sdf.parse(binding.tvTimeFrom.getText().toString());
@@ -267,26 +272,28 @@ public class LeaveFormActivity extends AppCompatActivity {
         binding.btnFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isActionShown){
+                /*if (isActionShown){
                     binding.layoutActions.setVisibility(View.GONE);
                     isActionShown = false;
                 } else {
                     binding.layoutActions.setVisibility(View.VISIBLE);
                     isActionShown = true;
-                }
+                }*/
+
+                showBottomSheetPickFile();
 
             }
         });
 
-        binding.btnClose.setOnClickListener(new View.OnClickListener() {
+        /*binding.btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                     binding.layoutActions.setVisibility(View.GONE);
                     isActionShown = false;
             }
-        });
+        });*/
 
-        binding.btnGallery.setOnClickListener(new View.OnClickListener() {
+        /*binding.btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openGallery();
@@ -298,7 +305,7 @@ public class LeaveFormActivity extends AppCompatActivity {
             public void onClick(View view) {
                 checkCameraPermission();
             }
-        });
+        });*/
 
         binding.tvCurrentdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -335,7 +342,7 @@ public class LeaveFormActivity extends AppCompatActivity {
             }
         });
 
-        binding.btnDoc.setOnClickListener(new View.OnClickListener() {
+        /*binding.btnDoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkDocumentPermission();
@@ -349,7 +356,53 @@ public class LeaveFormActivity extends AppCompatActivity {
                 //intent.setData(pdfUri);
                 //startActivity(intent);
             }
+        });*/
+    }
+
+    private void showBottomSheetPickFile() {
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_pick,null);
+
+        view.findViewById(R.id.btn_doc).setVisibility(View.VISIBLE);
+
+        ((View) view.findViewById(R.id.ln_gallery)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+                bottomSheetDialog.dismiss();
+            }
         });
+
+        ((View) view.findViewById(R.id.ln_camera)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkCameraPermission();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        ((View) view.findViewById(R.id.btn_doc)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkDocumentPermission();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(view);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            Objects.requireNonNull(bottomSheetDialog.getWindow()).addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
+        bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                bottomSheetDialog=null;
+            }
+        });
+        bottomSheetDialog.show();
+
     }
 
     private void checkDocumentPermission() {
@@ -536,7 +589,7 @@ public class LeaveFormActivity extends AppCompatActivity {
         leave.put("duration", binding.tvTotal.getText().toString());
         leave.put("note", binding.etNote.getText().toString());
         leave.put("requester", firebaseUser.getUid());
-        leave.put("status", "pending");
+        leave.put("status", "Pending");
         //leave.put("reviewer", );
 
         if(imageUri == null && pdfUri == null){
@@ -609,7 +662,7 @@ public class LeaveFormActivity extends AppCompatActivity {
 
     private String getCurrentDate() {
         Date date = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
         return df.format(date);
     }
@@ -624,7 +677,17 @@ public class LeaveFormActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String date = day + "/" + month + "/" + year;
+
+                String day1 = String.valueOf(day), month1 = String.valueOf(month);
+
+                if(day < 10){
+                    day1 = "0" + day;
+                }
+                if(month < 10){
+                    month1 = "0" + month;
+                }
+
+                String date = day1 + "-" + month1 + "-" + year;
                 tvDate.setText(date);
                 chosenDate = date;
                 calcTotal();
@@ -652,8 +715,8 @@ public class LeaveFormActivity extends AppCompatActivity {
                     SimpleDateFormat f12Hours = new SimpleDateFormat("hh:mm aa");
 
                     //Set selected time on text view
-                    tvTime.setText(f12Hours.format(date));
-                    chosenTime = f12Hours.format(date);
+                    tvTime.setText(f24Hours.format(date));
+                    chosenTime = f24Hours.format(date);
                     calcTotal();
                 }catch (ParseException e){
                     e.printStackTrace();
