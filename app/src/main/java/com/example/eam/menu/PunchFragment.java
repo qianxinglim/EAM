@@ -395,7 +395,7 @@ public class PunchFragment extends Fragment {
                                 @Override
                                 public void onSuccess(@NonNull Void aVoid) {
                                     clockOut = false;
-                                    binding.btnClock.setText("Clock out");
+                                    binding.tvClockStatus.setText("Clock out");
                                     Log.d("addAttendance", "onSuccess: ");
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
@@ -427,7 +427,7 @@ public class PunchFragment extends Fragment {
                         public void onSuccess(@NonNull Void aVoid) {
                             Log.d("addAttendance", "onSuccess: ");
                             clockOut = true;
-                            binding.btnClock.setText("Clock in");
+                            binding.tvClockStatus.setText("Clock in");
                             Toast.makeText(getContext(), "Successfully clockout.", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -459,11 +459,11 @@ public class PunchFragment extends Fragment {
 
                         if(children.hasChild("clockOutTime") && children.hasChild("clockOutDate") && children.hasChild("clockOutTimestamp")){
                             clockOut = true;
-                            binding.btnClock.setText("Clock in");
+                            binding.tvClockStatus.setText("Clock in");
                         }
                         else{
                             clockOut = false;
-                            binding.btnClock.setText("Clock out");
+                            binding.tvClockStatus.setText("Clock out");
                         }
 
                         //Log.d("key", attendanceID);
@@ -475,7 +475,7 @@ public class PunchFragment extends Fragment {
                 else{
                     lastClockinDate = null;
                     clockOut = true;
-                    binding.btnClock.setText("Clock in");
+                    binding.tvClockStatus.setText("Clock in");
                 }
             }
 
@@ -493,11 +493,11 @@ public class PunchFragment extends Fragment {
         Log.d(TAG, "Distance: " + km);
 
         if(km > range){
-            binding.tvLocation.setText("Not Within Company");
+            binding.tvLocation.setText("Not within company area");
             return false;
         }
         else{
-            binding.tvLocation.setText("Within Company");
+            binding.tvLocation.setText("Within company area");
             return true;
         }
     }
