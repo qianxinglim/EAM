@@ -57,13 +57,6 @@ public class AssetsFragment extends Fragment {
 
         binding.tvEmail.setText(companyID);
 
-        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                logout();
-            }
-        });
-
         binding.btnClockin.setOnClickListener(view -> {
             startActivity(new Intent(getActivity(), ClockActivity.class));
         });
@@ -97,12 +90,5 @@ public class AssetsFragment extends Fragment {
         });
 
         return binding.getRoot();
-    }
-
-    public void logout() {
-        FirebaseAuth.getInstance().signOut();
-        sessionManager.logout();
-        startActivity(new Intent(getActivity(),PhoneLoginActivity.class));
-        getActivity().finish();
     }
 }

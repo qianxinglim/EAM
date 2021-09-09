@@ -34,8 +34,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -52,6 +54,7 @@ import com.example.eam.model.Chats;
 import com.example.eam.service.FirebaseService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -157,9 +160,9 @@ public class IndvChatActivity extends AppCompatActivity {
         });
 
         //list = new ArrayList<>();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, true);
-        layoutManager.setReverseLayout(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
+        //layoutManager.setReverseLayout(true);
         binding.recyclerView.setLayoutManager(layoutManager);
         adapter = new ChatsAdapter(list, this);
         binding.recyclerView.setAdapter(adapter);
@@ -172,7 +175,7 @@ public class IndvChatActivity extends AppCompatActivity {
                 //Start Recording
 
                 if(!checkPermissionFromDevice()){
-                    binding.btnEmoji.setVisibility(View.INVISIBLE);
+                    //binding.btnEmoji.setVisibility(View.INVISIBLE);
                     binding.btnFile.setVisibility(View.INVISIBLE);
                     binding.btnCamera.setVisibility(View.INVISIBLE);
                     binding.edMessage.setVisibility(View.INVISIBLE);
@@ -199,7 +202,7 @@ public class IndvChatActivity extends AppCompatActivity {
 
             @Override
             public void onFinish(long recordTime) {
-                binding.btnEmoji.setVisibility(View.VISIBLE);
+                //binding.btnEmoji.setVisibility(View.VISIBLE);
                 binding.btnFile.setVisibility(View.VISIBLE);
                 binding.btnCamera.setVisibility(View.VISIBLE);
                 binding.edMessage.setVisibility(View.VISIBLE);
@@ -215,7 +218,7 @@ public class IndvChatActivity extends AppCompatActivity {
 
             @Override
             public void onLessThanSecond() {
-                binding.btnEmoji.setVisibility(View.VISIBLE);
+                //binding.btnEmoji.setVisibility(View.VISIBLE);
                 binding.btnFile.setVisibility(View.VISIBLE);
                 binding.btnCamera.setVisibility(View.VISIBLE);
                 binding.edMessage.setVisibility(View.VISIBLE);
@@ -224,7 +227,7 @@ public class IndvChatActivity extends AppCompatActivity {
         binding.recordView.setOnBasketAnimationEndListener(new OnBasketAnimationEnd() {
             @Override
             public void onAnimationEnd() {
-                binding.btnEmoji.setVisibility(View.VISIBLE);
+                //binding.btnEmoji.setVisibility(View.VISIBLE);
                 binding.btnFile.setVisibility(View.VISIBLE);
                 binding.btnCamera.setVisibility(View.VISIBLE);
                 binding.edMessage.setVisibility(View.VISIBLE);
@@ -395,14 +398,16 @@ public class IndvChatActivity extends AppCompatActivity {
         binding.btnFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isActionShown){
+                openBottomSheetDialog();
+
+                /*if(isActionShown){
                     binding.layoutActions.setVisibility(View.GONE);
                     isActionShown = false;
                 }
                 else{
                     binding.layoutActions.setVisibility(View.VISIBLE);
                     isActionShown = true;
-                }
+                }*/
             }
         });
         binding.btnGallery.setOnClickListener(new View.OnClickListener() {
@@ -430,6 +435,39 @@ public class IndvChatActivity extends AppCompatActivity {
                 checkDocumentPermission();
             }
         });
+    }
+
+    private void openBottomSheetDialog() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme2);
+
+        View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_pick_chat, null);
+
+        bottomSheetView.findViewById(R.id.btn_doc).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkDocumentPermission();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetView.findViewById(R.id.btn_camera_x).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkCameraPermission();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetView.findViewById(R.id.btn_gallery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
     }
 
     private void checkDocumentPermission() {

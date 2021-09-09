@@ -100,7 +100,29 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.fabCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showBottomSheetPickPhoto();
+                //showBottomSheetPickPhoto();
+
+                /*Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+
+                Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String timeStamp = new SimpleDateFormat("yyyyMMDD_HHmmss", Locale.getDefault()).format(new Date());
+                String imageFileName = "IMG_" + timeStamp + ".jpg";
+
+                try {
+                    File file = File.createTempFile("IMG_" + timeStamp, ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+                    imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
+                    intent2.putExtra(MediaStore.EXTRA_OUTPUT,  imageUri);
+                    intent2.putExtra("listPhotoName", imageFileName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Intent chooser = Intent.createChooser(intent,"select image");
+                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intent2});
+                startActivityForResult(chooser, IMAGE_GALLERY_REQUEST);*/
+
+                openIntent();
             }
         });
 
@@ -129,6 +151,28 @@ public class EditProfileActivity extends AppCompatActivity {
                 showDialogSignOut();
             }
         });
+    }
+
+    private void openIntent() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+
+        Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String timeStamp = new SimpleDateFormat("yyyyMMDD_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + ".jpg";
+
+        try {
+            File file = File.createTempFile("IMG_" + timeStamp, ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
+            intent2.putExtra(MediaStore.EXTRA_OUTPUT,  imageUri);
+            intent2.putExtra("listPhotoName", imageFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Intent chooser = Intent.createChooser(intent,"Select Image");
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intent2});
+        startActivityForResult(chooser, IMAGE_GALLERY_REQUEST);
     }
 
     private void showDialogSignOut() {
@@ -336,10 +380,13 @@ public class EditProfileActivity extends AppCompatActivity {
                 e.printStackTrace();
             }*/
         }
-
-        if(requestCode == 440 && resultCode == RESULT_OK){
+        else if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK){
             uploadToFirebase();
         }
+
+        /*if(requestCode == 440 && resultCode == RESULT_OK){
+            uploadToFirebase();
+        }*/
     }
 
     private String getFileExtension(Uri uri){

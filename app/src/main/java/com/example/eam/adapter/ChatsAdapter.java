@@ -69,7 +69,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView textMessage, imageText, tvDocumentName;
         private LinearLayout layoutText, layoutImage, layoutVoice, layoutDocument;
-        private ImageView imageMessage;
+        private ImageView imageMessage, imageFileType;
         private ImageButton btnPlay, btnDownload;
         private ViewHolder tmpHolder;
 
@@ -86,6 +86,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder>{
             btnPlay = itemView.findViewById(R.id.btn_play_chat);
             btnDownload = itemView.findViewById(R.id.btn_download);
             tvDocumentName = itemView.findViewById(R.id.tvDocumentName);
+            imageFileType = itemView.findViewById(R.id.document_chat);
 
         }
         void bind(Chats chats){
@@ -133,6 +134,26 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder>{
                             context.startActivity(intent);
                         }
                     });
+
+                    String extension = chats.getTextMessage().split("\\.")[1];
+                    if(extension.equals("pdf")){
+                        imageFileType.setImageResource(R.drawable.pdf);
+                    }
+                    else if(extension.equals("doc") || extension.equals("docx")){
+                        imageFileType.setImageResource(R.drawable.doc);
+                    }
+                    else if(extension.equals("ppt") || extension.equals("pptx")){
+                        imageFileType.setImageResource(R.drawable.ppt);
+                    }
+                    else if(extension.equals("xls") || extension.equals("xlsx")){
+                        imageFileType.setImageResource(R.drawable.xls);
+                    }
+                    else if(extension.equals("txt")){
+                        imageFileType.setImageResource(R.drawable.txt);
+                    }
+                    else if(extension.equals("zip")){
+                        imageFileType.setImageResource(R.drawable.zip);
+                    }
 
                     break;
 

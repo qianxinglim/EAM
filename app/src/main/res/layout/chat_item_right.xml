@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginBottom="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
     android:layout_marginEnd="10dp"
     android:orientation="vertical">
 
@@ -22,16 +23,15 @@
             android:padding="10dp"
             android:textSize="14sp"
             android:textColor="@android:color/white"
-            android:layout_marginStart="10dp"
             android:text="this is text message"/>
 
     </LinearLayout>
 
     <LinearLayout
+        android:layout_alignParentRight="true"
         android:id="@+id/layout_image"
-        android:layout_width="wrap_content"
+        android:layout_width="280dp"
         android:layout_height="370dp"
-        android:layout_marginStart="100dp"
         android:visibility="gone"
         android:orientation="vertical"
         android:background="@drawable/bg_text_chat_right">
@@ -43,6 +43,7 @@
             android:textSize="14sp"
             android:textColor="@android:color/white"
             android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:padding="5dp"
             android:text="this is text message"/>
 
@@ -62,10 +63,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_alignParentRight="true"
         android:id="@+id/layout_document"
-        android:layout_width="300dp"
+        android:layout_width="280dp"
         android:layout_height="100dp"
-        android:layout_marginStart="100dp"
         android:visibility="gone"
         android:orientation="vertical"
         android:gravity="center_horizontal"
@@ -86,25 +87,31 @@
                 <ImageView
                     android:id="@+id/document_chat"
                     android:layout_marginLeft="20dp"
-                    android:layout_width="60dp"
+                    android:layout_width="35dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/camera_button"/>
+                    android:src="@drawable/doc"/>
 
                 <TextView
                     android:id="@+id/tvDocumentName"
-                    android:layout_width="150dp"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="3"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
                     android:gravity="center_vertical"
+                    android:textSize="18sp"
                     android:text="File Name"/>
 
                 <ImageButton
                     android:id="@+id/btn_download"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_gravity="center"
                     android:scaleType="fitCenter"
-                    android:layout_marginRight="20dp"
+                    android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_baseline_arrow_circle_down_24"
                     android:background="@android:color/transparent" />
             </LinearLayout>
@@ -112,13 +119,14 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_alignParentRight="true"
         android:id="@+id/layout_voice"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
         android:visibility="visible"
-        android:background="@drawable/bg_layout_round"
-        android:orientation="horizontal">
+        android:background="@drawable/bg_text_chat_right"
+        android:orientation="horizontal"
+        android:padding="10dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -134,14 +142,13 @@
                 android:src="@drawable/ic_baseline_play_circle_filled_24"
                 android:clickable="false"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
                 android:visibility="visible" />
 
         </RelativeLayout>
         <View
             android:id="@+id/v_length"
             android:layout_width="match_parent"
-            android:layout_marginEnd="15dp"
+            android:layout_marginEnd="5dp"
             android:layout_height="1dp"
             android:layout_gravity="center_vertical"
             android:background="@android:color/white" />
@@ -158,4 +165,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
