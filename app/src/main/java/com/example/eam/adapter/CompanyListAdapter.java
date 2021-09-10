@@ -52,7 +52,7 @@ public class CompanyListAdapter extends RecyclerView.Adapter<CompanyListAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sessionManager.createSession(companylist.getCompanyID());
+                sessionManager.createSession(companylist.getCompanyID(), companylist.getCreatorID());
 
                 context.startActivity(new Intent(context, MainActivity.class));
                 ((Activity)context).finish();

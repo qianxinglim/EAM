@@ -9,10 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EAM">
-        <activity android:name=".LeaveRecordActivity"></activity>
-
+        <activity android:name=".EnterCodeActivity"></activity>
+        <activity android:name=".LeaveRecordActivity" />
         <activity android:name=".PunchDetailActivity" />
-
         <activity android:name=".EditCompanyActivity" />
         <activity android:name=".ReviewLeaveActivity" />
         <activity android:name=".EmployeeProfileActivity" />
@@ -44,6 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />

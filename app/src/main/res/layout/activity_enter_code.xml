@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp"
+    tools:context=".EnterCodeActivity">
+
+    <ImageView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="80dp"/>
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Enter the 6-digit code"/>
+
+    <TextView
+        android:id="@+id/tvPhoneDisplay"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sent to"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etOtp1"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:imeOptions="actionNext"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="1"
+            tools:ignore="LabelFor"/>
+
+        <EditText
+            android:id="@+id/etOtp2"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:imeOptions="actionNext"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="1"
+            tools:ignore="LabelFor"/>
+
+        <EditText
+            android:id="@+id/etOtp3"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:imeOptions="actionNext"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="1"
+            tools:ignore="LabelFor"/>
+
+        <EditText
+            android:id="@+id/etOtp4"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:imeOptions="actionNext"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="1"
+            tools:ignore="LabelFor"/>
+
+        <EditText
+            android:id="@+id/etOtp5"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:imeOptions="actionNext"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="1"
+            tools:ignore="LabelFor"/>
+
+        <EditText
+            android:id="@+id/etOtp6"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:imeOptions="actionNext"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="1"
+            tools:ignore="LabelFor"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnVerify"
+        android:text="Verify Code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
+</layout>

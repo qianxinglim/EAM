@@ -200,10 +200,10 @@ public class ProfileFragment extends Fragment {
                 binding.tvUsername.setText(userName);
                 binding.tvPhone.setText(userPhone);
                 binding.tvEmail.setText(userEmail);
-                //binding.tvDepartment.setText(userDepartment);
-                //binding.tvTitle.setText(userTitle);
-                //binding.tvClockInTime.setText(userClockInTime);
-                //binding.tvClockOutTime.setText(userClockOutTime);
+                binding.tvDepartment.setText(userDepartment);
+                binding.tvTitle.setText(userTitle);
+                binding.tvClockInTime.setText(userClockInTime);
+                binding.tvClockOutTime.setText(userClockOutTime);
 
                 if(!userProfilePic.equals("-") && userProfilePic!=null && !userProfilePic.equals("")) {
                     Glide.with(getActivity()).load(userProfilePic).into(binding.imageProfile);

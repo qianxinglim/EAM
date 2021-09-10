@@ -40,8 +40,8 @@ public class EmployeeListActivity extends AppCompatActivity {
         binding.fabAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EmployeeListActivity.this, "Add Employees", Toast.LENGTH_SHORT).show();
-                //startActivity(new Intent(EmployeeListActivity.this, ContactsActivity.class));
+                //Toast.makeText(EmployeeListActivity.this, "Add Employees", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(EmployeeListActivity.this, AddUserActivity.class));
             }
         });
 
@@ -53,7 +53,20 @@ public class EmployeeListActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                performOnClick(position);
+                if(position == 1){
+                    binding.fabAction.setVisibility(View.GONE);
+                }
+                else{
+                    binding.fabAction.setVisibility(View.VISIBLE);
+                    binding.fabAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                startActivity(new Intent(EmployeeListActivity.this, AddUserActivity.class));
+                        }
+                    });
+                }
+
+                //performOnClick(position);
             }
 
             @Override
@@ -100,20 +113,20 @@ public class EmployeeListActivity extends AppCompatActivity {
         }
     }
 
-    private void performOnClick(final int index) {
+    /*private void performOnClick(final int index) {
         binding.fabAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (index==0){
-                    Toast.makeText(EmployeeListActivity.this, "Add Employee", Toast.LENGTH_SHORT).show();
-                    //startActivity(new Intent(EmployeeListActivity.this, ContactsActivity.class));
+                    //Toast.makeText(EmployeeListActivity.this, "Add Employee", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(EmployeeListActivity.this, AddUserActivity.class));
                 }else if (index==1){
                     Toast.makeText(EmployeeListActivity.this, "Add Admin", Toast.LENGTH_SHORT).show();
                     //checkCameraPermission();
                 }
             }
         });
-    }
+    }*/
 
 
 }

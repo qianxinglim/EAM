@@ -3,6 +3,8 @@ package com.example.eam.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.eam.model.Company;
+
 import java.util.HashMap;
 
 public class SessionManager {
@@ -14,6 +16,7 @@ public class SessionManager {
     private static final String PREF_NAME = "LOGIN";
     private static final String LOGIN = "IS_LOGIN";
     public static final String COMPANYID = "COMPANYID";
+    public static final String CREATORID = "CREATORID";
     /*public static final String NAME = "NAME";
     public static final String EMAIL = "EMAIL";
     public static final String ID = "ID";*/
@@ -24,9 +27,10 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void createSession(String companyID){
+    public void createSession(String companyID, String creatorID){
         editor.putBoolean(LOGIN, true);
         editor.putString(COMPANYID, companyID);
+        editor.putString(CREATORID, creatorID);
         /*editor.putString(NAME, name);
         editor.putString(EMAIL, email);
         editor.putString(ID, id);*/
@@ -53,7 +57,7 @@ public class SessionManager {
     public HashMap<String, String> getUserDetail(){
         HashMap<String, String> user = new HashMap<>();
         user.put(COMPANYID, sharedPreferences.getString(COMPANYID, null));
-
+        user.put(CREATORID, sharedPreferences.getString(CREATORID, null));
         /*user.put(NAME, sharedPreferences.getString(NAME, null));
         user.put(EMAIL, sharedPreferences.getString(EMAIL, null));
         user.put(ID, sharedPreferences.getString(ID, null));*/

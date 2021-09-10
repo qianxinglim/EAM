@@ -48,7 +48,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -71,11 +73,9 @@ public class EmployeeProfileActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firestore;
     private SessionManager sessionManager;
-    private String companyID;
+    private String companyID, creatorID;
     private String userId;
-    private BottomSheetDialog bottomSheetDialog;
-    private int IMAGE_GALLERY_REQUEST = 111;
-    private Uri imageUri;
+    private boolean isAdmin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +90,7 @@ public class EmployeeProfileActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
+        creatorID = userDetail.get(sessionManager.CREATORID);
 
         Intent intent = getIntent();
         userId = intent.getStringExtra("userID");
@@ -130,13 +131,6 @@ public class EmployeeProfileActivity extends AppCompatActivity {
             }
         });
 
-        binding.fabCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showBottomSheetPickPhoto();
-            }
-        });
-
         /*String userName = intent.getStringExtra("userName");
         String userProfilePic = intent.getStringExtra("userProfilePic");
         String userDepartment = intent.getStringExtra("userDepartment");
@@ -147,111 +141,10 @@ public class EmployeeProfileActivity extends AppCompatActivity {
         validation();
     }
 
-    private void showBottomSheetPickPhoto() {
-        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_pick,null);
-
-        ((View) view.findViewById(R.id.ln_gallery)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-                bottomSheetDialog.dismiss();
-            }
-        });
-
-        ((View) view.findViewById(R.id.ln_camera)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkCameraPermission();
-                bottomSheetDialog.dismiss();
-            }
-        });
-
-        bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(view);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            Objects.requireNonNull(bottomSheetDialog.getWindow()).addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-
-        bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                bottomSheetDialog=null;
-            }
-        });
-        bottomSheetDialog.show();
-
-    }
-
-    private void checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    221);
-
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    222);
-        }
-        else {
-            openCamera();
-        }
-    }
-
-    private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        String timeStamp = new SimpleDateFormat("yyyyMMDD_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "IMG_" + timeStamp + ".jpg";
-
-        try {
-            File file = File.createTempFile("IMG_" + timeStamp, ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-            imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT,  imageUri);
-            intent.putExtra("listPhotoName", imageFileName);
-            startActivityForResult(intent, 440);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openGallery(){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        //Intent chooserIntent = Intent.createChooser(intent,"select image");
-
-        startActivityForResult(Intent.createChooser(intent,"select image"),IMAGE_GALLERY_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK && data !=null && data.getData() !=null){
-            imageUri = data.getData();
-
-            try{
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                Glide.with(EmployeeProfileActivity.this).load(bitmap).into(binding.imageProfile);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        //From Camera
-        if(requestCode == 440 && resultCode == RESULT_OK){
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                Glide.with(EmployeeProfileActivity.this).load(bitmap).into(binding.imageProfile);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void updateUserInfo() {
         final ProgressDialog progressDialog = new ProgressDialog(EmployeeProfileActivity.this);
-        progressDialog.setMessage("Sending leave request...");
+        progressDialog.setMessage("Updating user profile...");
         progressDialog.show();
 
         String phoneNo = binding.etPhoneNo.getText().toString();
@@ -286,32 +179,6 @@ public class EmployeeProfileActivity extends AppCompatActivity {
         updateInfo.put("clockOutTime", clockOutTime);
         updateInfo.put("minutesOfWork", workMinutes);
 
-        if(imageUri == null){
-            uploadInfo(updateInfo);
-            progressDialog.dismiss();
-            finish();
-        }
-        else{
-            if(imageUri != null){
-                new FirebaseService(EmployeeProfileActivity.this).uploadImageToFirebaseStorage(imageUri, new FirebaseService.OnCallBack() {
-                    @Override
-                    public void onUploadSuccess(String imageUrl) {
-                        updateInfo.put("profilePic", imageUrl);
-                        uploadInfo(updateInfo);
-                        progressDialog.dismiss();
-                        finish();
-                    }
-
-                    @Override
-                    public void onUploadFailed(Exception e) {
-                        Log.e("TAG", "onUploadFailed: " + e);
-                    }
-                });
-            }
-        }
-    }
-
-    private void uploadInfo(Map<String, Object> updateInfo) {
         firestore.collection("Companies").document(companyID).collection("Users").document(userId).update(updateInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(@NonNull Void aVoid) {
@@ -323,6 +190,9 @@ public class EmployeeProfileActivity extends AppCompatActivity {
                 Log.d(TAG, "fail to update user info");
             }
         });
+
+        progressDialog.dismiss();
+        finish();
     }
 
     private void getTime(TextView tvTime) {
@@ -375,7 +245,27 @@ public class EmployeeProfileActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_admin_edit, menu);
         return true;
+    }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_promote);
+
+        firestore.collection("Companies").document(companyID).collection("Admin").document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.exists()){
+                    item.setTitle("Demote admin");
+                    isAdmin = true;
+                }
+                else{
+                    item.setTitle("Promote to admin");
+                    isAdmin = false;
+                }
+            }
+        });
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -385,27 +275,68 @@ public class EmployeeProfileActivity extends AppCompatActivity {
         switch (id){
             case R.id.action_promote :
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(EmployeeProfileActivity.this);
-                builder.setMessage("Do you want to promote this user to admin?");
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        promoteUser();
-                    }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                if(isAdmin){
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(EmployeeProfileActivity.this);
+                    builder.setMessage("Do you want to demote this admin?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            demoteUser();
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+                else{
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(EmployeeProfileActivity.this);
+                    builder.setMessage("Do you want to promote this user to admin?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            promoteUser();
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
 
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void demoteUser() {
+
+        if(!userId.equals(creatorID)){
+            firestore.collection("Companies").document(companyID).collection("Admin").document(userId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(@NonNull Void aVoid) {
+                    Toast.makeText(EmployeeProfileActivity.this, "successfully demoted user", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(EmployeeProfileActivity.this, "Fail to promote user", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else{
+            Toast.makeText(this, "Creator of the company cannot be demoted.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void promoteUser() {

@@ -107,7 +107,32 @@ public class AdminListFragment extends Fragment {
             @Override
             public void run() {
                 for(String userID : allAdminID) {
-                    firestore.collection("Companies").document(companyID).collection("Users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    firestore.collection("Companies").document(companyID).collection("Users").document(userID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                            if(value.exists()){
+
+                                try {
+                                    User user = new User(value.getString("id"), value.getString("name"), value.getString("phoneNo"), value.getString("profilePic"), value.getString("email"),"", value.getString("title"), value.getString("department"),value.getString("clockInTime"),value.getString("clockOutTime"),value.getLong("minutesOfWork").intValue());
+                                    list.add(user);
+                                }catch(Exception e){
+                                    Log.d(TAG, "onSuccess: s" + e.getMessage());
+                                }
+
+                                if(adapter != null){
+                                    adapter.notifyItemInserted(0);
+                                    adapter.notifyDataSetChanged();
+
+                                    Log.d(TAG, "onSuccess: adapter" + adapter.getItemCount());
+                                }
+                            }
+                            else{
+
+                            }
+                        }
+                    });
+
+                    /*firestore.collection("Companies").document(companyID).collection("Users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(@NonNull DocumentSnapshot doc) {
                             try {
@@ -128,7 +153,7 @@ public class AdminListFragment extends Fragment {
                         public void onFailure(@NonNull Exception e) {
                             Log.d(TAG, "onFailure: Error " + e.getMessage());
                         }
-                    });
+                    });*/
                 }
             }
         });

@@ -139,7 +139,7 @@ public class AddUserActivity extends AppCompatActivity {
     }*/
 
     private void addUser(){
-        String phoneNo = binding.etPhone.getText().toString();
+        String phoneNo = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.etPhone.getText().toString();
         String name = binding.etName.getText().toString();
         String department = binding.etDepartment.getText().toString();
         String email = binding.etEmail.getText().toString();
@@ -190,6 +190,7 @@ public class AddUserActivity extends AppCompatActivity {
                                     firestore.collection("tempUsers").document(phoneNo).collection("Companies").document(companyID).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(@NonNull Void aVoid) {
+                                            finish();
                                             Toast.makeText(AddUserActivity.this, "added to tempUsers successfully", Toast.LENGTH_SHORT).show();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
