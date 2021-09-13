@@ -13,6 +13,7 @@ import com.example.eam.AddUserActivity;
 import com.example.eam.EmployeeListActivity;
 import com.example.eam.R;
 import com.example.eam.ReviewLeaveActivity;
+import com.example.eam.TimesheetActivity;
 import com.example.eam.adapter.LeaveReviewAdapter;
 import com.example.eam.common.Common;
 import com.example.eam.databinding.FragmentAdminBinding;
@@ -155,6 +156,13 @@ public class AdminFragment extends Fragment implements OnChartGestureListener, O
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), ReviewLeaveActivity.class));
+            }
+        });
+
+        binding.btnTimeSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), TimesheetActivity.class));
             }
         });
 

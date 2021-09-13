@@ -19,6 +19,7 @@ import com.example.eam.common.Common;
 import com.example.eam.databinding.ActivityViewAttendanceBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Attendance;
+import com.example.eam.model.Leave;
 import com.example.eam.model.User;
 import com.github.mikephil.charting.data.Entry;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +35,8 @@ import org.joda.time.Days;
 import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -49,15 +52,16 @@ public class ViewAttendanceActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private String companyID;
     private List<Attendance> list = new ArrayList<>();
-    private String userId = "RjtmE1tr9WZxJVfCtYFW47HpATK2";
+    private List<Leave> leavelist = new ArrayList<>();
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_view_attendance);
 
-        //Intent intent = getIntent();
-        //userId = intent.getStringExtra("userId");
+        Intent intent = getIntent();
+        userId = intent.getStringExtra("userID");
 
         firestore = FirebaseFirestore.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -69,8 +73,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
         setDate();
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
-        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, ViewAttendanceActivity.this);
+        /*binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
+        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
         binding.recyclerView.setAdapter(viewAttendanceAdapter);
 
         if(viewAttendanceAdapter != null){
@@ -78,7 +82,7 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             viewAttendanceAdapter.notifyDataSetChanged();
 
             Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
-        }
+        }*/
 
         binding.tvStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +128,35 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
                 }
             });
+        }
+
+        reference.child(companyID).child("Leaves").orderByChild("requester").equalTo(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                leavelist.clear();
+
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Leave leave = snapshot.getValue(Leave.class);
+
+                    leavelist.add(leave);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
+        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
+        binding.recyclerView.setAdapter(viewAttendanceAdapter);
+
+        if(viewAttendanceAdapter != null){
+            viewAttendanceAdapter.notifyItemInserted(0);
+            viewAttendanceAdapter.notifyDataSetChanged();
+
+            Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
         }
     }
 
@@ -183,10 +216,33 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         String start = binding.tvStartDate.getText().toString();
         String end = binding.tvEndDate.getText().toString();
 
-        LocalDate startDate = LocalDate.parse(start);
-        LocalDate endDate = LocalDate.parse(end);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            String dateFrom = formatter.format(sdf.parse(start));
+            String dateTo = formatter.format(sdf.parse(end));
+            LocalDate dateFrom2 = new LocalDate(dateFrom);
+            LocalDate dateTo2 = new LocalDate(dateTo);
+            LocalDate dateto = dateTo2.plusDays(1);
+            int days = Days.daysBetween(dateFrom2, dateto).getDays();
 
-        int days = Days.daysBetween(startDate, endDate).getDays();
+            datelist = new ArrayList<>(days);
+            for (int i=0; i < days; i++) {
+                LocalDate d = dateFrom2.withFieldAdded(DurationFieldType.days(), i);
+                String date = Common.getJodaTimeFormattedDate(d);
+                datelist.add(date);
+            }
+
+            setAdapter();
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //LocalDate startDate = LocalDate.parse(start);
+        //LocalDate endDate = LocalDate.parse(end);
+
+        /*int days = Days.daysBetween(startDate, endDate).getDays();
         datelist = new ArrayList<>(days);
         for (int i=0; i < days; i++) {
             LocalDate d = startDate.withFieldAdded(DurationFieldType.days(), i);
@@ -195,6 +251,6 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         }
         datelist.add(end);
 
-        setAdapter();
+        setAdapter();*/
     }
 }

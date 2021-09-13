@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_today"
+        android:icon="@drawable/ic_baseline_widgets_24"
+        android:title="Today" />
+
+    <item
+        android:id="@+id/nav_timesheet"
+        android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
+        android:title="Timesheets" />
+</menu>
