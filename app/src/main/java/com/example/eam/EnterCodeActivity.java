@@ -58,29 +58,14 @@ public class EnterCodeActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String phone = intent.getStringExtra("phoneNo");
 
-        //startPhoneVerification(phone);
-
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
-
-        validateOtpInput();
-
-        binding.btnVerify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String code = binding.etOtp1.getText().toString() + binding.etOtp2.getText().toString() + binding.etOtp3.getText().toString() + binding.etOtp4.getText().toString() + binding.etOtp5.getText().toString() + binding.etOtp6.getText().toString();
-                verifyPhoneNumberWithCode(mVerificationId, code);
-            }
-        });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
                 Log.d(TAG, "onVerificationCompleted: Complete");
                 signInWithPhoneAuthCredential(phoneAuthCredential);
-                //progressBar.setVisibility(View.INVISIBLE);
-                //signInWithPhoneAuthCredential(phoneAuthCredential);
-                //binding.btnNext.setText("Confirm");
             }
 
             @Override
@@ -89,17 +74,39 @@ public class EnterCodeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCodeSent(@NonNull String verificationId,
-                                   @NonNull PhoneAuthProvider.ForceResendingToken token) {
-                // The SMS verification code has been sent to the provided phone number, we
-                // now need to ask the user to enter the code and then construct a credential
-                // by combining the code with a verification ID.
+            public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
                 Log.d(TAG, "onCodeSent:" + verificationId);
 
+                // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
                 mResendToken = token;
             }
         };
+
+        startPhoneVerification(phone);
+
+        validateOtpInput();
+
+        binding.btnVerify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String code = binding.etOtp1.getText().toString()
+                        + binding.etOtp2.getText().toString()
+                        + binding.etOtp3.getText().toString()
+                        + binding.etOtp4.getText().toString()
+                        + binding.etOtp5.getText().toString()
+                        + binding.etOtp6.getText().toString();
+
+                verifyPhoneNumberWithCode(mVerificationId, code);
+            }
+        });
+
+        binding.btnResendOTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resendVerificationCode(phone, mResendToken);
+            }
+        });
     }
 
     private void validateOtpInput() {
@@ -236,6 +243,17 @@ public class EnterCodeActivity extends AppCompatActivity {
         });
     }
 
+    private void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token) {
+        PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions
+                .newBuilder(mAuth)
+                .setPhoneNumber(phoneNumber)       // Phone number to verify
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(this)                 // Activity (for callback binding)
+                .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                .setForceResendingToken(token)     // ForceResendingToken from callbacks
+                .build());
+    }
+
     private void startPhoneVerification(String phoneNumber){
         PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions
                 .newBuilder(FirebaseAuth.getInstance())
@@ -244,8 +262,6 @@ public class EnterCodeActivity extends AppCompatActivity {
                 .setTimeout(60L, TimeUnit.SECONDS)
                 .setCallbacks(mCallbacks)
                 .build());
-
-        //mVerificationProgress = true;
     }
 
     private void verifyPhoneNumberWithCode(String verificationId, String code){
@@ -256,14 +272,13 @@ public class EnterCodeActivity extends AppCompatActivity {
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
+                //binding.progressBar.setVisibility(View.INVISIBLE);
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "signInWithCredential:success");
 
                 FirebaseUser user = task.getResult().getUser();
 
                 if(user != null) {
-
-                    //ArrayList<String> listCompanyid = new ArrayList<>();
                     DocumentReference userRef = firestore.collection("users").document(user.getUid());
                     userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -292,7 +307,6 @@ public class EnterCodeActivity extends AppCompatActivity {
                                                         firestore.collection("tempUsers").document(user.getPhoneNumber()).collection("Companies").document(snapshots.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onSuccess(@NonNull DocumentSnapshot documentSnapshot){
-
                                                                 String companyID = documentSnapshot.getId();
                                                                 String name = documentSnapshot.getString("name");
                                                                 String email = documentSnapshot.getString("email");

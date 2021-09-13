@@ -132,8 +132,35 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
 
         TextView tvName = (TextView) bottomSheetView.findViewById(R.id.tvName);
         TextView tvStatus = (TextView) bottomSheetView.findViewById(R.id.tvStatus);
+        TextView tvType = (TextView) bottomSheetView.findViewById(R.id.tvType);
+        TextView tvDate = (TextView) bottomSheetView.findViewById(R.id.tvDate);
+        TextView tvDateFrom = (TextView) bottomSheetView.findViewById(R.id.tvDateFrom);
+        TextView tvDateTo = (TextView) bottomSheetView.findViewById(R.id.tvDateTo);
+        TextView tvTimeFrom = (TextView) bottomSheetView.findViewById(R.id.tvTimeFrom);
+        TextView tvTimeTo = (TextView) bottomSheetView.findViewById(R.id.tvTimeTo);
+        TextView tvDuration = (TextView) bottomSheetView.findViewById(R.id.tvDuration);
+        TextView tvNote = (TextView) bottomSheetView.findViewById(R.id.tvNote);
+
         tvName.setText(userName);
         tvStatus.setText(leave.getStatus());
+        tvType.setText(leave.getType());
+        tvNote.setText(leave.getNote());
+        tvDuration.setText(leave.getDuration());
+
+        if(leave.isFullDay()){
+            tvDateFrom.setText(leave.getDateFrom());
+            tvDateTo.setText(leave.getDateTo());
+            tvDate.setVisibility(View.GONE);
+            tvTimeFrom.setVisibility(View.GONE);
+            tvTimeTo.setVisibility(View.GONE);
+        }
+        else{
+            tvDate.setText(leave.getDate());
+            tvTimeFrom.setText(leave.getTimeFrom());
+            tvTimeTo.setText(leave.getTimeTo());
+            tvDateFrom.setVisibility(View.GONE);
+            tvDateTo.setVisibility(View.GONE);
+        }
 
         if(leave.getStatus().equals("Pending")) {
             bottomSheetView.findViewById(R.id.btnApprove).setOnClickListener(new View.OnClickListener() {

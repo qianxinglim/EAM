@@ -79,11 +79,33 @@ public class MainActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
 
-        if (firebaseUser == null) {
+        if (firebaseUser == null || sessionManager.checkLogin() == false) {
             startActivity(new Intent(MainActivity.this, PhoneLoginActivity.class));
-
+            finish();
         }
-        else {
+        else{
+            HashMap<String, String> userDetail = sessionManager.getUserDetail();
+            companyID = userDetail.get(sessionManager.COMPANYID);
+
+            firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+
+                    if(value != null && value.exists()){
+                        binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(true);
+                    }
+                    else{
+                        binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(false);
+                        binding.bottomNavigation.getMenu().removeItem(R.id.nav_admin);
+                    }
+                }
+            });
+        }
+        /*else {
             boolean isLoggin = sessionManager.checkLogin();
 
             if(isLoggin){
@@ -107,45 +129,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-                /*firestore.collection("Companies").document(companyID).collection("Admin").document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(true);
-                            } else {
-                                binding.bottomNavigation.getMenu().findItem(R.id.nav_admin).setVisible(false);
-                                binding.bottomNavigation.getMenu().removeItem(R.id.nav_admin);
-                            }
-                        } else {
-                            Log.d(TAG, "Failed with: " + task.getException());
-                        }
-                    }
-                });*/
             }
             else{
                 startActivity(new Intent(MainActivity.this, PhoneLoginActivity.class));
                 finish();
             }
-
-            //----------------------------------------------------------------------------
-            /*firebaseUser.getIdToken(true)
-                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-                            if (task.isSuccessful()) {
-                                String idToken = task.getResult().getToken();
-                                // Send token to your backend via HTTPS
-                                // ...
-                            } else {
-                                // Handle error -> task.getException();
-                            }
-                        }
-                    });*/
-
-            //-------------------------------------------------------------------------------
-        }
+        }*/
 
         //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -226,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /*public void logout(View view) {
+    /*public void logout() {
         FirebaseAuth.getInstance().signOut();
         sessionManager.logout();
         startActivity(new Intent(getApplicationContext(),PhoneLoginActivity.class));

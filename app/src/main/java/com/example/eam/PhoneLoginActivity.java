@@ -51,7 +51,6 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
     private FirebaseFirestore firestore;
 
     private ArrayList<String> listCompanyid = new ArrayList<>();
-    //private List<Users2> compUserList = new ArrayList<Users2>();
 
 
     @Override
@@ -59,23 +58,16 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_phone_login);
 
-        //Gathering the instance of Spinner and applying OnItemSelectedListener on it
-        //Spinner spin = findViewById(R.id.spinner_country);
-        //spin.setOnItemSelectedListener(this);
-
-        //Creating the ArrayAdapter instance having the country list
-        //ArrayAdapter<String> aa = new ArrayAdapter<>(this, android.R.layout.simple_list_item, country);
-        //aa.setDropDownViewResource(android.R.layout.simple_dropdown_item);
-
-        //Seting the ArrayAdapter data on the spinner
-        //spin.setAdapter(aa);
-
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
         //progressBar = new ProgressBar(this);
 
         binding.btnNext.setOnClickListener(view -> {
+            //String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
+
+            //startActivity(new Intent(PhoneLoginActivity.this, EnterCodeActivity.class).putExtra("phoneNo", phone));
+
             if(binding.btnNext.getText().equals("Next")){
                 //progressBar.setMessage("Please wait");
                 binding.progressBar.setVisibility(View.VISIBLE);
@@ -88,6 +80,15 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
                 verifyPhoneNumberWithCode(mVerificationId, binding.edCode.getText().toString());
             }
 
+        });
+
+        binding.btnResendOTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
+
+                resendVerificationCode(phone, mResendToken);
+            }
         });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -129,6 +130,17 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
         };
     }
 
+    private void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token) {
+        PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions
+                .newBuilder(mAuth)
+                .setPhoneNumber(phoneNumber)       // Phone number to verify
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(this)                 // Activity (for callback binding)
+                .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                .setForceResendingToken(token)     // ForceResendingToken from callbacks
+                .build());
+    }
+
     private void startPhoneVerification(String phoneNumber){
         PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions
                 .newBuilder(FirebaseAuth.getInstance())
@@ -140,7 +152,7 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
 
         //mVerificationProgress = true;
     }
-    
+
     private void verifyPhoneNumberWithCode(String verificationId, String code){
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
         signInWithPhoneAuthCredential(credential);

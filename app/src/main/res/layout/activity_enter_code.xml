@@ -103,6 +103,14 @@
             tools:ignore="LabelFor"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/btnResendOTP"
+        android:text="Resend OTP"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <Button
         android:id="@+id/btnVerify"
         android:text="Verify Code"

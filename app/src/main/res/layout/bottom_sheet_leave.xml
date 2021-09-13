@@ -65,6 +65,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <TextView
+        android:id="@+id/tvType"
+        android:text="Type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:text="Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvDateFrom"
+        android:text="Date from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvDateTo"
+        android:text="Date to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvTimeFrom"
+        android:text="Date from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvTimeTo"
+        android:text="Date to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvDuration"
+        android:text="Duration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvNote"
+        android:text="Note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <LinearLayout
         android:id="@+id/lnBtn"
         android:layout_width="match_parent"

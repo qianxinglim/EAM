@@ -87,11 +87,13 @@
                     android:hint="phone number"/>
             </LinearLayout>
             <TextView
+                android:id="@+id/btnResendOTP"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:layout_marginTop="15dp"
-                android:text=""/>
+                android:text="Resend OTP"
+                android:textColor="@color/colorPrimary"/>
 
             <EditText
                 android:id="@+id/ed_code"
