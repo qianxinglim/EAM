@@ -18,6 +18,7 @@ import com.example.eam.adapter.ViewAttendanceAdapter;
 import com.example.eam.common.Common;
 import com.example.eam.databinding.ActivityViewAttendanceBinding;
 import com.example.eam.managers.SessionManager;
+import com.example.eam.menu.PunchFragment;
 import com.example.eam.model.Attendance;
 import com.example.eam.model.Leave;
 import com.example.eam.model.User;
@@ -71,7 +72,17 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
 
-        setDate();
+        setDate(new OnCallBack() {
+            @Override
+            public void onSuccess() {
+                setAdapter();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+
+            }
+        });
 
         /*binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
         ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
@@ -100,6 +111,39 @@ public class ViewAttendanceActivity extends AppCompatActivity {
     }
 
     private void setAdapter() {
+        getAttendanceList(new OnCallBack() {
+            @Override
+            public void onSuccess() {
+                getLeaveList(new OnCallBack() {
+                    @Override
+                    public void onSuccess() {
+                        binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
+                        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
+                        binding.recyclerView.setAdapter(viewAttendanceAdapter);
+
+                        if(viewAttendanceAdapter != null){
+                            viewAttendanceAdapter.notifyItemInserted(0);
+                            viewAttendanceAdapter.notifyDataSetChanged();
+
+                            Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Exception e) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+
+            }
+        });
+    }
+
+    private void getAttendanceList(final OnCallBack onCallBack) {
         list.clear();
 
         for(String dates : datelist){
@@ -121,6 +165,10 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                             Log.d(TAG, "userId: " + attendance.getUserId());
                         }
                     }
+
+                    if(list != null){
+                        onCallBack.onSuccess();
+                    }
                 }
 
                 @Override
@@ -129,7 +177,9 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                 }
             });
         }
+    }
 
+    private void getLeaveList(final OnCallBack onCallBack) {
         reference.child(companyID).child("Leaves").orderByChild("requester").equalTo(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -138,7 +188,14 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Leave leave = snapshot.getValue(Leave.class);
 
-                    leavelist.add(leave);
+                    if (leave != null && leave.getStatus().equals("Approved")) {
+                        leavelist.add(leave);
+                        Log.e(TAG, "leavelist: " + leave.getStatus());
+                    }
+                }
+
+                if(leavelist != null){
+                    onCallBack.onSuccess();
                 }
             }
 
@@ -148,7 +205,7 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             }
         });
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
+        /*binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
         ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
         binding.recyclerView.setAdapter(viewAttendanceAdapter);
 
@@ -157,10 +214,10 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             viewAttendanceAdapter.notifyDataSetChanged();
 
             Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
-        }
+        }*/
     }
 
-    private void setDate() {
+    private void setDate(final OnCallBack onCallBack) {
         LocalDate currDate = new LocalDate();
         LocalDate daysAgo = currDate.minusDays(15);
 
@@ -179,7 +236,10 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         }
         datelist.add(currdate);
 
-        setAdapter();
+        if(datelist != null){
+            onCallBack.onSuccess();
+        }
+        //setAdapter();
     }
 
     private void getDate(TextView tvDate) {
@@ -205,14 +265,24 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                 String date = day1 + "-" + month1 + "-" + year;
                 tvDate.setText(date);
 
-                resetDate();
+                resetDate(new OnCallBack() {
+                    @Override
+                    public void onSuccess() {
+                        setAdapter();
+                    }
+
+                    @Override
+                    public void onFailed(Exception e) {
+
+                    }
+                });
             }
         }, year, month, day);
 
         datePickerDialog.show();
     }
 
-    private void resetDate() {
+    private void resetDate(final OnCallBack onCallBack) {
         String start = binding.tvStartDate.getText().toString();
         String end = binding.tvEndDate.getText().toString();
 
@@ -226,6 +296,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             LocalDate dateto = dateTo2.plusDays(1);
             int days = Days.daysBetween(dateFrom2, dateto).getDays();
 
+            datelist.clear();
+
             datelist = new ArrayList<>(days);
             for (int i=0; i < days; i++) {
                 LocalDate d = dateFrom2.withFieldAdded(DurationFieldType.days(), i);
@@ -233,7 +305,9 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                 datelist.add(date);
             }
 
-            setAdapter();
+            if(datelist != null){
+                onCallBack.onSuccess();
+            }
         }
         catch (ParseException e) {
             e.printStackTrace();
@@ -252,5 +326,10 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         datelist.add(end);
 
         setAdapter();*/
+    }
+
+    public interface OnCallBack{
+        void onSuccess();
+        void onFailed(Exception e);
     }
 }

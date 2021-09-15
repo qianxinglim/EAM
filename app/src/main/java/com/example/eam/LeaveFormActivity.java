@@ -24,6 +24,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -41,6 +42,7 @@ import com.example.eam.model.User;
 import com.example.eam.service.FirebaseService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -111,16 +113,25 @@ public class LeaveFormActivity extends AppCompatActivity {
         companyID = userDetail.get(sessionManager.COMPANYID);
 
         binding.switchAllDay.setChecked(true);
-        binding.tvCurrentdate.setText(getCurrentDate());
-        binding.tvDateFrom.setText(getCurrentDate());
-        binding.tvDateTo.setText(getCurrentDate());
+//        binding.tvCurrentdate.setText(getCurrentDate());
+//        binding.tvDateFrom.setText(getCurrentDate());
+//        binding.tvDateTo.setText(getCurrentDate());
         chosenDate = getCurrentDate();
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spReviewer.setAdapter(adapter);
+        binding.btnTvType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomSheetLeaveDetail();
+            }
+        });
 
-        firestore.collection("Companies").document(companyID).collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+
+        //adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //binding.spReviewer.setAdapter(adapter);
+
+        /*firestore.collection("Companies").document(companyID).collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -146,24 +157,60 @@ public class LeaveFormActivity extends AppCompatActivity {
 
                 Log.d(TAG, "User List" + list);
             }
-        });
+        });*/
 
-        binding.spReviewer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                User user = (User) parent.getSelectedItem();
-                //displayUserData(users);
-            }
+//        binding.spReviewer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+//                User user = (User) parent.getSelectedItem();
+//                //displayUserData(users);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        calcTotal();
+//        calcTotal();
         initButtonClick();
 
+    }
+
+    private void bottomSheetLeaveDetail() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(LeaveFormActivity.this, R.style.BottomSheetDialogTheme);
+
+        View bottomSheetView = LayoutInflater.from(LeaveFormActivity.this).inflate(R.layout.bottom_sheet_choose_leave_type, null);
+
+        bottomSheetView.findViewById(R.id.btnVacation).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.tvLeaveType.setText("Vacation");
+                binding.ivType.setVisibility(View.GONE);
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetView.findViewById(R.id.btnNonPaidAbsence).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.tvLeaveType.setText("Non Paid Absence");
+                binding.ivType.setVisibility(View.GONE);
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetView.findViewById(R.id.btnSickLeave).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.tvLeaveType.setText("Sick Leave");
+                binding.ivType.setVisibility(View.GONE);
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
     }
 
     private void displayUserData(User user){
@@ -194,49 +241,58 @@ public class LeaveFormActivity extends AppCompatActivity {
         if(toggle){
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
-            try{
-                Date dateFrom = sdf.parse(binding.tvDateFrom.getText().toString());
-                Date dateTo = sdf.parse(binding.tvDateTo.getText().toString());
-
-                int days = Days.daysBetween(new LocalDate(dateFrom), new LocalDate(dateTo)).getDays();
-
-                //long days = dateFrom.getTime() - dateTo.getTime();
-
-                if(days <= 0){
-                    binding.tvDateFrom.setText(chosenDate);
-                    binding.tvDateTo.setText(chosenDate);
-
-                    //calcTotal();
-                    binding.tvTotal.setText("1 day");
-                }
-                else{
-                    binding.tvTotal.setText((days + 1) + "day(s)");
-                }
-
-            }catch (ParseException e){
-                e.printStackTrace();
+            if(binding.tvDateFrom.getText().toString().equals("Pls select") || binding.tvDateTo.getText().toString().equals("Pls select")){
+                binding.tvTotal.setText("0 day");
             }
+            else{
+                try{
+                    Date dateFrom = sdf.parse(binding.tvDateFrom.getText().toString());
+                    Date dateTo = sdf.parse(binding.tvDateTo.getText().toString());
 
+                    int days = Days.daysBetween(new LocalDate(dateFrom), new LocalDate(dateTo)).getDays();
+
+                    //long days = dateFrom.getTime() - dateTo.getTime();
+
+                    if(days <= 0){
+                        binding.tvDateFrom.setText(chosenDate);
+                        binding.tvDateTo.setText(chosenDate);
+
+                        //calcTotal();
+                        binding.tvTotal.setText("1 day");
+                    }
+                    else{
+                        binding.tvTotal.setText((days + 1) + " days");
+                    }
+
+                }catch (ParseException e){
+                    e.printStackTrace();
+                }
+            }
         }
         else{
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-            try{
-                Date timeFrom = sdf.parse(binding.tvTimeFrom.getText().toString());
-                Date timeTo = sdf.parse(binding.tvTimeTo.getText().toString());
+            if(binding.tvTimeFrom.getText().toString().equals("Pls select") || binding.tvTimeTo.getText().toString().equals("Pls select")){
+                binding.tvTotal.setText("00:00 Work Hours");
+            }
+            else{
+                try{
+                    Date timeFrom = sdf.parse(binding.tvTimeFrom.getText().toString());
+                    Date timeTo = sdf.parse(binding.tvTimeTo.getText().toString());
 
-                if(timeFrom.after(timeTo)) {
-                    binding.tvTimeFrom.setText(chosenTime);
-                    binding.tvTimeTo.setText(chosenTime);
-                    binding.tvTotal.setText("00:00 Work Hours");
+                    if(timeFrom.after(timeTo)) {
+                        binding.tvTimeFrom.setText(chosenTime);
+                        binding.tvTimeTo.setText(chosenTime);
+                        binding.tvTotal.setText("00:00 Work Hours");
+                    }
+                    else{
+                        Interval interval = new Interval(timeFrom.getTime(), timeTo.getTime());
+                        Period period = interval.toPeriod();
+                        binding.tvTotal.setText(period.getHours() + " hours " + period.getMinutes() + " minutes");
+                    }
+                }catch (ParseException e){
+                    e.printStackTrace();
                 }
-                else{
-                    Interval interval = new Interval(timeFrom.getTime(), timeTo.getTime());
-                    Period period = interval.toPeriod();
-                    binding.tvTotal.setText(period.getHours() + " hours " + period.getMinutes() + " minutes");
-                }
-            }catch (ParseException e){
-                e.printStackTrace();
             }
         }
     }
@@ -247,16 +303,20 @@ public class LeaveFormActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     toggle = true;
-                    binding.layoutDate.setVisibility(View.GONE);
-                    binding.layoutChooseDate.setVisibility(View.VISIBLE);
-                    binding.layoutChooseTime.setVisibility(View.GONE);
+                    binding.lnDate.setVisibility(View.GONE);
+                    binding.lnStartDate.setVisibility(View.VISIBLE);
+                    binding.lnEndDate.setVisibility(View.VISIBLE);
+                    binding.lnStartTime.setVisibility(View.GONE);
+                    binding.lnEndTime.setVisibility(View.GONE);
                     calcTotal();
                 }
                 else{
                     toggle = false;
-                    binding.layoutDate.setVisibility(View.VISIBLE);
-                    binding.layoutChooseDate.setVisibility(View.GONE);
-                    binding.layoutChooseTime.setVisibility(View.VISIBLE);
+                    binding.lnDate.setVisibility(View.VISIBLE);
+                    binding.lnStartDate.setVisibility(View.GONE);
+                    binding.lnEndDate.setVisibility(View.GONE);
+                    binding.lnStartTime.setVisibility(View.VISIBLE);
+                    binding.lnEndTime.setVisibility(View.VISIBLE);
                     calcTotal();
                 }
             }
@@ -269,21 +329,21 @@ public class LeaveFormActivity extends AppCompatActivity {
             }
         });
 
-        binding.btnFile.setOnClickListener(new View.OnClickListener() {
+        /*binding.btnFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if (isActionShown){
-                    binding.layoutActions.setVisibility(View.GONE);
-                    isActionShown = false;
-                } else {
-                    binding.layoutActions.setVisibility(View.VISIBLE);
-                    isActionShown = true;
-                }*/
+//                if (isActionShown){
+//                    binding.layoutActions.setVisibility(View.GONE);
+//                    isActionShown = false;
+//                } else {
+//                    binding.layoutActions.setVisibility(View.VISIBLE);
+//                    isActionShown = true;
+//                }
 
                 showBottomSheetPickFile();
 
             }
-        });
+        });*/
 
         /*binding.btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -452,60 +512,60 @@ public class LeaveFormActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "select image"), IMAGE_GALLERY_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //From Gallery
-        if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK && data !=null && data.getData() !=null){
-            imageUri = data.getData();
-
-            try{
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-
-                //reviewImage(bitmap);
-                binding.tvImage.setImageBitmap(bitmap);
-                binding.tvImage.setVisibility(View.VISIBLE);
-                binding.layoutActions.setVisibility(View.GONE);
-                isActionShown = false;
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        //From Camera
-        if(requestCode == 440 && resultCode == RESULT_OK){
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                //reviewImage(bitmap);
-                binding.tvImage.setImageBitmap(bitmap);
-                binding.tvImage.setVisibility(View.VISIBLE);
-                binding.layoutActions.setVisibility(View.GONE);
-                isActionShown = false;
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        if(requestCode == 109 && resultCode == RESULT_OK && data !=null && data.getData() !=null){
-            pdfUri = data.getData();
-
-            if (pdfUri!=null){
-                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
-                progressDialog.setMessage("Uploading file...");
-                progressDialog.show();
-
-                String displayName = getUriPath(pdfUri);
-                binding.layoutDocument.setVisibility(View.VISIBLE);
-                binding.tvDocumentName.setText(displayName);
-
-                progressDialog.dismiss();
-
-                binding.layoutActions.setVisibility(View.GONE);
-                isActionShown = false;
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        //From Gallery
+//        if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK && data !=null && data.getData() !=null){
+//            imageUri = data.getData();
+//
+//            try{
+//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+//
+//                //reviewImage(bitmap);
+//                binding.tvImage.setImageBitmap(bitmap);
+//                binding.tvImage.setVisibility(View.VISIBLE);
+//                binding.layoutActions.setVisibility(View.GONE);
+//                isActionShown = false;
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        //From Camera
+//        if(requestCode == 440 && resultCode == RESULT_OK){
+//            try {
+//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+//                //reviewImage(bitmap);
+//                binding.tvImage.setImageBitmap(bitmap);
+//                binding.tvImage.setVisibility(View.VISIBLE);
+//                binding.layoutActions.setVisibility(View.GONE);
+//                isActionShown = false;
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        if(requestCode == 109 && resultCode == RESULT_OK && data !=null && data.getData() !=null){
+//            pdfUri = data.getData();
+//
+//            if (pdfUri!=null){
+//                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
+//                progressDialog.setMessage("Uploading file...");
+//                progressDialog.show();
+//
+//                String displayName = getUriPath(pdfUri);
+//                binding.layoutDocument.setVisibility(View.VISIBLE);
+//                binding.tvDocumentName.setText(displayName);
+//
+//                progressDialog.dismiss();
+//
+//                binding.layoutActions.setVisibility(View.GONE);
+//                isActionShown = false;
+//            }
+//        }
+//    }
 
     private String getUriPath(Uri pdfUri){
         String uriString = pdfUri.toString();
@@ -580,19 +640,25 @@ public class LeaveFormActivity extends AppCompatActivity {
     }
 
     private void sendLeaveRequest() {
-        final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
+        /*final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
         progressDialog.setMessage("Sending leave request...");
-        progressDialog.show();
+        progressDialog.show();*/
 
         Map<String,Object> leave = new HashMap<>();
-        leave.put("type", binding.spAbsenceType.getSelectedItem().toString());
+        leave.put("type", binding.tvLeaveType.getText().toString());
+        //leave.put("type", binding.spAbsenceType.getSelectedItem().toString());
         leave.put("duration", binding.tvTotal.getText().toString());
         leave.put("note", binding.etNote.getText().toString());
         leave.put("requester", firebaseUser.getUid());
         leave.put("status", "Pending");
+        leave.put("requestDate", getCurrentDate());
+        leave.put("requestTime", getCurrentTime());
+
         //leave.put("reviewer", );
 
-        if(imageUri == null && pdfUri == null){
+        uploadLeaveRequest(leave);
+
+        /*if(imageUri == null && pdfUri == null){
             uploadLeaveRequest(leave);
             progressDialog.dismiss();
             finish();
@@ -614,28 +680,103 @@ public class LeaveFormActivity extends AppCompatActivity {
                     }
                 });
             }
-            /*if(pdfUri != null){
-                new FirebaseService(LeaveFormActivity.this).uploadDocumentToFirebaseStorage(pdfUri, new FirebaseService.OnCallBack() {
-                    @Override
-                    public void onUploadSuccess(String pdfUrl) {
-                        leave.put("document", pdfUrl);
-                    }
+//            if(pdfUri != null){
+//                new FirebaseService(LeaveFormActivity.this).uploadDocumentToFirebaseStorage(pdfUri, new FirebaseService.OnCallBack() {
+//                    @Override
+//                    public void onUploadSuccess(String pdfUrl) {
+//                        leave.put("document", pdfUrl);
+//                    }
+//
+//                    @Override
+//                    public void onUploadFailed(Exception e) {
+//                        Log.e("TAG", "onUploadFailed: " + e);
+//                    }
+//                });
+//            }
 
-                    @Override
-                    public void onUploadFailed(Exception e) {
-                        Log.e("TAG", "onUploadFailed: " + e);
-                    }
-                });
-            }*/
-
-            /*uploadLeaveRequest(leave);
-            progressDialog.dismiss();
-            finish();*/
-        }
+//            uploadLeaveRequest(leave);
+//            progressDialog.dismiss();
+//            finish();
+        }*/
     }
 
     private void uploadLeaveRequest(Map<String, Object> leave) {
         if(toggle){
+            if(binding.tvLeaveType.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvDateFrom.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select start date.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvDateTo.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select end date.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                leave.put("fullDay", true);
+                leave.put("dateFrom", binding.tvDateFrom.getText().toString());
+                leave.put("dateTo", binding.tvDateTo.getText().toString());
+
+                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
+                progressDialog.setMessage("Sending leave request...");
+                progressDialog.show();
+
+                databaseReference.child(companyID).child("Leaves").push().setValue(leave).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+                        Toast.makeText(LeaveFormActivity.this, "Request sent successfully.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(LeaveFormActivity.this, "Fail to send request.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+        else{
+            if(binding.tvLeaveType.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvCurrentdate.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select a date.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvTimeFrom.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select start time.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvTimeTo.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select end time.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                leave.put("fullDay", false);
+                leave.put("date", binding.tvCurrentdate.getText().toString());
+                leave.put("timeFrom", binding.tvTimeFrom.getText().toString());
+                leave.put("timeTo", binding.tvTimeTo.getText().toString());
+
+                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
+                progressDialog.setMessage("Sending leave request...");
+                progressDialog.show();
+
+                databaseReference.child(companyID).child("Leaves").push().setValue(leave).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+                        Toast.makeText(LeaveFormActivity.this, "Request sent successfully.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(LeaveFormActivity.this, "Fail to send request.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
+        /*if(toggle){
             leave.put("fullDay", true);
             leave.put("dateFrom", binding.tvDateFrom.getText().toString());
             leave.put("dateTo", binding.tvDateTo.getText().toString());
@@ -657,12 +798,19 @@ public class LeaveFormActivity extends AppCompatActivity {
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(LeaveFormActivity.this, "Fail to send request.", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
     private String getCurrentDate() {
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+
+        return df.format(date);
+    }
+
+    private String getCurrentTime() {
+        Date date = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
         return df.format(date);
     }

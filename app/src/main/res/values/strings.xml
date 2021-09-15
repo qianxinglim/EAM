@@ -5,6 +5,12 @@
     <string name="back"><![CDATA[<-]]></string>
     <string name="forward"><![CDATA[->]]></string>
     <string name="select_type">Select Absence Type</string>
+    <string name="leave_type">Leave Type <font color='#FF0000'>*</font></string>
+    <string name="start_time">Start Time <font color='#FF0000'>*</font></string>
+    <string name="end_time">End Time <font color='#FF0000'>*</font></string>
+    <string name="start_date">Start Date <font color='#FF0000'>*</font></string>
+    <string name="end_date">End Date <font color='#FF0000'>*</font></string>
+    <string name="date">Date <font color='#FF0000'>*</font></string>
 
     <string-array name="absence_arrays">
         <item>Vacation</item>

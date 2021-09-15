@@ -1,6 +1,8 @@
 package com.example.eam.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapter.ViewHolder>{
@@ -43,10 +47,29 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
         Leave leave = list.get(position);
 
         if(leave.isFullDay()){
-            holder.tvLeaveDate.setText(leave.getDateFrom());
+            holder.tvLeaveDate.setText(leave.getDateFrom() + " to " + leave.getDateTo());
         }
         else{
             holder.tvLeaveDate.setText(leave.getDate());
+        }
+
+        if(leave.getStatus().equals("Approved")){
+            holder.tvStatus.setText(leave.getStatus());
+            DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googgreen));
+            holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+        }
+        else if(leave.getStatus().equals("Declined")){
+            holder.tvStatus.setText(leave.getStatus());
+            DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googred));
+            holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+        }
+        else{
+            holder.tvStatus.setText(leave.getStatus());
+            DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.colorDivider));
+        }
+
+        if(leave.getRequestDate() != null && leave.getRequestTime() != null){
+            holder.tvRequestDateTime.setText("Requested on " + leave.getRequestDate() + " at " + leave.getRequestTime());
         }
 
         holder.tvStatus.setText(leave.getStatus());
@@ -79,6 +102,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
             tvType = itemView.findViewById(R.id.tvType);
             tvLeaveDate = itemView.findViewById(R.id.tvLeaveDate);
             tvStatus = itemView.findViewById(R.id.tvStatus);
+            tvRequestDateTime = itemView.findViewById(R.id.tvRequestDateTime);
         }
     }
 }

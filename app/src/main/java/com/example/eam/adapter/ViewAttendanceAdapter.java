@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +46,7 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.attendance_item, parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.view_attendance_item, parent,false);
 
         return new ViewHolder(view);
     }
@@ -54,17 +55,21 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String theDate = datelist.get(position);
 
-        holder.tvClockInTime.setText(theDate);
+        /*holder.tvClockInTime.setText(theDate);
         holder.tvClockInStatus.setText("Absence");
-        holder.tvClockOutStatus.setText("Type");
+        holder.tvClockOutStatus.setText("Type");*/
 
-        //Log.d("TAG", "attendancelist: " + list);
+        holder.tvDateNo.setText(theDate);
+        holder.tvDailyTotal.setText("Absence");
+        holder.tvLeaveType.setVisibility(View.GONE);
+        holder.tvView.setVisibility(View.GONE);
 
         for(Attendance attendance : list){
             Log.d("TAG", "attendancelist: " + attendance.getClockInDate());
 
             if(attendance.getClockInDate().equals(theDate)){
-                holder.tvClockInStatus.setText("Present");
+                //holder.tvClockInStatus.setText("Present");
+                holder.tvDailyTotal.setText("Present");
                 Log.d("TAG", "theDate: " + theDate + "clockInDate: " + attendance.getClockInDate());
             }
             /*else{
@@ -74,6 +79,8 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
 
         for(Leave leave : leavelist) {
             if (leave.isFullDay()) {
+                Log.d("TAG1", "leaveFrom: " + leave.getDateFrom() + "leaveTo: " + leave.getDateTo());
+
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                 try {
@@ -89,12 +96,27 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
                         String date = Common.getJodaTimeFormattedDate(d);
 
                         if(date.equals(theDate)){
-                            holder.tvClockOutStatus.setText(leave.getType());
+                            Log.d("TAG", "leave: " + leave.getDateFrom());
+                            //holder.tvClockOutStatus.setText(leave.getType());
+                            holder.tvView.setVisibility(View.VISIBLE);
+                            holder.tvLeaveType.setVisibility(View.VISIBLE);
+                            holder.tvLeaveType.setText(leave.getType());
                         }
                     }
                 }
                 catch (ParseException e) {
                     e.printStackTrace();
+                }
+            }
+            else{
+                Log.d("TAG1", "leaveDate: " + leave.getDate());
+
+                if(leave.getDate().equals(theDate)){
+                    Log.d("TAG", "leave: " + leave.getDate());
+                    //holder.tvClockOutStatus.setText(leave.getType());
+                    holder.tvView.setVisibility(View.VISIBLE);
+                    holder.tvLeaveType.setVisibility(View.VISIBLE);
+                    holder.tvLeaveType.setText(leave.getType());
                 }
             }
         }
@@ -119,13 +141,21 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView tvClockInTime, tvClockInStatus, tvClockOutStatus;
+        private TextView tvDateNo, tvDateDay, tvLeaveType, tvDailyTotal;
+        private LinearLayout tvView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvClockInTime = itemView.findViewById(R.id.tvClockInTime);
+            /*tvClockInTime = itemView.findViewById(R.id.tvClockInTime);
             tvClockInStatus = itemView.findViewById(R.id.tvClockInStatus);
-            tvClockOutStatus = itemView.findViewById(R.id.tvClockOutStatus);
+            tvClockOutStatus = itemView.findViewById(R.id.tvClockOutStatus);*/
+
+            tvDateNo = itemView.findViewById(R.id.tvDateNo);
+            tvDateDay = itemView.findViewById(R.id.tvDateDay);
+            tvLeaveType = itemView.findViewById(R.id.tvLeaveType);
+            tvDailyTotal = itemView.findViewById(R.id.tvDailyTotal);
+            tvView = itemView.findViewById(R.id.tvView);
         }
     }
 }

@@ -15,11 +15,13 @@ public class Leave {
     private String timeTo;
     private String type;
     private String leaveId;
+    private String requestDate;
+    private String requestTime;
 
     public Leave() {
     }
 
-    public Leave(String date, String dateFrom, String dateTo, String document, String duration, boolean fullDay, String image, String note, String requester, String status, String timeFrom, String timeTo, String type) {
+    public Leave(String date, String dateFrom, String dateTo, String document, String duration, boolean fullDay, String image, String note, String requester, String status, String timeFrom, String timeTo, String type, String requestDate, String requestTime) {
         this.date = date;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
@@ -33,6 +35,8 @@ public class Leave {
         this.timeFrom = timeFrom;
         this.timeTo = timeTo;
         this.type = type;
+        this.requestDate = requestDate;
+        this.requestTime = requestTime;
     }
 
     public String getDate() {
@@ -145,5 +149,21 @@ public class Leave {
 
     public void setLeaveId(String leaveId) {
         this.leaveId = leaveId;
+    }
+
+    public String getRequestDate() {
+        return requestDate;
+    }
+
+    public void setRequestDate(String requestDate) {
+        this.requestDate = requestDate;
+    }
+
+    public String getRequestTime() {
+        return requestTime;
+    }
+
+    public void setRequestTime(String requestTime) {
+        this.requestTime = requestTime;
     }
 }

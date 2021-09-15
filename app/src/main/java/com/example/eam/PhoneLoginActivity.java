@@ -64,11 +64,11 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
         //progressBar = new ProgressBar(this);
 
         binding.btnNext.setOnClickListener(view -> {
-            //String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
+            String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
 
-            //startActivity(new Intent(PhoneLoginActivity.this, EnterCodeActivity.class).putExtra("phoneNo", phone));
+            startActivity(new Intent(PhoneLoginActivity.this, EnterCodeActivity.class).putExtra("phoneNo", phone));
 
-            if(binding.btnNext.getText().equals("Next")){
+            /*if(binding.btnNext.getText().equals("Next")){
                 //progressBar.setMessage("Please wait");
                 binding.progressBar.setVisibility(View.VISIBLE);
                 String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
@@ -78,18 +78,18 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
             }
             else{
                 verifyPhoneNumberWithCode(mVerificationId, binding.edCode.getText().toString());
-            }
+            }*/
 
         });
 
-        binding.btnResendOTP.setOnClickListener(new View.OnClickListener() {
+        /*binding.btnResendOTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
 
                 resendVerificationCode(phone, mResendToken);
             }
-        });
+        });*/
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
