@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
@@ -35,9 +36,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.eam.adapter.AttachmentAdapter;
+import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.databinding.ActivityLeaveFormBinding;
 import com.example.eam.managers.ChatService;
 import com.example.eam.managers.SessionManager;
+import com.example.eam.model.Leave;
 import com.example.eam.model.User;
 import com.example.eam.service.FirebaseService;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,6 +58,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -81,18 +86,20 @@ public class LeaveFormActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private SessionManager sessionManager;
     private int IMAGE_GALLERY_REQUEST = 111;
+    private int READ_FILE_REQUEST = 101;
     private String companyID;
     private List<User> list = new ArrayList<>();
     private ArrayAdapter<User> adapter;
     private boolean toggle = true;
     private String chosenDate, chosenTime;
     private boolean isActionShown = false;
-    private String defaultStart="9:00AM", defaultEnd="12:00AM";
     private Uri imageUri;
-    private Uri pdfUri;
     private BottomSheetDialog bottomSheetDialog;
     private ChatService chatService;
     private String receiverID;
+    private List<Uri> imageList = new ArrayList<>();
+    private AttachmentAdapter attachmentAdapter;
+    private List<String> imageURLlist = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,9 +120,6 @@ public class LeaveFormActivity extends AppCompatActivity {
         companyID = userDetail.get(sessionManager.COMPANYID);
 
         binding.switchAllDay.setChecked(true);
-//        binding.tvCurrentdate.setText(getCurrentDate());
-//        binding.tvDateFrom.setText(getCurrentDate());
-//        binding.tvDateTo.setText(getCurrentDate());
         chosenDate = getCurrentDate();
 
         binding.btnTvType.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +129,32 @@ public class LeaveFormActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnAddAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkDocumentPermission();
+
+
+
+
+//                Intent intent = new Intent();
+//                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+//                intent.addCategory(Intent.CATEGORY_OPENABLE);
+//                intent.setType("*/*");
+//                String[] mimeTypes = {"image/jpeg","image/png", //image
+//                        "application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+//                        "application/vnd.ms-powerpoint","application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
+//                        "application/vnd.ms-excel","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xls & .xlsx
+//                        "text/plain",
+//                        "application/pdf",
+//                        "application/zip"};
+//                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+
+                //showBottomSheetPickFile();
+            }
+        });
 
 
         //adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
@@ -251,13 +281,9 @@ public class LeaveFormActivity extends AppCompatActivity {
 
                     int days = Days.daysBetween(new LocalDate(dateFrom), new LocalDate(dateTo)).getDays();
 
-                    //long days = dateFrom.getTime() - dateTo.getTime();
-
                     if(days <= 0){
                         binding.tvDateFrom.setText(chosenDate);
                         binding.tvDateTo.setText(chosenDate);
-
-                        //calcTotal();
                         binding.tvTotal.setText("1 day");
                     }
                     else{
@@ -469,11 +495,49 @@ public class LeaveFormActivity extends AppCompatActivity {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    109);
+                    READ_FILE_REQUEST);
         }
         else{
-            selectDocument();
+            openIntent();
         }
+    }
+
+    private void openIntent() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*|" +
+                "application/pdf|" +
+                "application/msword|" +
+                "application/vnd.ms-powerpoint|" +
+                "application/vnd.ms-excel|" +
+                "text/plain|" +
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document|" +
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation|" +
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String[] mimeTypes = {"image/jpeg","image/png", //image
+                "application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+                "application/vnd.ms-powerpoint","application/vnd.openxmlformats-officedocument.presentationml.presentation", // .ppt & .pptx
+                "application/vnd.ms-excel","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xls & .xlsx
+                "text/plain",
+                "application/pdf"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+
+        Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String timeStamp = new SimpleDateFormat("yyyyMMDD_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + ".jpg";
+
+        try {
+            File file = File.createTempFile("IMG_" + timeStamp, ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            imageUri = FileProvider.getUriForFile(LeaveFormActivity.this, BuildConfig.APPLICATION_ID + ".provider", file);
+            intent2.putExtra(MediaStore.EXTRA_OUTPUT,  imageUri);
+            intent2.putExtra("listPhotoName", imageFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Intent chooser = Intent.createChooser(intent,"Select Attachment");
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intent2});
+        startActivityForResult(chooser, READ_FILE_REQUEST);
     }
 
     private void selectDocument() {
@@ -506,42 +570,115 @@ public class LeaveFormActivity extends AppCompatActivity {
     }
 
     private void openGallery(){
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "select image"), IMAGE_GALLERY_REQUEST);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //From Gallery
+        if(requestCode == READ_FILE_REQUEST && resultCode == RESULT_OK && data !=null){
+            if(data.getClipData() !=null) {
+                int countClipData = data.getClipData().getItemCount();
+
+                int currentImageSelect = 0;
+
+                while (currentImageSelect < countClipData) {
+                    imageUri = data.getClipData().getItemAt(currentImageSelect).getUri();
+                    imageList.add(imageUri);
+                    currentImageSelect = currentImageSelect + 1;
+                }
+            }
+            else{
+                imageList.add(data.getData());
+            }
+        }
+        else if(requestCode == READ_FILE_REQUEST && resultCode == RESULT_OK){
+            imageList.add(imageUri);
+        }
+
+        if(imageList.size() > 0){
+            binding.attachmentRecyclerView.setLayoutManager(new GridLayoutManager(this, imageList.size(), GridLayoutManager.VERTICAL, false));
+
+            attachmentAdapter = new AttachmentAdapter(imageList, LeaveFormActivity.this, new AttachmentAdapter.OnClickListener(){
+                @Override
+                public void onBtnDeleteClick(View view, int position) {
+                    imageList.remove(position);
+
+                    if(imageList.size() > 0){
+                        binding.attachmentRecyclerView.setLayoutManager(new GridLayoutManager(LeaveFormActivity.this, imageList.size()));
+                    }
+                    binding.attachmentRecyclerView.setAdapter(attachmentAdapter);
+                }
+            });
+
+            binding.attachmentRecyclerView.setAdapter(attachmentAdapter);
+        }
+
+
+
 //
 //        //From Gallery
-//        if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK && data !=null && data.getData() !=null){
+//        if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK && data !=null){
+//            if(data.getClipData() !=null) {
+//                int countClipData = data.getClipData().getItemCount();
+//
+//                int currentImageSelect = 0;
+//
+//                while (currentImageSelect < countClipData) {
+//                    imageUri = data.getClipData().getItemAt(currentImageSelect).getUri();
+//                    imageList.add(imageUri);
+//                    currentImageSelect = currentImageSelect + 1;
+//                }
+//            }
+//            else{
+//                imageList.add(data.getData());
+//            }
+//
+//
+//            binding.attachmentRecyclerView.setLayoutManager(new GridLayoutManager(this, imageList.size(), GridLayoutManager.VERTICAL, false));
+//
+//            attachmentAdapter = new AttachmentAdapter(imageList, LeaveFormActivity.this, new AttachmentAdapter.OnClickListener(){
+//                @Override
+//                public void onBtnDeleteClick(View view, int position) {
+//                    imageList.remove(position);
+//
+//                    if(imageList.size() > 0){
+//                        binding.attachmentRecyclerView.setLayoutManager(new GridLayoutManager(LeaveFormActivity.this, imageList.size()));
+//                    }
+//                    binding.attachmentRecyclerView.setAdapter(attachmentAdapter);
+//                }
+//            });
+//
+//            binding.attachmentRecyclerView.setAdapter(attachmentAdapter);
+//        }
+//
+//        /*if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK && data !=null && data.getData() !=null){
 //            imageUri = data.getData();
 //
 //            try{
 //                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 //
+//
 //                //reviewImage(bitmap);
-//                binding.tvImage.setImageBitmap(bitmap);
-//                binding.tvImage.setVisibility(View.VISIBLE);
-//                binding.layoutActions.setVisibility(View.GONE);
-//                isActionShown = false;
+//                //binding.tvImage.setImageBitmap(bitmap);
+//                //binding.tvImage.setVisibility(View.VISIBLE);
 //            }catch (Exception e){
 //                e.printStackTrace();
 //            }
-//        }
+//        }*/
 //
 //        //From Camera
 //        if(requestCode == 440 && resultCode == RESULT_OK){
 //            try {
 //                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 //                //reviewImage(bitmap);
-//                binding.tvImage.setImageBitmap(bitmap);
-//                binding.tvImage.setVisibility(View.VISIBLE);
-//                binding.layoutActions.setVisibility(View.GONE);
-//                isActionShown = false;
+//                //binding.tvImage.setImageBitmap(bitmap);
+//                //binding.tvImage.setVisibility(View.VISIBLE);
 //            }catch (Exception e){
 //                e.printStackTrace();
 //            }
@@ -551,21 +688,14 @@ public class LeaveFormActivity extends AppCompatActivity {
 //            pdfUri = data.getData();
 //
 //            if (pdfUri!=null){
-//                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
-//                progressDialog.setMessage("Uploading file...");
-//                progressDialog.show();
-//
 //                String displayName = getUriPath(pdfUri);
-//                binding.layoutDocument.setVisibility(View.VISIBLE);
-//                binding.tvDocumentName.setText(displayName);
+//                //binding.layoutDocument.setVisibility(View.VISIBLE);
+//                //binding.tvDocumentName.setText(displayName);
 //
-//                progressDialog.dismiss();
 //
-//                binding.layoutActions.setVisibility(View.GONE);
-//                isActionShown = false;
 //            }
 //        }
-//    }
+    }
 
     private String getUriPath(Uri pdfUri){
         String uriString = pdfUri.toString();
@@ -640,23 +770,103 @@ public class LeaveFormActivity extends AppCompatActivity {
     }
 
     private void sendLeaveRequest() {
-        /*final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
-        progressDialog.setMessage("Sending leave request...");
-        progressDialog.show();*/
+        final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
+        progressDialog.setMessage("Uploading file...");
+        progressDialog.show();
 
-        Map<String,Object> leave = new HashMap<>();
-        leave.put("type", binding.tvLeaveType.getText().toString());
-        //leave.put("type", binding.spAbsenceType.getSelectedItem().toString());
-        leave.put("duration", binding.tvTotal.getText().toString());
-        leave.put("note", binding.etNote.getText().toString());
-        leave.put("requester", firebaseUser.getUid());
-        leave.put("status", "Pending");
-        leave.put("requestDate", getCurrentDate());
-        leave.put("requestTime", getCurrentTime());
+        if(toggle){
+            if(binding.tvLeaveType.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvDateFrom.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select start date.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvDateTo.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select end date.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                if(imageList.size() > 0){
+                    for(int i=0; i < imageList.size(); i++){
+                        int finalI = i + 1;
+                        new FirebaseService(LeaveFormActivity.this).uploadDocumentToFirebaseStorage(imageList.get(i), new FirebaseService.OnCallBack() {
+                            @Override
+                            public void onUploadSuccess(String docUrl) {
+                                imageURLlist.add(docUrl);
 
-        //leave.put("reviewer", );
+                                if(finalI == imageList.size()){
+                                    uploadLeaveRequest(imageURLlist);
+                                }
 
-        uploadLeaveRequest(leave);
+                                Log.d(TAG, "docURL: " + docUrl);
+                                Log.d(TAG, "imageURLlist: " + imageURLlist);
+                                //String displayName = getUriPath(pdfUri);
+                                //chatService.sendDocument(pdfUrl, displayName);
+                                //progressDialog.dismiss();
+                            }
+
+                            @Override
+                            public void onUploadFailed(Exception e) {
+                                Log.e("TAG", "onUploadFailed: " + e);
+                            }
+                        });
+                    }
+                }
+                else{
+                    uploadLeaveRequest(imageURLlist);
+                }
+            }
+        }
+        else{
+            if(binding.tvLeaveType.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvCurrentdate.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select a date.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvTimeFrom.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select start time.", Toast.LENGTH_SHORT).show();
+            }
+            else if(binding.tvTimeTo.getText().toString().equals("Pls select")){
+                Toast.makeText(this, "Please select end time.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                if(imageList.size() > 0){
+                    for(int i=0; i < imageList.size(); i++){
+                        int finalI = i + 1;
+                        new FirebaseService(LeaveFormActivity.this).uploadDocumentToFirebaseStorage(imageList.get(i), new FirebaseService.OnCallBack() {
+                            @Override
+                            public void onUploadSuccess(String docUrl) {
+                                imageURLlist.add(docUrl);
+
+                                if(finalI == imageList.size()){
+                                    uploadLeaveRequest(imageURLlist);
+                                }
+
+                                Log.d(TAG, "docURL: " + docUrl);
+                                Log.d(TAG, "imageURLlist: " + imageURLlist);
+                                //String displayName = getUriPath(pdfUri);
+                                //chatService.sendDocument(pdfUrl, displayName);
+                                //progressDialog.dismiss();
+                            }
+
+                            @Override
+                            public void onUploadFailed(Exception e) {
+                                Log.e("TAG", "onUploadFailed: " + e);
+                            }
+                        });
+                    }
+                }
+                else{
+                    uploadLeaveRequest(imageURLlist);
+                }
+            }
+        }
+
+        progressDialog.dismiss();
+
+        Log.d(TAG, "imageURLlist2: " + imageURLlist);
+
+        //uploadLeaveRequest();
 
         /*if(imageUri == null && pdfUri == null){
             uploadLeaveRequest(leave);
@@ -700,83 +910,20 @@ public class LeaveFormActivity extends AppCompatActivity {
         }*/
     }
 
-    private void uploadLeaveRequest(Map<String, Object> leave) {
+    private void uploadLeaveRequest(List<String> imageURLlist) {
+        Map<String,Object> leave = new HashMap<>();
+        leave.put("type", binding.tvLeaveType.getText().toString());
+        //leave.put("type", binding.spAbsenceType.getSelectedItem().toString());
+        leave.put("duration", binding.tvTotal.getText().toString());
+        leave.put("note", binding.etNote.getText().toString());
+        leave.put("requester", firebaseUser.getUid());
+        leave.put("status", "Pending");
+        leave.put("requestDate", getCurrentDate());
+        leave.put("requestTime", getCurrentTime());
+        leave.put("attachments", imageURLlist);
+        //leave.put("reviewer", );
+
         if(toggle){
-            if(binding.tvLeaveType.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
-            }
-            else if(binding.tvDateFrom.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select start date.", Toast.LENGTH_SHORT).show();
-            }
-            else if(binding.tvDateTo.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select end date.", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                leave.put("fullDay", true);
-                leave.put("dateFrom", binding.tvDateFrom.getText().toString());
-                leave.put("dateTo", binding.tvDateTo.getText().toString());
-
-                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
-                progressDialog.setMessage("Sending leave request...");
-                progressDialog.show();
-
-                databaseReference.child(companyID).child("Leaves").push().setValue(leave).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        progressDialog.dismiss();
-                        Toast.makeText(LeaveFormActivity.this, "Request sent successfully.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(LeaveFormActivity.this, "Fail to send request.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }
-        else{
-            if(binding.tvLeaveType.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
-            }
-            else if(binding.tvCurrentdate.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select a date.", Toast.LENGTH_SHORT).show();
-            }
-            else if(binding.tvTimeFrom.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select start time.", Toast.LENGTH_SHORT).show();
-            }
-            else if(binding.tvTimeTo.getText().toString().equals("Pls select")){
-                Toast.makeText(this, "Please select end time.", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                leave.put("fullDay", false);
-                leave.put("date", binding.tvCurrentdate.getText().toString());
-                leave.put("timeFrom", binding.tvTimeFrom.getText().toString());
-                leave.put("timeTo", binding.tvTimeTo.getText().toString());
-
-                final ProgressDialog progressDialog = new ProgressDialog(LeaveFormActivity.this);
-                progressDialog.setMessage("Sending leave request...");
-                progressDialog.show();
-
-                databaseReference.child(companyID).child("Leaves").push().setValue(leave).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        progressDialog.dismiss();
-                        Toast.makeText(LeaveFormActivity.this, "Request sent successfully.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(LeaveFormActivity.this, "Fail to send request.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }
-
-        /*if(toggle){
             leave.put("fullDay", true);
             leave.put("dateFrom", binding.tvDateFrom.getText().toString());
             leave.put("dateTo", binding.tvDateTo.getText().toString());
@@ -792,13 +939,14 @@ public class LeaveFormActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(LeaveFormActivity.this, "Request sent successfully.", Toast.LENGTH_SHORT).show();
+                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(LeaveFormActivity.this, "Fail to send request.", Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
     }
 
     private String getCurrentDate() {

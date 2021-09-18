@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginRight="15dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/icon_male_ph"
+        android:scaleType="centerCrop"
+        android:layout_centerInParent="true"/>
+
+    <ImageButton
+        android:id="@+id/btnDelete"
+        android:background="@drawable/bg_layout_circle"
+        app:tint="@color/white"
+        android:elevation="1dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignTop="@id/imageView"
+        android:layout_alignEnd="@id/imageView"
+        android:src="@drawable/ic_baseline_close_24"/>
+
+</RelativeLayout>

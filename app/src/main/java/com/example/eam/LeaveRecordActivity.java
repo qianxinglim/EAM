@@ -63,12 +63,12 @@ public class LeaveRecordActivity extends AppCompatActivity {
             }
         });
 
-        /*binding.btnAddLeave.setOnClickListener(new View.OnClickListener() {
+        binding.btnAddLeave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(LeaveRecordActivity.this, LeaveFormActivity.class));
             }
-        });*/
+        });
     }
 
     private void getRequestList() {

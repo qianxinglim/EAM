@@ -1,11 +1,13 @@
 package com.example.eam.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHolder>{
@@ -48,13 +51,17 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final LocalDate date = days.get(position);
 
-        if(date == null)
+        if(date == null) {
             holder.dayOfMonth.setText("");
+        }
         else {
             holder.dayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
 
-            if(date.equals(CalendarUtils.selectedDate))
-                holder.parentView.setBackgroundColor(Color.LTGRAY);
+            if(date.equals(CalendarUtils.selectedDate)) {
+                //holder.parentView.setBackgroundColor(Color.LTGRAY);
+                holder.bgSelectedDate.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+                holder.cellDayText.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            }
         }
 
         /*holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -81,8 +88,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         //private final ArrayList<LocalDate> days;
-        private TextView dayOfMonth;
+        private TextView dayOfMonth, cellDayText;
         public final View parentView;
+        public LinearLayout bgSelectedDate;
         //private final OnItemListener onItemListener;
 
         public ViewHolder(@NonNull View itemView) {
@@ -90,6 +98,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
 
             parentView = itemView.findViewById(R.id.parentView);
             dayOfMonth = itemView.findViewById(R.id.cellDayText);
+            bgSelectedDate = itemView.findViewById(R.id.bgSelectedDate);
+            cellDayText = itemView.findViewById(R.id.cellDayText);
             //this.onItemListener = onItemListener;
             itemView.setOnClickListener(this);
             //this.days = days;

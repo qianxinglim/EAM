@@ -78,6 +78,8 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
         }
 
         for(Leave leave : leavelist) {
+            Log.e("TAGLOL", "leavelist: " + leavelist + ", leaveFrom: " + leave.getDateFrom() + ", leaveTo: " + leave.getDateTo());
+
             if (leave.isFullDay()) {
                 Log.d("TAG1", "leaveFrom: " + leave.getDateFrom() + "leaveTo: " + leave.getDateTo());
 

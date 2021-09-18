@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,12 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Leave leave = list.get(position);
+
+        if(position == list.size() - 1){
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 0, 0, 0);
+            holder.linearlayout.setLayoutParams(layoutParams);
+        }
 
         if(leave.isFullDay()){
             holder.tvLeaveDate.setText(leave.getDateFrom() + " to " + leave.getDateTo());
@@ -95,6 +102,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView tvType, tvStatus, tvLeaveDate, tvRequestDateTime;
+        private LinearLayout linearlayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -103,6 +111,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
             tvLeaveDate = itemView.findViewById(R.id.tvLeaveDate);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvRequestDateTime = itemView.findViewById(R.id.tvRequestDateTime);
+            linearlayout = itemView.findViewById(R.id.linearLayout);
         }
     }
 }

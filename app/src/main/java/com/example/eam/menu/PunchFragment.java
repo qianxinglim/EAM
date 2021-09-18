@@ -3,11 +3,15 @@ package com.example.eam.menu;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -96,6 +100,7 @@ public class PunchFragment extends Fragment {
     private String address;
     private int duration;
     private double range;
+    private boolean isLocationGet = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -124,6 +129,10 @@ public class PunchFragment extends Fragment {
             @Override
             public void onLocationResult(LocationResult locationResult){
                 if(locationResult == null){
+                    //Toast.makeText(getContext(), "Please check GPS", Toast.LENGTH_SHORT).show();
+
+                    isLocationGet = false;
+
                     return;
                 }
                 for(Location location: locationResult.getLocations()){
@@ -131,6 +140,10 @@ public class PunchFragment extends Fragment {
                     longitude = location.getLongitude();
 
                     calcDistance();
+
+                    isLocationGet = true;
+
+                    //initBtnClick();
                     Log.d(TAG, "myLat: " + latitude + ", myLong: " + longitude + ", compLat: " + companyLat + ", compLong: " + companyLong);
 
                     //Log.d(TAG, "onLocationResult: " + location.toString() + ", latitude: " + latitude + ", longitude: " + longitude);
@@ -220,8 +233,21 @@ public class PunchFragment extends Fragment {
                 progressDialog.setMessage("Adding Record...");
                 progressDialog.show();
 
-                checkLastNode();
-                recordAttendance();
+                if(isNetworkAvailable() && isGPSEnabled()){
+                    if(isLocationGet){
+                        checkLastNode();
+                        recordAttendance();
+                    }
+                    else{
+                        Toast.makeText(getContext(), "Please Wait", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if(isNetworkAvailable() == false){
+                    Toast.makeText(getContext(), "Please check your internet connection.", Toast.LENGTH_SHORT).show();
+                }
+                else if(isGPSEnabled() == false){
+                    Toast.makeText(getContext(), "Please enable the GPS service.", Toast.LENGTH_SHORT).show();
+                }
 
                 progressDialog.dismiss();
             }
@@ -422,22 +448,26 @@ public class PunchFragment extends Fragment {
                     attendance.put("clockOutInRange", inRange);
                     //attendance.put("clockOutAddress", address);
 
-                    reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(@NonNull Void aVoid) {
-                            Log.d("addAttendance", "onSuccess: ");
-                            clockOut = true;
-                            binding.tvClockStatus.setText("Clock in");
-                            Toast.makeText(getContext(), "Successfully clockout.", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d("addAttendance", "onFailure: " + e.getMessage());
-                            Toast.makeText(getContext(), "Fail to clockOut. Try again later.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                    if(attendanceID == null){
+                        Toast.makeText(getContext(), "Please Wait...", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        reference.child(companyID).child("Attendance").child(attendanceID).updateChildren(attendance).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(@NonNull Void aVoid) {
+                                Log.d("addAttendance", "onSuccess: ");
+                                clockOut = true;
+                                binding.tvClockStatus.setText("Clock in");
+                                Toast.makeText(getContext(), "Successfully clockout.", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("addAttendance", "onFailure: " + e.getMessage());
+                                Toast.makeText(getContext(), "Fail to clockOut. Try again later.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -651,6 +681,22 @@ public class PunchFragment extends Fragment {
 
         return dateTime;
     }*/
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private boolean isGPSEnabled(){
+        final LocationManager manager = (LocationManager) getActivity().getSystemService( Context.LOCATION_SERVICE );
+        if (!manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
     public interface OnCallBack{
         void onSuccess();

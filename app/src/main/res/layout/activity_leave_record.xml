@@ -6,7 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LeaveRecordActivity">
+    tools:context=".LeaveRecordActivity"
+    android:orientation="vertical"
+    android:background="@color/colorDivider">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -49,29 +51,32 @@
         android:layout_above="@+id/lnBtn"
         android:background="@color/colorDivider"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
-    <!--<LinearLayout
+    <LinearLayout
         android:id="@+id/lnBtn"
+        android:background="@color/white"
+        android:layout_marginTop="1dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-        <view
+        <!--<view
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#EAEAEA"/>
+            android:background="#EAEAEA"/>-->
 
         <Button
             android:id="@+id/btnAddLeave"
             android:text="+ Add New Leave Request"
             android:textSize="16sp"
             android:background="@drawable/bg_layout_round"
-            android:layout_margin="10dp"
+            app:tint="@color/white"
+            android:layout_margin="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-    </LinearLayout>-->
+    </LinearLayout>
 
     <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_action"
