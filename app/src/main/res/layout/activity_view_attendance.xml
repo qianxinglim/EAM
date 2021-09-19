@@ -7,10 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorDivider"
     tools:context=".ViewAttendanceActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary">
@@ -23,22 +23,30 @@
 
             <ImageButton
                 android:id="@+id/btn_back"
-                android:layout_marginEnd="2dp"
-                android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
                 android:background="@android:color/transparent"
                 app:tint="@color/white" />
 
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/tvProfilePic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_male_ph"/>
+
             <TextView
+                android:id="@+id/tvTimesheet"
+                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Timesheet for"
+                android:text="Timesheet"
                 android:layout_gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:layout_marginStart="15dp"/>
+                android:textSize="17sp"/>
 
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
@@ -47,33 +55,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:background="@color/colorPrimary"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="5dp">
 
         <TextView
             android:id="@+id/tvStartDate"
             android:text="StartDate"
-            android:layout_weight="2"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_layout_round"
+            android:backgroundTint="#26FFFFFF"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="43dp"/>
 
         <TextView
             android:text="to"
-            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/tvEndDate"
-            android:text="End Date"
-            android:layout_weight="2"
+            android:text="EndDate"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/bg_layout_round"
+            android:backgroundTint="#26FFFFFF"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="43dp"/>
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:paddingTop="10dp"
-        android:background="@color/colorDivider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

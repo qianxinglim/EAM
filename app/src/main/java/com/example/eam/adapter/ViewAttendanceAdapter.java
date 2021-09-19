@@ -2,7 +2,9 @@ package com.example.eam.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +56,24 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String theDate = datelist.get(position);
+
+        /*Resources r = context.getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                10,
+                r.getDisplayMetrics()
+        );
+
+        if(position == datelist.size() - 1){
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, px, 0, px);
+            holder.linearlayout.setLayoutParams(layoutParams);
+        }
+        else{
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, px, 0, 0);
+            holder.linearlayout.setLayoutParams(layoutParams);
+        }*/
 
         /*holder.tvClockInTime.setText(theDate);
         holder.tvClockInStatus.setText("Absence");
@@ -144,7 +164,7 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView tvClockInTime, tvClockInStatus, tvClockOutStatus;
         private TextView tvDateNo, tvDateDay, tvLeaveType, tvDailyTotal;
-        private LinearLayout tvView;
+        private LinearLayout tvView, linearlayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -158,6 +178,7 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
             tvLeaveType = itemView.findViewById(R.id.tvLeaveType);
             tvDailyTotal = itemView.findViewById(R.id.tvDailyTotal);
             tvView = itemView.findViewById(R.id.tvView);
+            linearlayout = itemView.findViewById(R.id.linearLayout);
         }
     }
 }

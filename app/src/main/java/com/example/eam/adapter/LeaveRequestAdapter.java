@@ -3,6 +3,8 @@ package com.example.eam.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,9 +49,21 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Leave leave = list.get(position);
 
+        Resources r = context.getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                1,
+                r.getDisplayMetrics()
+        );
+
         if(position == list.size() - 1){
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(0, 0, 0, 0);
+            holder.linearlayout.setLayoutParams(layoutParams);
+        }
+        else{
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 0, 0, px);
             holder.linearlayout.setLayoutParams(layoutParams);
         }
 
@@ -73,6 +87,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
         else{
             holder.tvStatus.setText(leave.getStatus());
             DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.colorDivider));
+            holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.grey));
         }
 
         if(leave.getRequestDate() != null && leave.getRequestTime() != null){

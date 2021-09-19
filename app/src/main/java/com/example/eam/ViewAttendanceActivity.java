@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.eam.adapter.RecordAdapter;
 import com.example.eam.adapter.ViewAttendanceAdapter;
 import com.example.eam.common.Common;
@@ -54,7 +55,7 @@ public class ViewAttendanceActivity extends AppCompatActivity {
     private String companyID;
     private List<Attendance> list = new ArrayList<>();
     private List<Leave> leavelist = new ArrayList<>();
-    private String userId;
+    private String userId, userProfilePic, userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         userId = intent.getStringExtra("userID");
+        userProfilePic = intent.getStringExtra("userProfilePic");
+        userName = intent.getStringExtra("userName");
 
         firestore = FirebaseFirestore.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -71,6 +74,16 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
+
+        if(userProfilePic == null || userProfilePic.equals("")){
+            binding.tvProfilePic.setImageResource(R.drawable.icon_male_ph);
+        }
+        else{
+            Glide.with(this).load(userProfilePic).into(binding.tvProfilePic);
+        }
+
+        binding.tvTimesheet.setText("Timesheet for " + userName);
+
 
         setDate(new OnCallBack() {
             @Override

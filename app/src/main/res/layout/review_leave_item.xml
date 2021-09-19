@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="10dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -22,14 +23,143 @@
                 android:orientation="horizontal">
 
                 <com.mikhaellopez.circularimageview.CircularImageView
-                    android:layout_margin="10dp"
                     android:layout_gravity="center_vertical"
                     android:id="@+id/tvProfilePic"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@drawable/icon_male_ph"/>
 
-                <LinearLayout
+                    <!--here is valid-->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical">
+
+                        <LinearLayout
+                            android:layout_marginLeft="10dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvRequesterName"
+                                android:text="Date"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:id="@+id/tvLeaveDate"
+                                android:text="Date"
+                                android:textSize="12sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:gravity="center"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:text="Pending"
+                            android:textSize="14sp"
+                            android:background="@drawable/bg_layout_round"
+                            android:backgroundTint="@color/colorDivider"
+                            android:layout_width="100dp"
+                            android:layout_height="40dp"/>
+
+                    </RelativeLayout>
+
+                    <!--<TextView
+                        android:id="@+id/tvRequester"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Requester"/>
+
+                    <TextView
+                        android:id="@+id/tvType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vacation"/>
+
+                    <TextView
+                        android:id="@+id/tvDay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Full Day"/>
+
+                    <TextView
+                        android:id="@+id/tvDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Duration"/>
+
+                    <TextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date"/>
+
+                    <TextView
+                        android:id="@+id/tvDateFrom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date from"/>
+
+                    <TextView
+                        android:id="@+id/tvDateTo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date to"/>
+
+                    <TextView
+                        android:id="@+id/tvTimeFrom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tine from"/>
+
+                    <TextView
+                        android:id="@+id/tvTimeTo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tine to"/>
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pending"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnDecline"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Decline"
+                            android:layout_margin="5dp"/>
+
+                        <Button
+                            android:id="@+id/btnApprove"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Approve"
+                            android:layout_margin="5dp"/>
+
+                    </LinearLayout>-->
+
+                <!--<LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -60,92 +190,9 @@
                     android:text="Pending"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"/>-->
 
             </LinearLayout>
-
-            <!--<TextView
-                android:id="@+id/tvRequester"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Requester"/>
-
-            <TextView
-                android:id="@+id/tvType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Vacation"/>
-
-            <TextView
-                android:id="@+id/tvDay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Full Day"/>
-
-            <TextView
-                android:id="@+id/tvDuration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Duration"/>
-
-            <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date"/>
-
-            <TextView
-                android:id="@+id/tvDateFrom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date from"/>
-
-            <TextView
-                android:id="@+id/tvDateTo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date to"/>
-
-            <TextView
-                android:id="@+id/tvTimeFrom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tine from"/>
-
-            <TextView
-                android:id="@+id/tvTimeTo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tine to"/>
-
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pending"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnDecline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Decline"
-                    android:layout_margin="5dp"/>
-
-                <Button
-                    android:id="@+id/btnApprove"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Approve"
-                    android:layout_margin="5dp"/>
-
-            </LinearLayout>-->
         </LinearLayout>
 
 

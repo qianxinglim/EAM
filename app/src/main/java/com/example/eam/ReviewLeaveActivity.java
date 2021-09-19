@@ -60,11 +60,7 @@ public class ReviewLeaveActivity extends AppCompatActivity {
     }
 
     private void getLeaveApplications(){
-        LocalDate date = CalendarUtils.selectedDate;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-        reference.child(companyID).child("Leaves").orderByChild("status").addValueEventListener(new ValueEventListener() {
+        reference.child(companyID).child("Leaves").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list.clear();
@@ -73,6 +69,7 @@ public class ReviewLeaveActivity extends AppCompatActivity {
                     Leave leave = snapshot.getValue(Leave.class);
                     leave.setLeaveId(snapshot.getKey());
                     list.add(leave);
+                    Log.d(TAG, "attachments: " + leave.getAttachments());
                 }
 
                 Log.d(TAG, "listSize: " + list.size());

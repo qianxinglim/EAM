@@ -1,5 +1,7 @@
 package com.example.eam.model;
 
+import java.util.List;
+
 public class Leave {
     private String date;
     private String dateFrom;
@@ -17,11 +19,12 @@ public class Leave {
     private String leaveId;
     private String requestDate;
     private String requestTime;
+    private List<String> attachments;
 
     public Leave() {
     }
 
-    public Leave(String date, String dateFrom, String dateTo, String document, String duration, boolean fullDay, String image, String note, String requester, String status, String timeFrom, String timeTo, String type, String requestDate, String requestTime) {
+    public Leave(String date, String dateFrom, String dateTo, String document, String duration, boolean fullDay, String image, String note, String requester, String status, String timeFrom, String timeTo, String type, String requestDate, String requestTime, List<String> attachments) {
         this.date = date;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
@@ -37,6 +40,7 @@ public class Leave {
         this.type = type;
         this.requestDate = requestDate;
         this.requestTime = requestTime;
+        this.attachments = attachments;
     }
 
     public String getDate() {
@@ -165,5 +169,13 @@ public class Leave {
 
     public void setRequestTime(String requestTime) {
         this.requestTime = requestTime;
+    }
+
+    public List<String> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<String> attachments) {
+        this.attachments = attachments;
     }
 }

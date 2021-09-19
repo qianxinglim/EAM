@@ -1,17 +1,26 @@
 package com.example.eam.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.eam.EditProfileActivity;
 import com.example.eam.IndvChatActivity;
+import com.example.eam.LeaveFormActivity;
 import com.example.eam.ProfileActivity;
 import com.example.eam.R;
 import com.example.eam.common.CalendarUtils;
@@ -20,6 +29,7 @@ import com.example.eam.model.Attendance;
 import com.example.eam.model.Leave;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -30,12 +40,16 @@ import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.ViewHolder>{
@@ -71,14 +85,33 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
 
                 holder.tvRequesterName.setText(userName);
                 holder.tvStatus.setText(leave.getStatus());
-                holder.tvType.setText(leave.getType());
+                //holder.tvType.setText(leave.getType());
 
-                if(leave.isFullDay()){
+                if(leave.getStatus().equals("Approved")){
+                    holder.tvStatus.setText(leave.getStatus());
+                    DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googgreen));
+                    holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+                }
+                else if(leave.getStatus().equals("Declined")){
+                    holder.tvStatus.setText(leave.getStatus());
+                    DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googred));
+                    holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+                }
+                else{
+                    holder.tvStatus.setText(leave.getStatus());
+                    DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.colorDivider));
+                }
+
+                if(leave.getRequestDate() != null && leave.getRequestTime() != null){
+                    holder.tvLeaveDate.setText("Requested absence on " + leave.getRequestDate());
+                }
+
+                /*if(leave.isFullDay()){
                     holder.tvLeaveDate.setText(leave.getDateFrom());
                 }
                 else{
                     holder.tvLeaveDate.setText(leave.getDate());
-                }
+                }*/
 
                 if(userProfilePic!=null && !userProfilePic.equals("")) {
                     Glide.with(context).load(userProfilePic).into(holder.tvProfilePic);
@@ -130,36 +163,113 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
 
         View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_leave, null);
 
+        Attachment2Adapter attachment2Adapter;
+
         TextView tvName = (TextView) bottomSheetView.findViewById(R.id.tvName);
+        TextView tvRequestDateTime = (TextView) bottomSheetView.findViewById(R.id.tvRequestDateTime);
         TextView tvStatus = (TextView) bottomSheetView.findViewById(R.id.tvStatus);
-        TextView tvType = (TextView) bottomSheetView.findViewById(R.id.tvType);
+        TextView tvType = (TextView) bottomSheetView.findViewById(R.id.tvLeaveType);
         TextView tvDate = (TextView) bottomSheetView.findViewById(R.id.tvDate);
         TextView tvDateFrom = (TextView) bottomSheetView.findViewById(R.id.tvDateFrom);
         TextView tvDateTo = (TextView) bottomSheetView.findViewById(R.id.tvDateTo);
         TextView tvTimeFrom = (TextView) bottomSheetView.findViewById(R.id.tvTimeFrom);
         TextView tvTimeTo = (TextView) bottomSheetView.findViewById(R.id.tvTimeTo);
-        TextView tvDuration = (TextView) bottomSheetView.findViewById(R.id.tvDuration);
-        TextView tvNote = (TextView) bottomSheetView.findViewById(R.id.tvNote);
+        TextView tvDuration = (TextView) bottomSheetView.findViewById(R.id.tvTotal);
+        TextView tvNote = (TextView) bottomSheetView.findViewById(R.id.etNote);
+        CircularImageView tvProfilePic = (CircularImageView) bottomSheetView.findViewById(R.id.tvProfilePic);
+        Switch switchAllDay = (Switch) bottomSheetView.findViewById(R.id.switchAllDay);
+        RelativeLayout lnDate = (RelativeLayout) bottomSheetView.findViewById(R.id.lnDate);
+        RelativeLayout lnStartDate = (RelativeLayout) bottomSheetView.findViewById(R.id.lnStartDate);
+        RelativeLayout lnEndDate = (RelativeLayout) bottomSheetView.findViewById(R.id.lnEndDate);
+        RelativeLayout lnStartTime = (RelativeLayout) bottomSheetView.findViewById(R.id.lnStartTime);
+        RelativeLayout lnEndTime = (RelativeLayout) bottomSheetView.findViewById(R.id.lnEndTime);
+        RecyclerView attachmentRecyclerView = (RecyclerView) bottomSheetView.findViewById(R.id.attachmentRecyclerView);
+        LinearLayout lnAttachments = (LinearLayout) bottomSheetView.findViewById(R.id.lnAttachments);
+        LinearLayout lnNote = (LinearLayout) bottomSheetView.findViewById(R.id.lnNote);
+        ImageView ivStatus = (ImageView) bottomSheetView.findViewById(R.id.ivStatus);
 
+        //Set User Info (Top part)
         tvName.setText(userName);
-        tvStatus.setText(leave.getStatus());
-        tvType.setText(leave.getType());
-        tvNote.setText(leave.getNote());
-        tvDuration.setText(leave.getDuration());
 
-        if(leave.isFullDay()){
-            tvDateFrom.setText(leave.getDateFrom());
-            tvDateTo.setText(leave.getDateTo());
-            tvDate.setVisibility(View.GONE);
-            tvTimeFrom.setVisibility(View.GONE);
-            tvTimeTo.setVisibility(View.GONE);
+        if(userProfilePic!=null && !userProfilePic.equals("")) {
+            Glide.with(context).load(userProfilePic).into(tvProfilePic);
         }
         else{
+            Glide.with(context).load(R.drawable.icon_male_ph).into(tvProfilePic);
+        }
+
+        tvRequestDateTime.setText("Requested absence on " + leave.getRequestDate());
+
+        if(leave.getStatus().equals("Approved")){
+            tvStatus.setText("Approved");
+            ivStatus.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.quantum_googgreen));
+        }
+        else if(leave.getStatus().equals("Declined")){
+            tvStatus.setText("Declined");
+            ivStatus.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.quantum_googred));
+        }
+        else{
+            tvStatus.setText("Pending");
+            ivStatus.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.quantum_yellow));
+        }
+
+
+        //Middle part
+        //tvStatus.setText(leave.getStatus());
+        tvType.setText(leave.getType());
+        tvNote.setText(leave.getNote());
+        tvNote.setFocusable(false);
+        //tvNote.setEnabled(false);
+        tvNote.setCursorVisible(false);
+        tvNote.setKeyListener(null);
+        tvNote.setBackgroundColor(Color.TRANSPARENT);
+        tvDuration.setText(leave.getDuration());
+
+        switchAllDay.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switchAllDay.setClickable(false);
+                return false;
+            }
+        });
+
+        if(leave.getAttachments() != null){
+            lnAttachments.setVisibility(View.VISIBLE);
+            attachmentRecyclerView.setLayoutManager(new GridLayoutManager(context, leave.getAttachments().size(), GridLayoutManager.VERTICAL, false));
+            attachment2Adapter = new Attachment2Adapter(leave.getAttachments(), context);
+            attachmentRecyclerView.setAdapter(attachment2Adapter);
+        }
+        else{
+            lnAttachments.setVisibility(View.GONE);
+        }
+
+        if(leave.getNote().equals("") || leave.getNote() == null){
+            lnNote.setVisibility(View.GONE);
+        }
+        else{
+            lnNote.setVisibility(View.VISIBLE);
+        }
+
+        if(leave.isFullDay()){
+            lnStartDate.setVisibility(View.VISIBLE);
+            lnEndDate.setVisibility(View.VISIBLE);
+            tvDateFrom.setText(leave.getDateFrom());
+            tvDateTo.setText(leave.getDateTo());
+            lnDate.setVisibility(View.GONE);
+            lnStartTime.setVisibility(View.GONE);
+            lnEndTime.setVisibility(View.GONE);
+            switchAllDay.setChecked(true);
+        }
+        else{
+            lnDate.setVisibility(View.VISIBLE);
+            lnStartTime.setVisibility(View.VISIBLE);
+            lnEndTime.setVisibility(View.VISIBLE);
             tvDate.setText(leave.getDate());
             tvTimeFrom.setText(leave.getTimeFrom());
             tvTimeTo.setText(leave.getTimeTo());
-            tvDateFrom.setVisibility(View.GONE);
-            tvDateTo.setVisibility(View.GONE);
+            lnStartDate.setVisibility(View.GONE);
+            lnEndDate.setVisibility(View.GONE);
+            switchAllDay.setChecked(false);
         }
 
         if(leave.getStatus().equals("Pending")) {
@@ -213,6 +323,17 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
         });
 
         bottomSheetDialog.setContentView(bottomSheetView);
+
+        bottomSheetDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                BottomSheetDialog d = (BottomSheetDialog) dialog;
+
+                FrameLayout bottomSheet = (FrameLayout) d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
         bottomSheetDialog.show();
     }
 
@@ -228,7 +349,7 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvType = itemView.findViewById(R.id.tvType);
+            //tvType = itemView.findViewById(R.id.tvType);
             tvLeaveDate = itemView.findViewById(R.id.tvLeaveDate);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvRequesterName = itemView.findViewById(R.id.tvRequesterName);
