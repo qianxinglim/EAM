@@ -58,7 +58,7 @@
         android:background="@color/colorPrimary"
         android:paddingRight="15dp"
         android:paddingLeft="15dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="5dp"
         android:paddingTop="5dp">
 
         <TextView
@@ -94,10 +94,148 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary"
+        android:paddingTop="15dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp">
+
+        <View
+            android:text="StartDate"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/white"
+            android:background="#FFFFFF"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"/>
+
+        <TextView
+            android:text="Overall Totals"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:text="StartDate"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/white"
+            android:background="#FFFFFF"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Absence"
+                android:textSize="13sp"
+                android:textColor="#B3FFFFFF"/>
+
+            <TextView
+                android:id="@+id/tvAbsence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="--"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Leave"
+                android:textSize="13sp"
+                android:textColor="#B3FFFFFF"/>
+
+            <TextView
+                android:id="@+id/tvLeave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="--"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Punch missed"
+                android:textSize="13sp"
+                android:textColor="#B3FFFFFF"/>
+
+            <TextView
+                android:id="@+id/tvPunchMissed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="--"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
     <!--<ListView
         android:id="@+id/listview"

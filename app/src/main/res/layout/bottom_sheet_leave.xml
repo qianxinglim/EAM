@@ -52,12 +52,13 @@
         </LinearLayout>
     </LinearLayout>
 
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/colorDivider"
         android:layout_below="@+id/userDetail"
-        android:layout_above="@+id/lnBtn"
-        android:background="@color/colorDivider">
+        android:layout_above="@+id/lnBtn">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -449,6 +450,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+
     <LinearLayout
         android:id="@+id/lnBtn"
         android:layout_width="match_parent"
@@ -468,9 +470,11 @@
             android:background="@color/white"
             android:padding="15dp">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnApprove"
                 android:background="@drawable/bg_layout_round"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/quantum_googgreen"
                 android:text="Approve"
                 android:layout_weight="1"
                 android:layout_marginEnd="5dp"

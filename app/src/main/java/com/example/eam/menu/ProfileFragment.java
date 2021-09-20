@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -34,18 +36,28 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.eam.AddCaptionPicActivity;
 import com.example.eam.BuildConfig;
+import com.example.eam.CreateCompanyActivity;
 import com.example.eam.EditProfileActivity;
+import com.example.eam.LeaveFormActivity;
+import com.example.eam.LeaveRecordActivity;
 import com.example.eam.PhoneLoginActivity;
 import com.example.eam.ProfileActivity;
 import com.example.eam.R;
+import com.example.eam.SelectCompanyActivity;
+import com.example.eam.adapter.CompanyListAdapter;
+import com.example.eam.adapter.LeaveRequestAdapter;
 import com.example.eam.common.Common;
 import com.example.eam.databinding.ActivityProfileBinding;
 import com.example.eam.databinding.FragmentProfileBinding;
 import com.example.eam.display.ViewImageActivity;
 import com.example.eam.managers.SessionManager;
+import com.example.eam.model.Company;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -57,8 +69,10 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -79,6 +93,8 @@ public class ProfileFragment extends Fragment {
     private String companyID;
     private int IMAGE_GALLERY_REQUEST = 111;
     private Uri imageUri;
+    private List<Company> companyList = new ArrayList<>();
+    private CompanyListAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,7 +111,21 @@ public class ProfileFragment extends Fragment {
             getInfo();
         }
 
-        initActionClick();
+        binding.btnSwitchAcc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBottomSheetSwitchCompany();
+            }
+        });
+
+        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialogSignOut();
+            }
+        });
+
+        //initActionClick();
 
         return binding.getRoot();
     }
@@ -109,30 +139,88 @@ public class ProfileFragment extends Fragment {
         });
     }*/
 
-    private void initActionClick() {
-        binding.fabCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openIntent();
-            }
-        });
+//    private void initActionClick() {
+//        binding.fabCamera.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                openIntent();
+//            }
+//        });
+//
+//        binding.imageProfile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                binding.imageProfile.invalidate();
+//                Drawable dr = binding.imageProfile.getDrawable();
+//                Common.IMAGE_BITMAP = ((BitmapDrawable)dr.getCurrent()).getBitmap();
+//                ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), binding.imageProfile,"image");
+//                Intent intent = new Intent(getContext(), ViewImageActivity.class);
+//                startActivity(intent, activityOptionsCompat.toBundle());
+//            }
+//        });
+//
+//        binding.btnLogOut.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showDialogSignOut();
+//            }
+//        });
+//    }
 
-        binding.imageProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.imageProfile.invalidate();
-                Drawable dr = binding.imageProfile.getDrawable();
-                Common.IMAGE_BITMAP = ((BitmapDrawable)dr.getCurrent()).getBitmap();
-                ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), binding.imageProfile,"image");
-                Intent intent = new Intent(getContext(), ViewImageActivity.class);
-                startActivity(intent, activityOptionsCompat.toBundle());
-            }
-        });
+    private void showBottomSheetSwitchCompany() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialogTheme);
 
-        binding.btnLogOut.setOnClickListener(new View.OnClickListener() {
+        View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_switch_company, null);
+
+        RecyclerView recyclerView = (RecyclerView) bottomSheetView.findViewById(R.id.recyclerView);
+        getCompanyList(recyclerView);
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
+    }
+
+    private void getCompanyList(RecyclerView recyclerView) {
+        companyList.clear();
+
+        firestore.collection("users").document(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onClick(View view) {
-                showDialogSignOut();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        List<String> group = (List<String>) document.get("CompanyID");
+                        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
+                        for(String companyid : group){
+                            tasks.add(firestore.collection("Companies").document(companyid).get());
+                        }
+
+                        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                            @Override
+                            public void onSuccess(@NonNull List<Object> objlist) {
+                                try {
+                                    for (Object object : objlist) {
+                                        Company company = ((DocumentSnapshot) object).toObject(Company.class);
+                                        companyList.add(company);
+                                    }
+                                }catch (Exception e){
+                                    Log.d(TAG, "onSuccess: "+e.getMessage());
+                                }
+
+                                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                                adapter = new CompanyListAdapter(companyList, getContext());
+                                recyclerView.setAdapter(adapter);
+
+                                if (adapter!=null){
+                                    adapter.notifyItemInserted(0);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
             }
         });
     }
@@ -184,41 +272,41 @@ public class ProfileFragment extends Fragment {
         alertDialog.show();
     }
 
-    private void getInfo() {
-        firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
-                String userName = documentSnapshot.get("name").toString();
-                String userPhone = documentSnapshot.get("phoneNo").toString();
-                String userDepartment = documentSnapshot.get("department").toString();
-                String userEmail = documentSnapshot.get("email").toString();
-                String userTitle = documentSnapshot.get("title").toString();
-                String userClockInTime = documentSnapshot.get("clockInTime").toString();
-                String userClockOutTime = documentSnapshot.get("clockOutTime").toString();
-                String userProfilePic = documentSnapshot.get("profilePic").toString();
-
-                binding.tvUsername.setText(userName);
-                binding.tvPhone.setText(userPhone);
-                binding.tvEmail.setText(userEmail);
-                binding.tvDepartment.setText(userDepartment);
-                binding.tvTitle.setText(userTitle);
-                binding.tvClockInTime.setText(userClockInTime);
-                binding.tvClockOutTime.setText(userClockOutTime);
-
-                if(!userProfilePic.equals("-") && userProfilePic!=null && !userProfilePic.equals("")) {
-                    Glide.with(getActivity()).load(userProfilePic).into(binding.imageProfile);
-                }
-                else{
-                    Glide.with(getActivity()).load(R.drawable.icon_male_ph).into(binding.imageProfile);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
-    }
+//    private void getInfo() {
+//        firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+//                String userName = documentSnapshot.get("name").toString();
+//                String userPhone = documentSnapshot.get("phoneNo").toString();
+//                String userDepartment = documentSnapshot.get("department").toString();
+//                String userEmail = documentSnapshot.get("email").toString();
+//                String userTitle = documentSnapshot.get("title").toString();
+//                String userClockInTime = documentSnapshot.get("clockInTime").toString();
+//                String userClockOutTime = documentSnapshot.get("clockOutTime").toString();
+//                String userProfilePic = documentSnapshot.get("profilePic").toString();
+//
+//                binding.tvUsername.setText(userName);
+//                binding.tvPhone.setText(userPhone);
+//                binding.tvEmail.setText(userEmail);
+//                binding.tvDepartment.setText(userDepartment);
+//                binding.tvTitle.setText(userTitle);
+//                binding.tvClockInTime.setText(userClockInTime);
+//                binding.tvClockOutTime.setText(userClockOutTime);
+//
+//                if(!userProfilePic.equals("-") && userProfilePic!=null && !userProfilePic.equals("")) {
+//                    Glide.with(getActivity()).load(userProfilePic).into(binding.imageProfile);
+//                }
+//                else{
+//                    Glide.with(getActivity()).load(R.drawable.icon_male_ph).into(binding.imageProfile);
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//
+//            }
+//        });
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -268,7 +356,7 @@ public class ProfileFragment extends Fragment {
                         @Override
                         public void onSuccess(@NonNull Void aVoid) {
                             //Toast.makeText(getContext(), "upload successfully", Toast.LENGTH_SHORT).show();
-                            getInfo();
+                            //getInfo();
                             progressDialog.dismiss();
                             progressDialog.setCanceledOnTouchOutside(true);
                         }
@@ -288,14 +376,15 @@ public class ProfileFragment extends Fragment {
 
 
 
-    /*private void getInfo(){
+    private void getInfo(){
         firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
                 String userName = Objects.requireNonNull(documentSnapshot.get("name")).toString();
                 String userProfilePic = documentSnapshot.get("profilePic").toString();
+                String userTitle = documentSnapshot.get("title").toString();
 
-                if(!userProfilePic.equals("-") && userProfilePic!=null && !userProfilePic.equals("")) {
+                if(userProfilePic != null && !userProfilePic.equals("")) {
                     Glide.with(getContext()).load(userProfilePic).into(binding.imageProfile);
                 }
                 else{
@@ -303,6 +392,20 @@ public class ProfileFragment extends Fragment {
                 }
 
                 binding.tvUsername.setText(userName);
+                binding.tvTitle.setText(userTitle);
+
+                firestore.collection("Companies").document(companyID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+                        String companyName = documentSnapshot.get("companyName").toString();
+                        binding.tvCompany.setText(companyName);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Get Data","onFailure: " + e.getMessage());
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -310,5 +413,5 @@ public class ProfileFragment extends Fragment {
                 Log.d("Get Data","onFailure: " + e.getMessage());
             }
         });
-    }*/
+    }
 }

@@ -9,20 +9,22 @@
         android:orientation="vertical"
         tools:context=".EditProfileActivity">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar"
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            >
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                app:titleTextColor="@android:color/white"
-                app:title="Profile"/>
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary">
 
-        </com.google.android.material.appbar.AppBarLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:paddingRight="12dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

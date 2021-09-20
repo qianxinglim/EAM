@@ -10,54 +10,63 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:layout_height="wrap_content"
+        android:padding="5dp"
         android:background="@color/white">
 
         <LinearLayout
-            android:layout_width="80dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:orientation="vertical">
 
            <TextView
                android:id="@+id/tvDateNo"
                android:text="14"
                android:gravity="center"
+               android:textSize="20sp"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/tvDateDay"
                 android:text="Tue"
+                android:layout_marginTop="2dp"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
-        <!--<view
-            android:background="#E6E6E6"
+        <View
+            android:background="@color/colorDivider"
             android:layout_width="1dp"
-            android:layout_height="match_parent"/>-->
+            android:layout_height="match_parent"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvLeaveType"
-                android:visibility="gone"
+                android:visibility="visible"
+                android:padding="15dp"
                 android:text="Vacation"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
                 <LinearLayout
                     android:id="@+id/tvView"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
+                    android:visibility="visible"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingRight="15dp"
+                    android:paddingLeft="15dp"
                     android:orientation="vertical">
 
                 <View
@@ -70,10 +79,24 @@
             <TextView
                 android:id="@+id/tvDailyTotal"
                 android:text="Daily Total --"
+                android:textSize="16sp"
+                android:padding="13dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
+
+        <ImageButton
+            app:tint="@color/colorPrimary"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_arrow_forward_ios_24"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="15dp" />
 
     </LinearLayout>
 

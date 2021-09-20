@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.example.eam.IndvChatActivity;
 import com.example.eam.R;
 import com.example.eam.model.User;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.List;
 
@@ -39,16 +40,21 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = list.get(position);
 
-        holder.username.setText(user.getName());
-        //holder.desc.setText(user.getUserID());
-        if(!user.getProfilePic().equals("-") && user.getProfilePic()!=null && !user.getProfilePic().equals("")) {
-            Glide.with(context).load(user.getProfilePic()).into(holder.imageProfile);
-        }
-        else{
-            Glide.with(context).load(R.drawable.icon_male_ph).into(holder.imageProfile);
+        if (position > 0 && list.get(position - 1).getDepartment().equals(user.getDepartment())) {
+            holder.tvHeader.setVisibility(View.GONE);
+        } else {
+            holder.tvHeader.setVisibility(View.VISIBLE);
+            holder.tvHeader.setText(user.getDepartment());
         }
 
-        //Glide.with(context).load(user.getProfilePic()).into(holder.imageProfile);
+        holder.tvName.setText(user.getName());
+
+        if(user.getProfilePic().equals("")){
+            holder.profile.setImageResource(R.drawable.icon_male_ph);
+        }
+        else{
+            Glide.with(context).load(user.getProfilePic()).into(holder.profile);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,15 +73,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private ImageView imageProfile;
-        private TextView username, desc;
+        private TextView tvName, tvHeader;
+        private CircularImageView profile;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            imageProfile = itemView.findViewById(R.id.image_profile);
-            username = itemView.findViewById(R.id.tv_username);
-            desc = itemView.findViewById(R.id.tv_desc);
+            tvName = itemView.findViewById(R.id.tvName);
+            profile = itemView.findViewById(R.id.image_profile);
+            tvHeader = itemView.findViewById(R.id.tvHeader);
         }
     }
 }

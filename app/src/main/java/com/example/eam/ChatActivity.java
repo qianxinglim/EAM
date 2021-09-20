@@ -38,7 +38,6 @@ import java.util.Objects;
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
     private ActivityChatBinding binding;
-    //FirebaseAuth mAuth;
     FirebaseFirestore firestore;
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
@@ -48,18 +47,18 @@ public class ChatActivity extends AppCompatActivity {
     private ChatListAdapter adapter;
     private SessionManager sessionManager;
     private String companyID;
-    //String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_chat);
 
+        //getSupportActionBar().hide();
+
         //setUpWithViewPager(binding.viewPager);
         //binding.tabLayout.setupWithViewPager(binding.viewPager);
-        setSupportActionBar(binding.toolbar);
-
-        //FirebaseApp.initializeApp(this);
+        //setSupportActionBar(binding.toolbar);
+        //Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference();
@@ -71,14 +70,7 @@ public class ChatActivity extends AppCompatActivity {
 
         list = new ArrayList<>();
         allUserID = new ArrayList<>();
-        
-        //mAuth = FirebaseAuth.getInstance();
-        //fStore = FirebaseFirestore.getInstance();
 
-        //userID = mAuth.getCurrentUser().getUid();
-        //FirebaseUser user = mAuth.getCurrentUser();
-
-        //RecyclerView recyclerView = findViewById(R.id.recyclerView);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ChatListAdapter(list, this);
         binding.recyclerView.setAdapter(adapter);
@@ -161,66 +153,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    /*private void getUserData(String userID) {
-        firestore.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
-                Chatlist chat = new Chatlist(
-                        documentSnapshot.getString("ID"),
-                        documentSnapshot.getString("Name"),
-                        "this is description..",
-                        "",
-                        documentSnapshot.getString("ProfilePic")
-                );
-                list.add(chat);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "onDataChange: list " + list.size());
-            }
-        });
-    }*/
-
-    /*private void setUpWithViewPager(ViewPager viewPager){
-        ChatActivity.SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        //adapter.addFragment(new CameraFragment(),"");
-        adapter.addFragment(new ChatsFragment(),"Chats");
-        //adapter.addFragment(new StatusFragment(),"Status");
-        adapter.addFragment(new CallsFragment(),"Calls");
-        viewPager.setAdapter(adapter);
-    }*/
-
-    /*private static class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public SectionsPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -243,45 +175,4 @@ public class ChatActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    /*private void changeFabIcon(final int index){
-        binding.fabAction.hide();
-        //binding.btnAddStatus.setVisibility(View.GONE);
-
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                switch (index){
-                    case 0 :
-                        binding.fabAction.hide();
-                        binding.fabAction.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                startActivity(new Intent(ChatActivity.this, ContactActivity.class));
-                            }
-                        });
-                        break;
-                    case 1 :
-                        binding.fabAction.show();
-                        //binding.fabAction.setImageDrawable(getDrawable(R.drawable.ic_chat_black_24dp));
-                        break;
-                    case 2 :
-
-                        binding.fabAction.show();
-                        //binding.fabAction.setImageDrawable(getDrawable(R.drawable.ic_camera_alt_black_24dp));
-                        //binding.btnAddStatus.setVisibility(View.VISIBLE);
-                        break;
-
-                    case 3 :
-                        binding.fabAction.show();
-                        //binding.fabAction.setImageDrawable(getDrawable(R.drawable.ic_call_black_24dp));
-                        break;
-                }
-
-            }
-        },400);
-
-        //performOnClick(index);
-    }*/
 }

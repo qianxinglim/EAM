@@ -41,8 +41,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ViewAttendanceActivity extends AppCompatActivity {
     private static final String TAG = "ViewAttendanceActivity";
@@ -55,7 +58,9 @@ public class ViewAttendanceActivity extends AppCompatActivity {
     private String companyID;
     private List<Attendance> list = new ArrayList<>();
     private List<Leave> leavelist = new ArrayList<>();
+    private List<String> leaveDateList = new ArrayList<>();
     private String userId, userProfilePic, userName;
+    private int presentCount, punchMissed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
         binding.tvTimesheet.setText("Timesheet for " + userName);
 
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.recyclerView.setVisibility(View.GONE);
 
         setDate(new OnCallBack() {
             @Override
@@ -96,17 +103,6 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
             }
         });
-
-        /*binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
-        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
-        binding.recyclerView.setAdapter(viewAttendanceAdapter);
-
-        if(viewAttendanceAdapter != null){
-            viewAttendanceAdapter.notifyItemInserted(0);
-            viewAttendanceAdapter.notifyDataSetChanged();
-
-            Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
-        }*/
 
         binding.tvStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,16 +126,82 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                 getLeaveList(new OnCallBack() {
                     @Override
                     public void onSuccess() {
-                        binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
+
+                        //Set leave count and absence count
+                        int absenceCount = datelist.size() - presentCount;
+
+                        for(String theDate : datelist) {
+                            for (Leave leave : leavelist) {
+                                if (leave.isFullDay()) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                    try {
+                                        String dateFrom = formatter.format(sdf.parse(leave.getDateFrom()));
+                                        String dateTo = formatter.format(sdf.parse(leave.getDateTo()));
+                                        LocalDate dateFrom2 = new LocalDate(dateFrom);
+                                        LocalDate dateTo2 = new LocalDate(dateTo);
+                                        LocalDate dateto = dateTo2.plusDays(1);
+                                        int days = Days.daysBetween(dateFrom2, dateto).getDays();
+
+                                        for (int i = 0; i < days; i++) {
+                                            LocalDate d = dateFrom2.withFieldAdded(DurationFieldType.days(), i);
+                                            String date = Common.getJodaTimeFormattedDate(d);
+
+                                            if (date.equals(theDate)) {
+                                                leaveDateList.add(theDate);
+                                            }
+                                        }
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    if (leave.getDate().equals(theDate)) {
+                                        leaveDateList.add(theDate);
+                                    }
+                                }
+                            }
+                        }
+
+                        //remove repeated dates
+                        Set<String> set = new HashSet<>(leaveDateList);
+                        leaveDateList.clear();
+                        leaveDateList.addAll(set);
+
+                        if(leaveDateList.size() > 1){
+                            binding.tvLeave.setText(leaveDateList.size() + " days");
+                        }
+                        else{
+                            binding.tvLeave.setText(leaveDateList.size() + " day");
+                        }
+
+                        if(absenceCount > 1){
+                            binding.tvAbsence.setText(absenceCount + " days");
+                        }
+                        else{
+                            binding.tvAbsence.setText(absenceCount + " day");
+                        }
+
+                        if(punchMissed > 1){
+                            binding.tvPunchMissed.setText(punchMissed + " days");
+                        }
+                        else{
+                            binding.tvPunchMissed.setText(punchMissed + "day");
+                        }
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ViewAttendanceActivity.this);
+                        linearLayoutManager.setReverseLayout(true);
+                        linearLayoutManager.setStackFromEnd(true);
+                        binding.recyclerView.setLayoutManager(linearLayoutManager);
                         ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
                         binding.recyclerView.setAdapter(viewAttendanceAdapter);
 
                         if(viewAttendanceAdapter != null){
                             viewAttendanceAdapter.notifyItemInserted(0);
                             viewAttendanceAdapter.notifyDataSetChanged();
-
-                            Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
                         }
+
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.recyclerView.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -158,6 +220,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
     private void getAttendanceList(final OnCallBack onCallBack) {
         list.clear();
+        presentCount = 0;
+        punchMissed = 0;
 
         for(String dates : datelist){
             reference.child(companyID).child("Attendance").orderByChild("clockInDate").equalTo(dates).addValueEventListener(new ValueEventListener() {
@@ -171,11 +235,22 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                         if (attendance != null && attendance.getUserId().equals(userId) && attendance.getClockInDate().equals(dates)){
                             list.add(attendance);
 
-                            Log.d(TAG, "datelist: " + datelist);
-                            Log.d(TAG, "listSize: " + list);
+                            presentCount = presentCount + 1;
 
-                            Log.d(TAG, "user: " + attendance.getClockInDate());
-                            Log.d(TAG, "userId: " + attendance.getUserId());
+                            if(attendance.getClockOutDate() != null) {
+                                if (!attendance.getClockInDate().equals(attendance.getClockOutDate())) {
+                                    punchMissed = punchMissed + 1;
+                                }
+                            }
+                            else{
+                                SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+                                Date dateTime = new Date();
+                                String currDate = formatter2.format(dateTime);
+
+                                if(!attendance.getClockInDate().equals(currDate)){
+                                    punchMissed = punchMissed + 1;
+                                }
+                            }
                         }
                     }
 
@@ -202,6 +277,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                     Leave leave = snapshot.getValue(Leave.class);
 
                     if (leave != null && leave.getStatus().equals("Approved")) {
+                        //leaveCount = leaveCount + 1;
+
                         leavelist.add(leave);
                         Log.e(TAG, "leavelist: " + leave.getStatus());
                     }
@@ -217,17 +294,6 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
             }
         });
-
-        /*binding.recyclerView.setLayoutManager(new LinearLayoutManager(ViewAttendanceActivity.this));
-        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
-        binding.recyclerView.setAdapter(viewAttendanceAdapter);
-
-        if(viewAttendanceAdapter != null){
-            viewAttendanceAdapter.notifyItemInserted(0);
-            viewAttendanceAdapter.notifyDataSetChanged();
-
-            Log.d(TAG, "onSuccess: adapter" + viewAttendanceAdapter.getItemCount());
-        }*/
     }
 
     private void setDate(final OnCallBack onCallBack) {
@@ -252,7 +318,6 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         if(datelist != null){
             onCallBack.onSuccess();
         }
-        //setAdapter();
     }
 
     private void getDate(TextView tvDate) {
@@ -277,6 +342,9 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
                 String date = day1 + "-" + month1 + "-" + year;
                 tvDate.setText(date);
+
+                binding.progressBar.setVisibility(View.VISIBLE);
+                binding.recyclerView.setVisibility(View.GONE);
 
                 resetDate(new OnCallBack() {
                     @Override
@@ -325,20 +393,6 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         catch (ParseException e) {
             e.printStackTrace();
         }
-
-        //LocalDate startDate = LocalDate.parse(start);
-        //LocalDate endDate = LocalDate.parse(end);
-
-        /*int days = Days.daysBetween(startDate, endDate).getDays();
-        datelist = new ArrayList<>(days);
-        for (int i=0; i < days; i++) {
-            LocalDate d = startDate.withFieldAdded(DurationFieldType.days(), i);
-            String date = Common.getJodaTimeFormattedDate(d);
-            datelist.add(date);
-        }
-        datelist.add(end);
-
-        setAdapter();*/
     }
 
     public interface OnCallBack{

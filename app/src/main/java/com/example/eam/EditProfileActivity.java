@@ -79,8 +79,10 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_edit_profile);
 
-        setSupportActionBar(binding.toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        //setSupportActionBar(binding.toolbar);
+        //Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        //getSupportActionBar().hide();
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestore = FirebaseFirestore.getInstance();

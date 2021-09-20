@@ -3,6 +3,7 @@ package com.example.eam.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -25,11 +26,16 @@ import org.joda.time.Days;
 import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAdapter.ViewHolder>{
@@ -57,6 +63,33 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String theDate = datelist.get(position);
 
+        //Set day of week & dateNum
+        try {
+            SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+            Date dateTime = new Date();
+            String currDate = formatter2.format(dateTime);
+
+            DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            Date datee = format.parse(theDate);
+            String day = new SimpleDateFormat("EE").format(datee);
+            String dateNum = new SimpleDateFormat("dd").format(datee);
+
+            holder.tvDateDay.setText(day);
+            holder.tvDateNo.setText(dateNum);
+            holder.tvDateNo.setTypeface(null, Typeface.NORMAL);
+            holder.tvDateDay.setTextColor(ContextCompat.getColor(context, R.color.grey));
+            holder.tvDateNo.setTextColor(ContextCompat.getColor(context, R.color.grey));
+
+            if(currDate.equals(theDate)){
+                holder.tvDateNo.setTypeface(null, Typeface.BOLD);
+                holder.tvDateDay.setTextColor(ContextCompat.getColor(context, R.color.black));
+                holder.tvDateNo.setTextColor(ContextCompat.getColor(context, R.color.black));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
         /*Resources r = context.getResources();
         int px = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -75,21 +108,18 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
             holder.linearlayout.setLayoutParams(layoutParams);
         }*/
 
-        /*holder.tvClockInTime.setText(theDate);
-        holder.tvClockInStatus.setText("Absence");
-        holder.tvClockOutStatus.setText("Type");*/
-
-        holder.tvDateNo.setText(theDate);
-        holder.tvDailyTotal.setText("Absence");
+        //holder.tvDateNo.setText(theDate);
+        holder.tvDailyTotal.setText("Absent");
         holder.tvLeaveType.setVisibility(View.GONE);
         holder.tvView.setVisibility(View.GONE);
+        holder.tvDailyTotal.setTextColor(ContextCompat.getColor(context, R.color.grey));
 
         for(Attendance attendance : list){
             Log.d("TAG", "attendancelist: " + attendance.getClockInDate());
 
             if(attendance.getClockInDate().equals(theDate)){
-                //holder.tvClockInStatus.setText("Present");
                 holder.tvDailyTotal.setText("Present");
+                holder.tvDailyTotal.setTextColor(ContextCompat.getColor(context, R.color.black));
                 Log.d("TAG", "theDate: " + theDate + "clockInDate: " + attendance.getClockInDate());
             }
             /*else{
@@ -119,7 +149,6 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
 
                         if(date.equals(theDate)){
                             Log.d("TAG", "leave: " + leave.getDateFrom());
-                            //holder.tvClockOutStatus.setText(leave.getType());
                             holder.tvView.setVisibility(View.VISIBLE);
                             holder.tvLeaveType.setVisibility(View.VISIBLE);
                             holder.tvLeaveType.setText(leave.getType());
@@ -135,7 +164,6 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
 
                 if(leave.getDate().equals(theDate)){
                     Log.d("TAG", "leave: " + leave.getDate());
-                    //holder.tvClockOutStatus.setText(leave.getType());
                     holder.tvView.setVisibility(View.VISIBLE);
                     holder.tvLeaveType.setVisibility(View.VISIBLE);
                     holder.tvLeaveType.setText(leave.getType());

@@ -56,7 +56,7 @@
                             <TextView
                                 android:id="@+id/tvLeaveDate"
                                 android:text="Date"
-                                android:textSize="12sp"
+                                android:textSize="13sp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
 

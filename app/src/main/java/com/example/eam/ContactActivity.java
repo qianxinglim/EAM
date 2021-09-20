@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ListView;
 
@@ -22,6 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -66,10 +69,29 @@ public class ContactActivity extends AppCompatActivity {
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
 
-        if(firebaseUser != null){
-            //getContactFromPhone();
-            getContactList();
-        }
+        binding.recyclerView.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.VISIBLE);
+
+        //getContactFromPhone();
+        getContactList();
+
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+
 
         /*if(mobileArray != null){
             getContactList();
@@ -77,6 +99,25 @@ public class ContactActivity extends AppCompatActivity {
             //    Log.d(TAG, "onCreate: contacts" + mobileArray.get(i).toString());
             //}
         }*/
+    }
+
+    private void filter(String text) {
+        binding.recyclerView.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.VISIBLE);
+
+        ArrayList<User> searchList = new ArrayList<>();
+
+        for(User user : list){
+            if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                searchList.add(user);
+            }
+        }
+
+        adapter = new ContactsAdapter(searchList, ContactActivity.this);
+        binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.GONE);
     }
 
     private void getContactFromPhone() {
@@ -160,22 +201,13 @@ public class ContactActivity extends AppCompatActivity {
 
 
     private void getContactList() {
-        firestore.collection("Companies").document(companyID).collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        firestore.collection("Companies").document(companyID).collection("Users").orderBy("department", Query.Direction.ASCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for(QueryDocumentSnapshot snapshots : queryDocumentSnapshots){
-                    String userID = snapshots.getString("id");
-                    String userName = snapshots.getString("name");
-                    String imageUrl = snapshots.getString("profilePic");
-                    String phone = snapshots.getString("phoneNo");
+                    User user = new User(snapshots.getString("id"), snapshots.getString("name"), snapshots.getString("phoneNo"), snapshots.getString("profilePic"), snapshots.getString("email"),"", snapshots.getString("title"), snapshots.getString("department"),snapshots.getString("clockInTime"),snapshots.getString("clockOutTime"),snapshots.getLong("minutesOfWork").intValue());
 
-                    User user = new User();
-                    user.setID(userID);
-                    user.setName(userName);
-                    user.setProfilePic(imageUrl);
-                    user.setPhoneNo(phone);
-
-                    if(userID != null && !userID.equals(firebaseUser.getUid())){
+                    if(user.getID() != null && !user.getID().equals(firebaseUser.getUid())){
                         list.add(user);
                     }
                 }
@@ -193,6 +225,9 @@ public class ContactActivity extends AppCompatActivity {
 
                 adapter = new ContactsAdapter(list, ContactActivity.this);
                 binding.recyclerView.setAdapter(adapter);
+
+                binding.recyclerView.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
     }

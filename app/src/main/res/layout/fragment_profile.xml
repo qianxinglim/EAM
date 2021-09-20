@@ -7,24 +7,198 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".ProfileActivity">
+        tools:context=".ProfileActivity"
+        android:background="@color/colorDivider">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar"
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:paddingRight="12dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            >
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+            android:layout_margin="15dp"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                app:titleTextColor="@android:color/white"
-                app:title="Profile"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="17dp">
 
-        </com.google.android.material.appbar.AppBarLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <ScrollView
+                    <TextView
+                        android:id="@+id/tvCompany"
+                        android:text="Ikea"
+                        android:textColor="@color/grey"
+                        android:textStyle="bold"
+                        android:textSize="17sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="0dp"
+                        android:layout_alignParentRight="true"
+                        app:cardCornerRadius="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageProfile"
+                            android:layout_width="65dp"
+                            android:layout_height="65dp"
+                            android:src="@drawable/icon_male_ph"
+                            android:scaleType="centerCrop" />
+                    </androidx.cardview.widget.CardView>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:textSize="23sp"
+                    android:textColor="@color/black"
+                    android:text="Susan"
+                    android:textFontWeight="700"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:text="CEO"
+                    android:textSize="14sp"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:text="More"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/btnProfile">
+
+                <ImageView
+                    android:src="@drawable/ic_baseline_person_outline_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/quantum_googyellow" />
+
+                <TextView
+                    android:text="Profile Details"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/btnSwitchAcc">
+
+                <ImageView
+                    android:src="@drawable/ic_baseline_swap_horiz_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/quantum_googblue" />
+
+                <TextView
+                    android:text="Switch Company"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/btnLogout">
+
+                <ImageView
+                    android:src="@drawable/ic_baseline_logout_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/quantum_googred" />
+
+                <TextView
+                    android:text="Logout"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+        </LinearLayout>
+
+        <!--<ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <LinearLayout
@@ -445,7 +619,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-        </ScrollView>
+        </ScrollView>-->
 
         <!--<ScrollView
             android:layout_width="match_parent"
