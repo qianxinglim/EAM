@@ -35,7 +35,7 @@ public class EmployeeListActivity extends AppCompatActivity {
 
         setUpWithViewPager(binding.viewPager);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
-        setSupportActionBar(binding.toolbar);
+        //setSupportActionBar(binding.toolbar);
 
         binding.fabAction.setOnClickListener(new View.OnClickListener() {
             @Override
