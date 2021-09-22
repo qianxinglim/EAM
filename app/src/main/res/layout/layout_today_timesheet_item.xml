@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorDivider"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="10dp"
+        android:textSize="14sp"
+        android:text="Department"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <LinearLayout
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/image_profile"
+            android:layout_marginLeft="8dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/icon_male_ph"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:textColor="#2E2E2E"
+                    android:layout_gravity="center_vertical"
+                    android:text="Name"/>
+
+                <TextView
+                    android:id="@+id/tvAttendance"
+                    android:text="Has yet to clock in"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textSize="16sp"
+                    android:layout_marginRight="10dp"/>
+
+                <LinearLayout
+                    android:id="@+id/lnAttendance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical"
+                    android:visibility="visible"
+                    android:layout_marginRight="5dp">
+
+                    <TextView
+                        android:id="@+id/tvAttendanceFrom"
+                        android:background="@drawable/bg_layout_round"
+                        android:gravity="center"
+                        android:layout_width="70dp"
+                        android:layout_height="36dp"
+                        android:textColor="@color/white"
+                        android:text="12:00"/>
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_baseline_arrow_forward_24"
+                        android:layout_gravity="center"/>
+
+                    <TextView
+                        android:id="@+id/tvAttendanceTo"
+                        android:background="@drawable/bg_layout_round"
+                        android:gravity="center"
+                        android:layout_width="70dp"
+                        android:layout_height="36dp"
+                        android:textColor="@color/white"
+                        android:text="--"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>
