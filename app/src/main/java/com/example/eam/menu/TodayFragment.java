@@ -8,14 +8,18 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.eam.ContactActivity;
 import com.example.eam.R;
 import com.example.eam.ReviewLeaveActivity;
 import com.example.eam.ViewAttendanceActivity;
+import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.adapter.TimesheetsAdapter;
 import com.example.eam.adapter.TodayTimesheetsAdapter;
 import com.example.eam.adapter.ViewAttendanceAdapter;
@@ -36,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -64,6 +69,7 @@ public class TodayFragment extends Fragment {
     private List<User> clockedInUserList = new ArrayList<>();
     private List<User> noClockedInUserList = new ArrayList<>();
     private TodayTimesheetsAdapter todayTimesheetsAdapter;
+    private int filter = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -116,7 +122,91 @@ public class TodayFragment extends Fragment {
             }
         });
 
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+
         return binding.getRoot();
+    }
+
+    private void filter(String text) {
+        binding.recyclerView.setVisibility(View.GONE);
+        //binding.progressBar.setVisibility(View.VISIBLE);
+
+        ArrayList<User> searchList = new ArrayList<>();
+
+        switch(filter){
+            case 0:
+                for(User user : userList){
+                    if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                        searchList.add(user);
+                    }
+                }
+
+                break;
+
+            case 1:
+                for(User user : clockedInUserList){
+                    if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                        searchList.add(user);
+                    }
+                }
+
+                break;
+
+            case 2:
+                for(User user : noClockedInUserList){
+                    if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                        searchList.add(user);
+                    }
+                }
+
+                break;
+        }
+
+
+        /*if(filter.equals("Clocked in")){
+            for(User user : clockedInUserList){
+                if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                    searchList.add(user);
+                }
+            }
+        }
+        else if(filter.equals("Not clocked in")){
+            for(User user : noClockedInUserList){
+                if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                    searchList.add(user);
+                }
+            }
+        }
+        else{
+            for(User user : userList){
+                if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                    searchList.add(user);
+                }
+            }
+        }*/
+
+//        adapter = new ContactsAdapter(searchList, ContactActivity.this);
+//        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        todayTimesheetsAdapter = new TodayTimesheetsAdapter(searchList, list, getContext());
+        binding.recyclerView.setAdapter(todayTimesheetsAdapter);
+        binding.recyclerView.setVisibility(View.VISIBLE);
+        //binding.progressBar.setVisibility(View.GONE);
     }
 
     private void bottomSheetShow() {
@@ -129,6 +219,8 @@ public class TodayFragment extends Fragment {
             public void onClick(View view) {
                 //binding.btnFilter.setText("All");
                 bottomSheetDialog.dismiss();
+
+                filter = 0;
 
                 binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
                 binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
@@ -145,6 +237,8 @@ public class TodayFragment extends Fragment {
                 //binding.btnFilter.setText("Clocked in");
                 bottomSheetDialog.dismiss();
 
+                filter = 1;
+
                 binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
                 binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
 
@@ -159,6 +253,8 @@ public class TodayFragment extends Fragment {
             public void onClick(View view) {
                 //binding.btnFilter.setText("Not Clocked in");
                 bottomSheetDialog.dismiss();
+
+                filter = 2;
 
                 binding.tvCount.setText(String.valueOf(noClockedInUserList.size()));
                 binding.tvCountDes.setText("/" + userList.size() + " Users did not clocked in");
@@ -187,7 +283,7 @@ public class TodayFragment extends Fragment {
     }
 
     private void getUserList(final OnCallBack onCallBack){
-        firestore.collection("Companies").document(companyID).collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        firestore.collection("Companies").document(companyID).collection("Users").orderBy("department", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
