@@ -51,7 +51,7 @@
         android:background="@color/colorDivider"/>
 
     <TextView
-        android:id="@+id/btnNotClockedIn"
+        android:id="@+id/btnClockedIn"
         android:text="Clocked in"
         android:padding="15dp"
         android:textSize="16sp"
@@ -65,7 +65,7 @@
         android:background="@color/colorDivider"/>
 
     <TextView
-        android:id="@+id/btnClockedIn"
+        android:id="@+id/btnNotClockedIn"
         android:text="Not clocked in"
         android:padding="15dp"
         android:textSize="16sp"

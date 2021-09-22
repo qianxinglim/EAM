@@ -61,6 +61,8 @@ public class TodayFragment extends Fragment {
     private String companyID;
     private List<User> userList;
     private List<Attendance> list;
+    private List<User> clockedInUserList = new ArrayList<>();
+    private List<User> noClockedInUserList = new ArrayList<>();
     private TodayTimesheetsAdapter todayTimesheetsAdapter;
 
     @Override
@@ -81,7 +83,17 @@ public class TodayFragment extends Fragment {
         getAttendanceList(new OnCallBack() {
             @Override
             public void onSuccess() {
-                getUserList();
+                getUserList(new OnCallBack() {
+                    @Override
+                    public void onSuccess() {
+                        compareLists();
+                    }
+
+                    @Override
+                    public void onFailed(Exception e) {
+
+                    }
+                });
             }
 
             @Override
@@ -115,11 +127,14 @@ public class TodayFragment extends Fragment {
         bottomSheetView.findViewById(R.id.btnAll).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.btnFilter.setText("All");
+                //binding.btnFilter.setText("All");
                 bottomSheetDialog.dismiss();
 
+                binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
+                binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
+
                 binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                todayTimesheetsAdapter = new TodayTimesheetsAdapter(binding.btnFilter.getText().toString(), userList, list, getContext());
+                todayTimesheetsAdapter = new TodayTimesheetsAdapter(userList, list, getContext());
                 binding.recyclerView.setAdapter(todayTimesheetsAdapter);
             }
         });
@@ -127,11 +142,14 @@ public class TodayFragment extends Fragment {
         bottomSheetView.findViewById(R.id.btnClockedIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.btnFilter.setText("Clocked in");
+                //binding.btnFilter.setText("Clocked in");
                 bottomSheetDialog.dismiss();
 
+                binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
+                binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
+
                 binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                todayTimesheetsAdapter = new TodayTimesheetsAdapter(binding.btnFilter.getText().toString(), userList, list, getContext());
+                todayTimesheetsAdapter = new TodayTimesheetsAdapter(clockedInUserList, list, getContext());
                 binding.recyclerView.setAdapter(todayTimesheetsAdapter);
             }
         });
@@ -139,11 +157,14 @@ public class TodayFragment extends Fragment {
         bottomSheetView.findViewById(R.id.btnNotClockedIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.btnFilter.setText("Not Clocked in");
+                //binding.btnFilter.setText("Not Clocked in");
                 bottomSheetDialog.dismiss();
 
+                binding.tvCount.setText(String.valueOf(noClockedInUserList.size()));
+                binding.tvCountDes.setText("/" + userList.size() + " Users did not clocked in");
+
                 binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                todayTimesheetsAdapter = new TodayTimesheetsAdapter(binding.btnFilter.getText().toString(), userList, list, getContext());
+                todayTimesheetsAdapter = new TodayTimesheetsAdapter(noClockedInUserList, list, getContext());
                 binding.recyclerView.setAdapter(todayTimesheetsAdapter);
             }
         });
@@ -152,7 +173,20 @@ public class TodayFragment extends Fragment {
         bottomSheetDialog.show();
     }
 
-    private void getUserList(){
+    private void compareLists(){
+        for(User user : userList){
+            for(Attendance attendance : list){
+                if(user.getID().equals(attendance.getUserId())){
+                    clockedInUserList.add(user);
+                }
+                else{
+                    noClockedInUserList.add(user);
+                }
+            }
+        }
+    }
+
+    private void getUserList(final OnCallBack onCallBack){
         firestore.collection("Companies").document(companyID).collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -171,14 +205,19 @@ public class TodayFragment extends Fragment {
                     }
                 }
 
-                binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                todayTimesheetsAdapter = new TodayTimesheetsAdapter(binding.btnFilter.getText().toString(), userList, list, getContext());
-                binding.recyclerView.setAdapter(todayTimesheetsAdapter);
+                onCallBack.onSuccess();
 
-                if(todayTimesheetsAdapter != null){
-                    todayTimesheetsAdapter.notifyItemInserted(0);
-                    todayTimesheetsAdapter.notifyDataSetChanged();
-                }
+                binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
+                binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
+
+                binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                todayTimesheetsAdapter = new TodayTimesheetsAdapter(userList, list, getContext());
+                binding.recyclerView.setAdapter(todayTimesheetsAdapter);
+//
+//                if(todayTimesheetsAdapter != null){
+//                    todayTimesheetsAdapter.notifyItemInserted(0);
+//                    todayTimesheetsAdapter.notifyDataSetChanged();
+//                }
             }
         });
     }

@@ -27,13 +27,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TodayTimesheetsAdapter extends RecyclerView.Adapter<TodayTimesheetsAdapter.Holder> {
     private List<User> userList;
     private List<Attendance> list;
-    private String filter;
     private Context context;
 
-    public TodayTimesheetsAdapter(String filter, List<User> userList, List<Attendance> list, Context context) {
+    public TodayTimesheetsAdapter(List<User> userList, List<Attendance> list, Context context) {
         this.list = list;
         this.userList = userList;
-        this.filter = filter;
         this.context = context;
     }
 
