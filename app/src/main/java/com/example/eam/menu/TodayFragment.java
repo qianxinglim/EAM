@@ -1,5 +1,6 @@
 package com.example.eam.menu;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.eam.ContactActivity;
 import com.example.eam.R;
@@ -23,6 +27,7 @@ import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.adapter.TimesheetsAdapter;
 import com.example.eam.adapter.TodayTimesheetsAdapter;
 import com.example.eam.adapter.ViewAttendanceAdapter;
+import com.example.eam.common.Common;
 import com.example.eam.databinding.FragmentTimesheetsBinding;
 import com.example.eam.databinding.FragmentTodayBinding;
 import com.example.eam.managers.SessionManager;
@@ -44,8 +49,15 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.joda.time.Days;
+import org.joda.time.DurationFieldType;
+import org.joda.time.LocalDate;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +78,8 @@ public class TodayFragment extends Fragment {
     private String companyID;
     private List<User> userList;
     private List<Attendance> list;
-    private List<User> clockedInUserList = new ArrayList<>();
-    private List<User> noClockedInUserList = new ArrayList<>();
+    private List<User> clockedInUserList;
+    private List<User> noClockedInUserList;
     private TodayTimesheetsAdapter todayTimesheetsAdapter;
     private int filter = 0;
 
@@ -86,20 +98,32 @@ public class TodayFragment extends Fragment {
         list = new ArrayList<>();
         userList = new ArrayList<>();
 
-        getAttendanceList(new OnCallBack() {
+//        getAttendanceList(new OnCallBack() {
+//            @Override
+//            public void onSuccess() {
+//                getUserList(new OnCallBack() {
+//                    @Override
+//                    public void onSuccess() {
+//                        compareLists();
+//                    }
+//
+//                    @Override
+//                    public void onFailed(Exception e) {
+//
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailed(Exception e) {
+//
+//            }
+//        });
+
+        getUserList(new OnCallBack() {
             @Override
             public void onSuccess() {
-                getUserList(new OnCallBack() {
-                    @Override
-                    public void onSuccess() {
-                        compareLists();
-                    }
-
-                    @Override
-                    public void onFailed(Exception e) {
-
-                    }
-                });
+                getAttendanceList();
             }
 
             @Override
@@ -139,11 +163,18 @@ public class TodayFragment extends Fragment {
             }
         });
 
+        binding.btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDate(binding.btnDate);
+            }
+        });
+
         return binding.getRoot();
     }
 
     private void filter(String text) {
-        binding.recyclerView.setVisibility(View.GONE);
+        //binding.recyclerView.setVisibility(View.GONE);
         //binding.progressBar.setVisibility(View.VISIBLE);
 
         ArrayList<User> searchList = new ArrayList<>();
@@ -177,31 +208,6 @@ public class TodayFragment extends Fragment {
                 break;
         }
 
-
-        /*if(filter.equals("Clocked in")){
-            for(User user : clockedInUserList){
-                if(user.getName().toLowerCase().contains(text.toLowerCase())){
-                    searchList.add(user);
-                }
-            }
-        }
-        else if(filter.equals("Not clocked in")){
-            for(User user : noClockedInUserList){
-                if(user.getName().toLowerCase().contains(text.toLowerCase())){
-                    searchList.add(user);
-                }
-            }
-        }
-        else{
-            for(User user : userList){
-                if(user.getName().toLowerCase().contains(text.toLowerCase())){
-                    searchList.add(user);
-                }
-            }
-        }*/
-
-//        adapter = new ContactsAdapter(searchList, ContactActivity.this);
-//        binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         todayTimesheetsAdapter = new TodayTimesheetsAdapter(searchList, list, getContext());
         binding.recyclerView.setAdapter(todayTimesheetsAdapter);
@@ -269,17 +275,27 @@ public class TodayFragment extends Fragment {
         bottomSheetDialog.show();
     }
 
-    private void compareLists(){
-        for(User user : userList){
-            for(Attendance attendance : list){
-                if(user.getID().equals(attendance.getUserId())){
-                    clockedInUserList.add(user);
-                }
-                else{
-                    noClockedInUserList.add(user);
+    private void compareLists(final OnCallBack onCallBack){
+        clockedInUserList = new ArrayList<>();
+        noClockedInUserList = new ArrayList<>();
+
+        if(userList.size() > 0 && list.size() > 0) {
+            for (User user : userList) {
+                for (Attendance attendance : list) {
+                    if (user.getID().equals(attendance.getUserId())) {
+                        clockedInUserList.add(user);
+                    } else {
+                        noClockedInUserList.add(user);
+                    }
                 }
             }
         }
+        else{
+            //Collections.copy(noClockedInUserList, userList);
+            noClockedInUserList = new ArrayList<>(userList);
+        }
+
+        onCallBack.onSuccess();
     }
 
     private void getUserList(final OnCallBack onCallBack){
@@ -303,12 +319,15 @@ public class TodayFragment extends Fragment {
 
                 onCallBack.onSuccess();
 
-                binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
-                binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
+                //getAttendanceList();
+                //onCallBack.onSuccess();
 
-                binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                todayTimesheetsAdapter = new TodayTimesheetsAdapter(userList, list, getContext());
-                binding.recyclerView.setAdapter(todayTimesheetsAdapter);
+//                binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
+//                binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
+//
+//                binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//                todayTimesheetsAdapter = new TodayTimesheetsAdapter(userList, list, getContext());
+//                binding.recyclerView.setAdapter(todayTimesheetsAdapter);
 //
 //                if(todayTimesheetsAdapter != null){
 //                    todayTimesheetsAdapter.notifyItemInserted(0);
@@ -318,12 +337,22 @@ public class TodayFragment extends Fragment {
         });
     }
 
-    private void getAttendanceList(final OnCallBack onCallBack) {
+    private void getAttendanceList() {
         SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
         Date dateTime = new Date();
         String currDate = formatter2.format(dateTime);
+        String queryDate;
 
-        reference.child(companyID).child("Attendance").orderByChild("clockInDate").equalTo("21-09-2021").addValueEventListener(new ValueEventListener() {
+        if(binding.btnDate.getText().toString().equals("Today")){
+            queryDate = currDate;
+        }
+        else{
+            queryDate = binding.btnDate.getText().toString();
+        }
+
+        Log.d(TAG, "querydate: " + queryDate);
+
+        reference.child(companyID).child("Attendance").orderByChild("clockInDate").equalTo(queryDate).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list.clear();
@@ -334,9 +363,33 @@ public class TodayFragment extends Fragment {
                     list.add(attendance);
                 }
 
-                if(list != null){
-                    onCallBack.onSuccess();
-                }
+//                if(list != null){
+//                    onCallBack.onSuccess();
+//                }
+
+                compareLists(new OnCallBack() {
+                    @Override
+                    public void onSuccess() {
+                        binding.tvCount.setText(String.valueOf(clockedInUserList.size()));
+                        binding.tvCountDes.setText("/" + userList.size() + " Users clocked in");
+
+                        Log.e(TAG, "clockedInUserList: " + clockedInUserList + ", noClockedInUserList: " + noClockedInUserList + ", userList: " + userList);
+
+                        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        todayTimesheetsAdapter = new TodayTimesheetsAdapter(userList, list, getContext());
+                        binding.recyclerView.setAdapter(todayTimesheetsAdapter);
+
+                        if(todayTimesheetsAdapter != null) {
+                            todayTimesheetsAdapter.notifyItemInserted(0);
+                            todayTimesheetsAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Exception e) {
+
+                    }
+                });
             }
 
             @Override
@@ -344,6 +397,49 @@ public class TodayFragment extends Fragment {
 
             }
         });
+    }
+
+    private void getDate(TextView tvDate) {
+        Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                month = month + 1;
+
+                String day1 = String.valueOf(day), month1 = String.valueOf(month);
+
+                if(day < 10){
+                    day1 = "0" + day;
+                }
+                if(month < 10){
+                    month1 = "0" + month;
+                }
+
+                String date = day1 + "-" + month1 + "-" + year;
+
+                SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+                Date dateTime = new Date();
+                String currDate = formatter2.format(dateTime);
+
+                if(date.equals(currDate)){
+                    tvDate.setText("Today");
+                }
+                else{
+                    tvDate.setText(date);
+                }
+
+                //binding.progressBar.setVisibility(View.VISIBLE);
+                //binding.recyclerView.setVisibility(View.GONE);
+
+                getAttendanceList();
+            }
+        }, year, month, day);
+
+        datePickerDialog.show();
     }
 
     public interface OnCallBack{
