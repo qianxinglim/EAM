@@ -11,23 +11,21 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/colorPrimary">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:orientation="horizontal">
+                android:background="@color/colorPrimary">
 
                 <ImageButton
                     android:id="@+id/btn_back"
-                    android:layout_marginEnd="2dp"
-                    android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
                     android:background="@android:color/transparent"
                     app:tint="@color/white" />
@@ -35,13 +33,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Punch Details"
-                    android:layout_gravity="center_vertical"
+                    android:text="Clock In/Out"
+                    android:paddingRight="12dp"
+                    android:layout_centerInParent="true"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:layout_marginStart="15dp"/>
+                    android:textStyle="bold"/>
 
-            </LinearLayout>
+            </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.cardview.widget.CardView
@@ -109,13 +108,14 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvCurrTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:textSize="30sp"
                             android:textStyle="bold"
                             android:layout_marginTop="10dp"
-                            android:text="17:30"
+                            android:text="..."
                             android:layout_marginBottom="5dp"/>
 
                         <TextView

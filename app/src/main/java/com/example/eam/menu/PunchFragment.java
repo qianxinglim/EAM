@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -120,6 +121,8 @@ public class PunchFragment extends Fragment {
         locationRequest.setInterval(4000);
         locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        clock();
 
         checkLastNode();
 
@@ -433,7 +436,7 @@ public class PunchFragment extends Fragment {
                         }
                     }
                     else{
-                        Toast.makeText(getContext(), "Cannot clock in", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "You are only allowed to clock in 1 hour before your work time.", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "cannot clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
                     }
                 }
@@ -593,6 +596,29 @@ public class PunchFragment extends Fragment {
                 onCallBack.onSuccess();
             }
         });
+    }
+
+    private void clock() {
+        final Handler hander = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                hander.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                        binding.tvCurrTime.setText(dateFormat.format(new Date()));
+
+                        clock();
+                    }
+                });
+            }
+        }).start();
     }
 
     /*private void getPermission(final OnCallBack onCallBack){

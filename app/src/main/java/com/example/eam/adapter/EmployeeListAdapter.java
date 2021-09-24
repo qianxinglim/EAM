@@ -30,13 +30,20 @@ public class EmployeeListAdapter extends RecyclerView.Adapter<EmployeeListAdapte
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_chat_list,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_contact_item,parent,false);
         return new Holder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         User user = list.get(position);
+
+        if (position > 0 && list.get(position - 1).getDepartment().equals(user.getDepartment())) {
+            holder.tvHeader.setVisibility(View.GONE);
+        } else {
+            holder.tvHeader.setVisibility(View.VISIBLE);
+            holder.tvHeader.setText(user.getDepartment());
+        }
 
         holder.tvName.setText(user.getName());
 
@@ -72,15 +79,14 @@ public class EmployeeListAdapter extends RecyclerView.Adapter<EmployeeListAdapte
     }
 
     public class Holder extends RecyclerView.ViewHolder {
-        private TextView tvName, tvDesc, tvDate;
+        private TextView tvName, tvHeader;
         private CircularImageView profile;
         public Holder(@NonNull View itemView) {
             super(itemView);
 
-            tvDate = itemView.findViewById(R.id.tv_date);
-            tvDesc = itemView.findViewById(R.id.tv_desc);
-            tvName = itemView.findViewById(R.id.tv_name);
+            tvName = itemView.findViewById(R.id.tvName);
             profile = itemView.findViewById(R.id.image_profile);
+            tvHeader = itemView.findViewById(R.id.tvHeader);
         }
     }
 }

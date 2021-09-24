@@ -1,8 +1,9 @@
 package com.example.eam.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Leave {
+public class Leave implements Serializable {
     private String date;
     private String dateFrom;
     private String dateTo;

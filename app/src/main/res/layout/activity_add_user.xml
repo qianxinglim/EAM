@@ -8,20 +8,40 @@
     android:orientation="vertical"
     tools:context=".AddUserActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
         android:background="@color/colorPrimary">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            app:titleTextColor="@android:color/white"
-            app:title="Add User"/>
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
+                android:background="@android:color/transparent"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add User"
+                android:paddingRight="12dp"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -78,18 +98,16 @@
 
                     <com.hbb20.CountryCodePicker
                         android:id="@+id/spCountryPicker"
-                        android:layout_width="0dp"
+                        android:layout_width="130dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
                         android:gravity="center"
                         app:ccp_showNameCode="true"
                         app:ccp_autoDetectCountry="true"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tvPhoneNo"
-                        android:layout_weight="1"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.eam.EditProfileActivity;
 import com.example.eam.IndvChatActivity;
+import com.example.eam.LeaveDetailActivity;
 import com.example.eam.LeaveFormActivity;
 import com.example.eam.ProfileActivity;
 import com.example.eam.R;
@@ -123,7 +124,12 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        bottomSheetLeaveDetail(userName, userProfilePic, leave, companyID);
+                        context.startActivity(new Intent(context, LeaveDetailActivity.class)
+                                .putExtra("leaveObj", leave)
+                                .putExtra("profilePic", userProfilePic)
+                                .putExtra("userName", userName)
+                                .putExtra("Activity", "LeaveReview"));
+                        //bottomSheetLeaveDetail(userName, userProfilePic, leave, companyID);
                     }
                 });
             }

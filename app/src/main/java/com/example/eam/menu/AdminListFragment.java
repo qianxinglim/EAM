@@ -18,6 +18,7 @@ import com.example.eam.R;
 import com.example.eam.adapter.EmployeeListAdapter;
 import com.example.eam.databinding.FragmentAdminListBinding;
 import com.example.eam.managers.SessionManager;
+import com.example.eam.model.Leave;
 import com.example.eam.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +34,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -72,10 +74,6 @@ public class AdminListFragment extends Fragment {
 
         getEmployeeList();
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EmployeeListAdapter(list, getContext());
-        binding.recyclerView.setAdapter(adapter);
-
         return binding.getRoot();
     }
 
@@ -88,7 +86,7 @@ public class AdminListFragment extends Fragment {
                     return;
                 }
 
-                list.clear();
+                allAdminID.clear();
 
                 for (QueryDocumentSnapshot doc : value) {
                     if (doc.getId() != null) {
@@ -103,6 +101,8 @@ public class AdminListFragment extends Fragment {
     }
 
     private void getUserInfo() {
+        list.clear();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -131,6 +131,11 @@ public class AdminListFragment extends Fragment {
                             }
                         }
                     });
+
+                    binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    list.sort(Comparator.comparing(User::getDepartment));
+                    adapter = new EmployeeListAdapter(list, getContext());
+                    binding.recyclerView.setAdapter(adapter);
 
                     /*firestore.collection("Companies").document(companyID).collection("Users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override

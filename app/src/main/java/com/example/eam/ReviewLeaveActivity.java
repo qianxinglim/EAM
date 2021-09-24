@@ -14,6 +14,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.example.eam.adapter.CalendarAdapter;
+import com.example.eam.adapter.LeaveRequestAdapter;
 import com.example.eam.adapter.LeaveReviewAdapter;
 import com.example.eam.adapter.RecordAdapter;
 import com.example.eam.common.CalendarUtils;
@@ -22,6 +23,7 @@ import com.example.eam.databinding.ActivityReviewLeaveBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Attendance;
 import com.example.eam.model.Leave;
+import com.github.mikephil.charting.data.Entry;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -198,9 +201,15 @@ public class ReviewLeaveActivity extends AppCompatActivity {
 
                     if (list.size() > 0) {
                         //binding.tvNoRecord.setVisibility(View.GONE);
+
+                        list.sort(Comparator.comparing(Leave::getRequestDate));
+
                         binding.recyclerView.setVisibility(View.VISIBLE);
 
-                        binding.recyclerView.setLayoutManager(new LinearLayoutManager(ReviewLeaveActivity.this));
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReviewLeaveActivity.this);
+                        linearLayoutManager.setReverseLayout(true);
+                        linearLayoutManager.setStackFromEnd(true);
+                        binding.recyclerView.setLayoutManager(linearLayoutManager);
                         LeaveReviewAdapter adapter = new LeaveReviewAdapter(list, ReviewLeaveActivity.this);
                         binding.recyclerView.setAdapter(adapter);
 

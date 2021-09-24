@@ -2,6 +2,7 @@ package com.example.eam.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.util.TypedValue;
@@ -13,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.eam.IndvChatActivity;
+import com.example.eam.LeaveDetailActivity;
 import com.example.eam.R;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Leave;
@@ -56,7 +59,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
                 r.getDisplayMetrics()
         );
 
-        if(position == list.size() - 1){
+        if(position == 0){
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(0, 0, 0, 0);
             holder.linearlayout.setLayoutParams(layoutParams);
@@ -68,7 +71,8 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
         }
 
         if(leave.isFullDay()){
-            holder.tvLeaveDate.setText(leave.getDateFrom() + " to " + leave.getDateTo());
+            holder.tvLeaveDate.setText(leave.getDateFrom());
+            holder.tvLeaveDateTo.setText(leave.getDateTo());
         }
         else{
             holder.tvLeaveDate.setText(leave.getDate());
@@ -99,15 +103,14 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
 
         //holder.tvRequestDateTime.setText(leave.);
 
-        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, IndvChatActivity.class)
-                        .putExtra("userID", user.getID())
-                        .putExtra("userName", user.getName())
-                        .putExtra("userProfilePic", user.getProfilePic()));
+                context.startActivity(new Intent(context, LeaveDetailActivity.class)
+                        .putExtra("leaveObj", leave)
+                        .putExtra("Activity", "LeaveRecord"));
             }
-        });*/
+        });
     }
 
     @Override
@@ -116,7 +119,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView tvType, tvStatus, tvLeaveDate, tvRequestDateTime;
+        private TextView tvType, tvStatus, tvLeaveDate, tvRequestDateTime, tvLeaveDateTo;
         private LinearLayout linearlayout;
 
         public ViewHolder(@NonNull View itemView) {
@@ -127,6 +130,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvRequestDateTime = itemView.findViewById(R.id.tvRequestDateTime);
             linearlayout = itemView.findViewById(R.id.linearLayout);
+            tvLeaveDateTo = itemView.findViewById(R.id.tvLeaveDateTo);
         }
     }
 }

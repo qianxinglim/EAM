@@ -13,6 +13,7 @@ import android.view.View;
 import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.adapter.LeaveRequestAdapter;
 import com.example.eam.adapter.LeaveReviewAdapter;
+import com.example.eam.adapter.ViewAttendanceAdapter;
 import com.example.eam.databinding.ActivityLeaveRecordBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Leave;
@@ -88,7 +89,10 @@ public class LeaveRecordActivity extends AppCompatActivity {
                 if(list.size() > 0){
                     binding.recyclerView.setVisibility(View.VISIBLE);
 
-                    binding.recyclerView.setLayoutManager(new LinearLayoutManager(LeaveRecordActivity.this));
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(LeaveRecordActivity.this);
+                    linearLayoutManager.setReverseLayout(true);
+                    linearLayoutManager.setStackFromEnd(true);
+                    binding.recyclerView.setLayoutManager(linearLayoutManager);
                     LeaveRequestAdapter adapter = new LeaveRequestAdapter(list, LeaveRecordActivity.this);
                     binding.recyclerView.setAdapter(adapter);
                 }

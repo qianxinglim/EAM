@@ -9,12 +9,13 @@
     tools:context=".LeaveDetailActivity">
 
     <LinearLayout
-        android:id="@+id/userDetail"
+        android:id="@+id/lnUserDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/colorPrimary"
         android:layout_alignParentTop="true"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageButton
             android:id="@+id/btnClose"
@@ -23,7 +24,8 @@
             android:layout_height="20dp"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_baseline_close_24" />
+            android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
+            app:tint="@color/white"/>
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/tvProfilePic"
@@ -42,12 +44,13 @@
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 android:text="Name"/>
 
             <TextView
                 android:id="@+id/tvRequestDateTime"
+                android:textColor="@color/colorDivider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"/>
@@ -60,7 +63,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -90,11 +94,12 @@
 
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorDivider"
-        android:layout_below="@+id/toolbar"
-        android:layout_above="@+id/lnBtn">
+        android:layout_below="@+id/lnUserDetail"
+        android:layout_above="@+id/lnBtnCancel">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -486,13 +491,40 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <LinearLayout
+        android:id="@+id/lnBtnCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:padding="15dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnCancel"
+                android:background="@drawable/bg_layout_round_border"
+                android:textColor="@color/grey"
+                android:text="Cancel Request"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/lnBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
 
         <View
             android:layout_width="match_parent"
