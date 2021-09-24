@@ -21,4 +21,9 @@ public class Common {
         String formattedDate = date.toString("dd-MM-yyyy");
         return formattedDate;
     }
+
+    public static String getJodaTimeFormattedDate2(LocalDate date){
+        String formattedDate = date.toString("dd/M");
+        return formattedDate;
+    }
 }

@@ -9,17 +9,37 @@
         android:orientation="vertical"
         android:padding="15dp">
 
-        <androidx.cardview.widget.CardView
+        <!--<androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
+            android:layout_height="200dp"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="10dp"
+            android:background="@color/colorPrimary"
+            app:cardBackgroundColor="@color/colorPrimary"
             android:layout_marginBottom="20dp">
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/chart"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"/>
-        </androidx.cardview.widget.CardView>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Attendance"
+                    android:textSize="16sp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart"
+                    android:background="@color/colorPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

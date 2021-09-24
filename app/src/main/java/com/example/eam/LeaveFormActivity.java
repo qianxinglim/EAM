@@ -787,21 +787,20 @@ public class LeaveFormActivity extends AppCompatActivity {
             else{
                 if(imageList.size() > 0){
                     for(int i=0; i < imageList.size(); i++){
-                        int finalI = i + 1;
+                        //int finalI = i + 1;
                         new FirebaseService(LeaveFormActivity.this).uploadDocumentToFirebaseStorage(imageList.get(i), new FirebaseService.OnCallBack() {
                             @Override
                             public void onUploadSuccess(String docUrl) {
                                 imageURLlist.add(docUrl);
 
-                                if(finalI == imageList.size()){
+                                if(imageURLlist.size() == imageList.size()){
                                     uploadLeaveRequest(imageURLlist);
                                 }
 
                                 Log.d(TAG, "docURL: " + docUrl);
                                 Log.d(TAG, "imageURLlist: " + imageURLlist);
-                                //String displayName = getUriPath(pdfUri);
-                                //chatService.sendDocument(pdfUrl, displayName);
-                                //progressDialog.dismiss();
+                                //Log.e(TAG, "finali: " + finalI);
+                                //Log.e(TAG, "imageListSize: " + imageList.size());
                             }
 
                             @Override

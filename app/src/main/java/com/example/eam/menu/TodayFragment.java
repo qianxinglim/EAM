@@ -1,10 +1,13 @@
 package com.example.eam.menu;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +37,14 @@ import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Attendance;
 import com.example.eam.model.Chatlist;
 import com.example.eam.model.User;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.Utils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -58,6 +69,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +109,9 @@ public class TodayFragment extends Fragment {
 
         list = new ArrayList<>();
         userList = new ArrayList<>();
+
+        LocalDate currDate = new LocalDate();
+        displayChart(currDate);
 
 //        getAttendanceList(new OnCallBack() {
 //            @Override
@@ -436,10 +451,168 @@ public class TodayFragment extends Fragment {
                 //binding.recyclerView.setVisibility(View.GONE);
 
                 getAttendanceList();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    String selectedDate = formatter.format(sdf.parse(date));
+                    LocalDate selectedDate2 = new LocalDate(selectedDate);
+
+                    displayChart(selectedDate2);
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }, year, month, day);
 
         datePickerDialog.show();
+    }
+
+    private void displayChart(LocalDate currDate) {
+
+        //axis lines
+        binding.chart.getAxisRight().setEnabled(false);
+        binding.chart.getAxisLeft().setEnabled(false);
+        binding.chart.getAxisLeft().removeAllLimitLines();
+        binding.chart.getAxisRight().removeAllLimitLines();
+        binding.chart.getAxisLeft().setDrawLabels(false);
+        binding.chart.getAxisRight().setDrawLabels(false);
+        binding.chart.getAxisLeft().setDrawAxisLine(false);
+        binding.chart.getXAxis().setDrawAxisLine(false);
+        binding.chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        //Remove background grid lines
+        binding.chart.getAxisLeft().setDrawGridLines(false);
+        binding.chart.getXAxis().setDrawGridLines(false);
+        binding.chart.getAxisRight().setDrawGridLines(false);
+        //Hide legend
+        binding.chart.getLegend().setEnabled(false);
+        //Set background color
+        binding.chart.setBackgroundColor(Color.WHITE);
+        binding.chart.setDrawGridBackground(false);
+        //remove description label
+        binding.chart.getDescription().setEnabled(false);
+        //Set text color & size
+        binding.chart.getXAxis().setTextColor(Color.parseColor("#808080"));
+        binding.chart.getLegend().setTextColor(Color.parseColor("#5ebf95"));
+        binding.chart.getDescription().setTextColor(Color.parseColor("#5ebf95"));
+        binding.chart.getXAxis().setTextSize(12);
+        //Set margins
+        binding.chart.getXAxis().setSpaceMin(0.1f);
+        binding.chart.getXAxis().setSpaceMax(0.1f);
+        binding.chart.getXAxis().setYOffset(1);
+
+        LocalDate fiveDaysAgo = currDate.minusDays(4);
+        LocalDate dateto = currDate.plusDays(1);
+
+        int days = Days.daysBetween(fiveDaysAgo, dateto).getDays();
+        List<String> datelist = new ArrayList<>(days);  // Set initial capacity to `days`.
+        List<String> datelist2 = new ArrayList<>(days);  // Set initial capacity to `days`.
+        for (int i=0; i < days; i++) {
+            LocalDate d = fiveDaysAgo.withFieldAdded(DurationFieldType.days(), i);
+            String date = Common.getJodaTimeFormattedDate(d);
+            String date2 = Common.getJodaTimeFormattedDate2(d);
+            datelist.add(date);
+            datelist2.add(date2);
+        }
+        Collections.sort(datelist);
+
+        Log.d(TAG, "dates: " + datelist);
+        Log.d(TAG, "datelist2: " + datelist2);
+
+        ArrayList<Entry> yValues = new ArrayList();
+
+        for(int i=0; i < datelist.size(); i++){
+            String dates = datelist.get(i);
+            int finali = i;
+
+            reference.child(companyID).child("Attendance").orderByChild("clockInDate").equalTo(dates).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //if(dataSnapshot.exists()){
+                    yValues.add(new Entry(finali, dataSnapshot.getChildrenCount()));
+
+                    if(yValues.size() == datelist.size()){
+                        displayChart2(yValues, datelist2);
+                    }
+
+                    Log.d(TAG, dates + "= " + dataSnapshot.getChildrenCount());
+                    Log.d(TAG, "inlist: " + yValues);
+                    Log.d(TAG, "finali: " + finali);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    private void displayChart2(ArrayList<Entry> yValues, List<String> datelist2){
+
+        yValues.sort(Comparator.comparing(Entry::getX));
+
+        Log.d(TAG, "inlist2: " + yValues);
+
+        LineDataSet set1 = new LineDataSet(yValues, "Data Set 1");
+        set1.setFillAlpha(110);
+        //line customization
+        set1.setCircleColor(Color.parseColor("#5ebf95"));
+        set1.setCircleHoleColor(Color.parseColor("#5ebf95"));
+        set1.setLineWidth(3f);
+        set1.setCircleRadius(5f);
+        set1.setColor(Color.parseColor("#5ebf95"));
+        set1.setValueTextSize(10f);
+        set1.setValueTextColor(Color.BLACK);
+        //set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set1.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+
+        //set value text from float to int
+        set1.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int)value);
+            }
+        });
+
+        //set graph fill color
+        set1.setDrawFilled(true);
+        if (Utils.getSDKInt() >= 18) {
+            // fill drawable only supported on api level 18 and above
+            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_white);
+            set1.setFillDrawable(drawable);
+        }
+        else {
+            set1.setFillColor(Color.parseColor("#5ebf95"));
+        }
+
+        //Set data
+        ArrayList<LineDataSet> dataSets = new ArrayList<>();
+        dataSets.add(set1);
+
+        LineData data = new LineData(set1);
+        binding.chart.setData(data);
+
+        XAxis xAxis = binding.chart.getXAxis();
+        xAxis.setValueFormatter(new MyAxisValueFormatter(datelist2.toArray(new String[0])));
+        xAxis.setGranularity(1f);
+
+        binding.chart.invalidate();
+        binding.chart.refreshDrawableState();
+    }
+
+    public class MyAxisValueFormatter extends ValueFormatter {
+        private String[] mValues;
+
+        public MyAxisValueFormatter(String[] values){
+            this.mValues = values;
+        }
+
+        @Override
+        public String getAxisLabel(float value, AxisBase axis){
+            return mValues[(int) value];
+        }
     }
 
     public interface OnCallBack{
