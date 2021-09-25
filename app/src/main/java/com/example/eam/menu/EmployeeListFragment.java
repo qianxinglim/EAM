@@ -7,12 +7,16 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.eam.ContactActivity;
 import com.example.eam.R;
+import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.adapter.EmployeeListAdapter;
 import com.example.eam.databinding.FragmentEmployeeListBinding;
 import com.example.eam.managers.SessionManager;
@@ -69,7 +73,44 @@ public class EmployeeListFragment extends Fragment {
         adapter = new EmployeeListAdapter(list, getContext());
         binding.recyclerView.setAdapter(adapter);
 
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+
         return binding.getRoot();
+    }
+
+    private void filter(String text) {
+//        binding.recyclerView.setVisibility(View.GONE);
+//        binding.progressBar.setVisibility(View.VISIBLE);
+
+        ArrayList<User> searchList = new ArrayList<>();
+
+        for(User user : list){
+            if(user.getName().toLowerCase().contains(text.toLowerCase())){
+                searchList.add(user);
+            }
+        }
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EmployeeListAdapter(searchList, getContext());
+        binding.recyclerView.setAdapter(adapter);
+
+//        binding.recyclerView.setVisibility(View.VISIBLE);
+//        binding.progressBar.setVisibility(View.GONE);
     }
 
     private void getEmployeeList(){

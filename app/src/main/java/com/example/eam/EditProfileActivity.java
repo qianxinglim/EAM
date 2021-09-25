@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -79,11 +80,6 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_edit_profile);
 
-        //setSupportActionBar(binding.toolbar);
-        //Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        //getSupportActionBar().hide();
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
         //progressBar = new ProgressBar(this);
@@ -102,36 +98,7 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.fabCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //showBottomSheetPickPhoto();
-
-                /*Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-
-                Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                String timeStamp = new SimpleDateFormat("yyyyMMDD_HHmmss", Locale.getDefault()).format(new Date());
-                String imageFileName = "IMG_" + timeStamp + ".jpg";
-
-                try {
-                    File file = File.createTempFile("IMG_" + timeStamp, ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-                    imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
-                    intent2.putExtra(MediaStore.EXTRA_OUTPUT,  imageUri);
-                    intent2.putExtra("listPhotoName", imageFileName);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                Intent chooser = Intent.createChooser(intent,"select image");
-                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intent2});
-                startActivityForResult(chooser, IMAGE_GALLERY_REQUEST);*/
-
                 openIntent();
-            }
-        });
-
-        binding.lnEditName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showBottomSheetEditName();
             }
         });
 
@@ -144,13 +111,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(EditProfileActivity.this, binding.imageProfile,"image");
                 Intent intent = new Intent(EditProfileActivity.this, ViewImageActivity.class);
                 startActivity(intent, activityOptionsCompat.toBundle());
-            }
-        });
-
-        binding.btnLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDialogSignOut();
             }
         });
     }
@@ -175,116 +135,6 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent chooser = Intent.createChooser(intent,"Select Image");
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intent2});
         startActivityForResult(chooser, IMAGE_GALLERY_REQUEST);
-    }
-
-    private void showDialogSignOut() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-        builder.setMessage("Do you want to sign out?");
-        builder.setPositiveButton("Sign out", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(EditProfileActivity.this, PhoneLoginActivity.class));
-            }
-        });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
-    private void showBottomSheetEditName() {
-        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_edit_name,null);
-
-        ((View) view.findViewById(R.id.btn_cancel)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bsdEditName.dismiss();
-            }
-        });
-
-        EditText edUserName = view.findViewById(R.id.ed_username);
-
-        ((View) view.findViewById(R.id.btn_save)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(TextUtils.isEmpty(edUserName.getText().toString())){
-                    Toast.makeText(EditProfileActivity.this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    updateName(edUserName.getText().toString());
-                    bsdEditName.dismiss();
-                }
-            }
-        });
-
-        bsdEditName = new BottomSheetDialog(this);
-        bsdEditName.setContentView(view);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            Objects.requireNonNull(bsdEditName.getWindow()).addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-
-        bsdEditName.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                bsdEditName=null;
-            }
-        });
-        bsdEditName.show();
-
-    }
-
-    private void updateName(String newName) {
-        firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid()).update("name", newName).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Toast.makeText(EditProfileActivity.this, "New name updated successfully", Toast.LENGTH_SHORT).show();
-                getInfo();
-            }
-        });
-    }
-
-    private void showBottomSheetPickPhoto() {
-        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_pick,null);
-
-        ((View) view.findViewById(R.id.ln_gallery)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-                bottomSheetDialog.dismiss();
-            }
-        });
-
-        ((View) view.findViewById(R.id.ln_camera)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkCameraPermission();
-                bottomSheetDialog.dismiss();
-            }
-        });
-
-        bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(view);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            Objects.requireNonNull(bottomSheetDialog.getWindow()).addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-
-        bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                bottomSheetDialog=null;
-            }
-        });
-        bottomSheetDialog.show();
-
     }
 
     private void checkCameraPermission() {
@@ -325,14 +175,20 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
                 String userName = documentSnapshot.get("name").toString();
                 String userPhone = documentSnapshot.get("phoneNo").toString();
-                //String userDOB = documentSnapshot.get("DOB").toString();
-                //String userDepartment = documentSnapshot.get("Department").toString();
-                //String userEmail = documentSnapshot.get("Email").toString();
-                //String userGender = documentSnapshot.get("Gender").toString();
+                String userDepartment = documentSnapshot.get("department").toString();
+                String userEmail = documentSnapshot.get("email").toString();
                 String userProfilePic = documentSnapshot.get("profilePic").toString();
+                String userTitle = documentSnapshot.get("title").toString();
+                String userClockInTime = documentSnapshot.get("clockInTime").toString();
+                String userClockOutTime = documentSnapshot.get("clockOutTime").toString();
 
                 binding.tvUsername.setText(userName);
                 binding.tvPhone.setText(userPhone);
+                binding.tvDepartment.setText(userDepartment);
+                binding.tvEmail.setText(userEmail);
+                binding.tvTitle.setText(userTitle);
+                binding.tvClockInTime.setText(userClockInTime);
+                binding.tvClockOutTime.setText(userClockOutTime);
 
                 if(!userProfilePic.equals("-") && userProfilePic!=null && !userProfilePic.equals("")) {
                     Glide.with(EditProfileActivity.this).load(userProfilePic).into(binding.imageProfile);
@@ -374,21 +230,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
             imageUri = data.getData();
             uploadToFirebase();
-
-            /*try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                binding.imageProfile.setImageBitmap(bitmap);
-            }catch(Exception e){
-                e.printStackTrace();
-            }*/
         }
         else if(requestCode == IMAGE_GALLERY_REQUEST && resultCode == RESULT_OK){
             uploadToFirebase();
         }
-
-        /*if(requestCode == 440 && resultCode == RESULT_OK){
-            uploadToFirebase();
-        }*/
     }
 
     private String getFileExtension(Uri uri){
@@ -399,8 +244,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void uploadToFirebase() {
         if(imageUri != null){
-            //progressBar.setMessage("Uploading");
-            binding.progressBar.setVisibility(View.VISIBLE);
+            final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this);
+            progressDialog.setMessage("Uploading profile picture...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
 
             StorageReference riversRef = FirebaseStorage.getInstance().getReference().child(companyID + "/Profile/Image/" + System.currentTimeMillis() + "." + getFileExtension(imageUri));
             riversRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -415,7 +262,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     HashMap<String, Object> hashMap = new HashMap<>();
                     hashMap.put("profilePic", sdownload_url);
-                    binding.progressBar.setVisibility(View.INVISIBLE);
+                    progressDialog.dismiss();
+                    progressDialog.setCanceledOnTouchOutside(true);
 
                     firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid()).update(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -429,7 +277,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(getApplicationContext(), "upload failed", Toast.LENGTH_SHORT).show();
-                    binding.progressBar.setVisibility(View.INVISIBLE);
+                    //binding.progressBar.setVisibility(View.INVISIBLE);
                 }
             });
         }

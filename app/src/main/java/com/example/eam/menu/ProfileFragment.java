@@ -125,6 +125,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        binding.btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), EditProfileActivity.class));
+            }
+        });
+
         //initActionClick();
 
         return binding.getRoot();
