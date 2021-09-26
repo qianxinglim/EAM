@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,10 +26,12 @@ import com.example.eam.ContactActivity;
 import com.example.eam.ProfileActivity;
 import com.example.eam.R;
 import com.example.eam.adapter.ChatListAdapter;
+import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.databinding.ActivityChatBinding;
 import com.example.eam.databinding.FragmentChatsBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Chatlist;
+import com.example.eam.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -97,8 +101,44 @@ public class ChatsFragment extends Fragment {
             }
         });
 
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
 
         return binding.getRoot();
+    }
+
+    private void filter(String text) {
+        binding.recyclerView.setVisibility(View.GONE);
+        //binding.progressBar.setVisibility(View.VISIBLE);
+
+        ArrayList<Chatlist> searchList = new ArrayList<>();
+
+        for(Chatlist chat : list){
+            if(chat.getUserName().toLowerCase().contains(text.toLowerCase())){
+                searchList.add(chat);
+            }
+        }
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ChatListAdapter(searchList, getContext());
+        binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setVisibility(View.VISIBLE);
+        //binding.progressBar.setVisibility(View.GONE);
     }
 
     private void getChatList() {
