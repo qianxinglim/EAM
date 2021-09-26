@@ -12,14 +12,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.eam.adapter.CalendarAdapter;
-import com.example.eam.adapter.ChatListAdapter;
 import com.example.eam.adapter.RecordAdapter;
 import com.example.eam.common.CalendarUtils;
 import com.example.eam.databinding.ActivityWeeklyViewBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Attendance;
-import com.example.eam.model.Chats;
-import com.example.eam.model.Event;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import static com.example.eam.common.CalendarUtils.daysInWeekArray;
 import static com.example.eam.common.CalendarUtils.monthYearFromDate;

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.eam.R;
 import com.example.eam.common.Common;
@@ -18,6 +19,13 @@ public class ViewImageActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this,R.layout.activity_view_image);
 
         binding.imageView.setImageBitmap(Common.IMAGE_BITMAP);
+
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
     }
 }

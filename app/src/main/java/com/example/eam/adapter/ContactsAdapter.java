@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.eam.IndvChatActivity;
 import com.example.eam.R;
+import com.example.eam.UserProfileActivity;
 import com.example.eam.model.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -21,10 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder>{
     private List<User> list;
+    private int pos;
     private Context context;
 
-    public ContactsAdapter(List<User> list, Context context) {
+    public ContactsAdapter(List<User> list, int pos, Context context) {
         this.list = list;
+        this.pos = pos;
         this.context = context;
     }
 
@@ -59,10 +62,22 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, IndvChatActivity.class)
-                        .putExtra("userID", user.getID())
-                        .putExtra("userName", user.getName())
-                        .putExtra("userProfilePic", user.getProfilePic()));
+
+                if(pos == 2) {
+                    context.startActivity(new Intent(context, IndvChatActivity.class)
+                            .putExtra("userID", user.getID())
+                            .putExtra("userName", user.getName())
+                            .putExtra("userProfilePic", user.getProfilePic()));
+                }
+                else{
+                    context.startActivity(new Intent(context, UserProfileActivity.class)
+                            .putExtra("userID", user.getID())
+                            .putExtra("userName", user.getName())
+                            .putExtra("userProfilePic", user.getProfilePic())
+                            .putExtra("userEmail", user.getEmail())
+                            .putExtra("userPhone", user.getPhoneNo())
+                            .putExtra("userDepartment", user.getDepartment()));
+                }
             }
         });
     }

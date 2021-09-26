@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ public class ContactActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private SessionManager sessionManager;
     private String companyID;
+    private int pos;
 
     //-----------------here----------------------------
     public static final int REQUEST_READ_CONTACTS = 79;
@@ -68,6 +70,10 @@ public class ContactActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
+
+        //from ChatsFragment & AssetsFragment
+        Intent i = getIntent();
+        pos = i.getIntExtra("pos", 1);
 
         binding.recyclerView.setVisibility(View.GONE);
         binding.progressBar.setVisibility(View.VISIBLE);
@@ -113,7 +119,7 @@ public class ContactActivity extends AppCompatActivity {
             }
         }
 
-        adapter = new ContactsAdapter(searchList, ContactActivity.this);
+        adapter = new ContactsAdapter(searchList, pos, ContactActivity.this);
         binding.recyclerView.setAdapter(adapter);
 
         binding.recyclerView.setVisibility(View.VISIBLE);
@@ -223,7 +229,7 @@ public class ContactActivity extends AppCompatActivity {
                 }*/
                 //------------------------------to here---------------------------------
 
-                adapter = new ContactsAdapter(list, ContactActivity.this);
+                adapter = new ContactsAdapter(list, pos, ContactActivity.this);
                 binding.recyclerView.setAdapter(adapter);
 
                 binding.recyclerView.setVisibility(View.VISIBLE);

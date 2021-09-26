@@ -122,7 +122,7 @@ public class AssetsFragment extends Fragment {
         binding.btnContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getContext(), ContactActivity.class));
+                startActivity(new Intent(getContext(), ContactActivity.class).putExtra("pos",1));
             }
         });
 

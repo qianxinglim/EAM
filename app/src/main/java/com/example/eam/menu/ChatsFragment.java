@@ -93,7 +93,7 @@ public class ChatsFragment extends Fragment {
         binding.fabAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), ContactActivity.class));
+                startActivity(new Intent(getActivity(), ContactActivity.class).putExtra("pos", 2));
             }
         });
 
