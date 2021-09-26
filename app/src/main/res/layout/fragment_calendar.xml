@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
-                android:textColor="@color/black"
+                app:tint="@color/white"
                 android:background="@null"
                 android:textStyle="bold"
                 android:textSize="20sp"/>
@@ -37,7 +37,7 @@
                 android:text="Feb 2021"
                 android:textSize="20sp"
                 android:textAlignment="center"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"/>
 
             <ImageButton
                 android:id="@+id/btn_nextWeek"
@@ -46,7 +46,7 @@
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_baseline_arrow_forward_ios_24"
-                android:textColor="@color/black"
+                app:tint="@color/white"
                 android:background="@null"
                 android:textStyle="bold"
                 android:textSize="20sp"/>
@@ -131,7 +131,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"/>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="10dp"
@@ -140,18 +140,20 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
+                android:layout_alignParentTop="true"
                 android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/tvNoRecord"
+                android:layout_centerInParent="true"
                 android:visibility="gone"
                 android:text="No Record"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
     </LinearLayout>

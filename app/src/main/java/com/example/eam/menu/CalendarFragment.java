@@ -126,7 +126,7 @@ public class CalendarFragment extends Fragment {
                 CalendarUtils.selectedDate = date;
                 if(!date.equals("")) {
                     String message = "Selected Date " + date;
-                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                 }
                 setWeekView();
             }

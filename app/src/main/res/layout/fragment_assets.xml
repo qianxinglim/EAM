@@ -1,103 +1,323 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorDivider">
 
-        <Button
-            android:id="@+id/btnVerify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Verify"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary">
 
-        <Button
-            android:id="@+id/btnClockin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clockin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvPhone" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary">
 
-        <Button
-            android:id="@+id/btnChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chat"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnClockin" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Assets"
+                            android:paddingRight="12dp"
+                            android:layout_centerInParent="true"
+                            android:textColor="@android:color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/tvVerify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email not verified"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tvfName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvVerify" />
+        </androidx.appcompat.widget.Toolbar>
 
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvfName" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/colorPrimary"/>
 
-        <TextView
-            android:id="@+id/tvPhone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+        <GridLayout
+            android:layout_marginTop="-60dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnOrderPreserved="false"
+            android:alignmentMode="alignMargins"
+            android:paddingLeft="5dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:rowCount="3"
+            android:columnCount="2">
 
-        <Button
-            android:id="@+id/btnCreateCompany"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create Company"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnChat" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnClockIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
 
-        <Button
-            android:id="@+id/btnLeaveForm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Apply Leave"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnCreateCompany" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
 
-        <Button
-            android:id="@+id/btnLeaveRequests"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Leave Requests"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnLeaveForm" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+                                <ImageView
+                                    android:src="@drawable/ic_baseline_access_time_24"
+                                    app:tint="@color/colorPrimary"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"/>
+
+                                <TextView
+                                    android:layout_marginTop="15dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"
+                                    android:text="Clock In/Out"/>
+                        </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnTimesheet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="15dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:src="@drawable/ic_baseline_event_note_24"
+                                    app:tint="@color/colorPrimary"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"/>
+
+                                <TextView
+                                    android:layout_marginTop="15dp"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:text="Timesheet"/>
+                        </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnLeaveRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:src="@drawable/ic_baseline_directions_run_24"
+                                    app:tint="@color/colorPrimary"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"/>
+
+                                <TextView
+                                    android:layout_marginTop="15dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"
+                                    android:text="Leave"/>
+                        </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnLeaveForm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="15dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:src="@drawable/ic_baseline_edit_note_24"
+                                    app:tint="@color/colorPrimary"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"/>
+
+                                <TextView
+                                    android:layout_marginTop="15dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"
+                                    android:text="Apply Leave"/>
+                        </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:src="@drawable/ic_baseline_event_note_24"
+                                    app:tint="@color/colorPrimary"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"/>
+
+                                <TextView
+                                    android:layout_marginTop="15dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"
+                                    android:text="Timesheet"/>
+                        </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="15dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:src="@drawable/ic_baseline_groups_24"
+                                    app:tint="@color/colorPrimary"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"/>
+
+                                <TextView
+                                    android:layout_marginTop="15dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"
+                                    android:text="Contacts"/>
+                        </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+        </GridLayout>
+
+
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white">
+
+
+
+                </androidx.cardview.widget.CardView>
+
+                <Button
+                    android:id="@+id/btnVerify"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Verify"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnClockin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Clockin"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPhone" />
+
+                <Button
+                    android:id="@+id/btnLeaveForm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Apply Leave"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnCreateCompany" />
+
+                <Button
+                    android:id="@+id/btnLeaveRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Leave Requests"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnLeaveForm" />
+
+        </LinearLayout>-->
+</LinearLayout>
 </layout>
