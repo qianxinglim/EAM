@@ -50,6 +50,7 @@ import com.example.eam.dialog.DialogReviewSendImage;
 import com.example.eam.display.ViewImageActivity;
 import com.example.eam.interfaces.OnReadChatCallBack;
 import com.example.eam.managers.ChatService;
+import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Chats;
 import com.example.eam.service.FirebaseService;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -62,6 +63,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +72,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -78,8 +82,10 @@ public class IndvChatActivity extends AppCompatActivity {
     private static final String TAG = "IndvChatActivity";
     private static final int REQUEST_CORD_PERMISSION = 332;
     private ActivityIndvChatBinding binding;
-    //private FirebaseUser firebaseUser;
-    //private DatabaseReference reference;
+    private FirebaseUser firebaseUser;
+    private FirebaseFirestore firestore;
+    private SessionManager sessionManager;
+    private String companyID;
     private String receiverID, userProfilePic, userName;
     private ChatsAdapter adapter;
     private List<Chats> list = new ArrayList<>();
@@ -97,6 +103,13 @@ public class IndvChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_indv_chat);
+
+        firestore = FirebaseFirestore.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        sessionManager = new SessionManager(this);
+        HashMap<String, String> userDetail = sessionManager.getUserDetail();
+        companyID = userDetail.get(sessionManager.COMPANYID);
 
         initialized();
         initBtnClick();
@@ -389,10 +402,25 @@ public class IndvChatActivity extends AppCompatActivity {
         binding.tvUsername.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(IndvChatActivity.this, UserProfileActivity.class)
-                        .putExtra("userID", receiverID)
-                        .putExtra("imageProfile", userProfilePic)
-                        .putExtra("userName", userName));
+                firestore.collection("Companies").document(companyID).collection("Users").document(receiverID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+                        //String userName = documentSnapshot.get("name").toString();
+
+                        startActivity(new Intent(IndvChatActivity.this, UserProfileActivity.class)
+                                .putExtra("userID", receiverID)
+                                .putExtra("userProfilePic", userProfilePic)
+                                .putExtra("userName", userName)
+                                .putExtra("userEmail", documentSnapshot.getString("email"))
+                                .putExtra("userPhone", documentSnapshot.getString("phoneNo"))
+                                .putExtra("userDepartment", documentSnapshot.getString("department")));
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
             }
         });
         binding.btnFile.setOnClickListener(new View.OnClickListener() {

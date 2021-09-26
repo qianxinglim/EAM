@@ -45,7 +45,7 @@ public class CompanyListAdapter extends RecyclerView.Adapter<CompanyListAdapter.
         Company companylist = list.get(position);
 
         holder.tvCompanyName.setText(companylist.getCompanyName());
-        holder.tvCompanyID.setText(companylist.getCompanyID());
+        //holder.tvCompanyID.setText(companylist.getCompanyID());
 
         sessionManager = new SessionManager(context);
 
@@ -72,7 +72,7 @@ public class CompanyListAdapter extends RecyclerView.Adapter<CompanyListAdapter.
         public Holder(@NonNull View itemView) {
             super(itemView);
 
-            tvCompanyID = itemView.findViewById(R.id.tv_companyID);
+            //tvCompanyID = itemView.findViewById(R.id.tv_companyID);
             tvCompanyName = itemView.findViewById(R.id.tv_companyName);
         }
     }

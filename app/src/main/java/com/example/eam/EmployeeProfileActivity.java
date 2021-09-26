@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
@@ -17,6 +18,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,8 +38,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.eam.common.Common;
 import com.example.eam.databinding.ActivityEditProfileBinding;
 import com.example.eam.databinding.ActivityEmployeeProfileBinding;
+import com.example.eam.display.ViewImageActivity;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.User;
 import com.example.eam.service.FirebaseService;
@@ -128,6 +133,18 @@ public class EmployeeProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 updateUserInfo();
+            }
+        });
+
+        binding.imageProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.imageProfile.invalidate();
+                Drawable dr = binding.imageProfile.getDrawable();
+                Common.IMAGE_BITMAP = ((BitmapDrawable)dr.getCurrent()).getBitmap();
+                ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(EmployeeProfileActivity.this, binding.imageProfile,"image");
+                Intent intent = new Intent(EmployeeProfileActivity.this, ViewImageActivity.class);
+                startActivity(intent, activityOptionsCompat.toBundle());
             }
         });
 

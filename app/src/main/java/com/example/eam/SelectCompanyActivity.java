@@ -7,11 +7,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 
 import com.example.eam.adapter.CompanyListAdapter;
+import com.example.eam.adapter.ContactsAdapter;
+import com.example.eam.common.Common;
 import com.example.eam.databinding.ActivitySelectCompanyBinding;
 import com.example.eam.model.Company;
+import com.example.eam.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,6 +54,40 @@ public class SelectCompanyActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);*/
 
         getCompanyList();
+
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+    }
+
+    private void filter(String text) {
+        binding.recyclerView.setVisibility(View.GONE);
+
+        ArrayList<Company> searchList = new ArrayList<>();
+
+        for(Company company : list){
+            if(company.getCompanyName().toLowerCase().contains(text.toLowerCase())){
+                searchList.add(company);
+            }
+        }
+
+        adapter = new CompanyListAdapter(searchList,SelectCompanyActivity.this);
+        binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setVisibility(View.VISIBLE);
     }
 
     private void getCompanyList() {

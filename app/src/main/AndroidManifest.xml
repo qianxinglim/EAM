@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EAM">
-        <activity android:name=".LeaveDetailActivity"></activity>
+        <activity android:name=".RegisterUserActivity"></activity>
+        <activity android:name=".NoCompanyActivity" />
+        <activity android:name=".LeaveDetailActivity" />
         <activity android:name=".TimesheetActivity" />
         <activity android:name=".ViewAttendanceActivity" />
         <activity android:name=".EnterCodeActivity" />

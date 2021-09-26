@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NoCompanyActivity">
+
+    <ImageView
+        android:layout_marginTop="70dp"
+        android:transitionName="image"
+        android:layout_width="230dp"
+        android:layout_height="230dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_error"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:text="Oh Snap..."
+        android:textSize="20sp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:text="We couldn't find your mobile number in any company. Please ask your manager to add you to the company app"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"
+        android:textSize="14sp"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"
+        android:orientation="vertical">
+
+        <!--<Button
+            android:layout_width="match_parent"
+            android:background="@drawable/bg_layout_round"
+            android:layout_gravity="center_horizontal"
+            android:text="Retry"
+            android:layout_height="wrap_content"/>-->
+
+        <TextView
+            android:text="Want to create a company app for your business?"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnCreateCompany"
+            android:layout_width="match_parent"
+            android:background="@drawable/bg_layout_round"
+            android:layout_gravity="center_horizontal"
+            android:text="Create Company"
+            android:layout_height="wrap_content"/>
+
+        <!--<TextView
+            android:id="@+id/btnCreateCompany"
+            android:layout_marginTop="8dp"
+            android:text="Create new company app"
+            android:textColor="@color/quantum_googblue"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>-->
+    </LinearLayout>
+
+</LinearLayout>
+</layout>

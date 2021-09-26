@@ -292,8 +292,8 @@ public class EnterCodeActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if (task.isSuccessful()) {
                                                 if(task.getResult().isEmpty()){
-                                                    Toast.makeText(EnterCodeActivity.this, "1Register a company or contact ur company's admin to join.", Toast.LENGTH_SHORT).show();
-                                                    startActivity(new Intent(EnterCodeActivity.this, CreateCompanyActivity.class));
+                                                    //Toast.makeText(EnterCodeActivity.this, "1Register a company or contact ur company's admin to join.", Toast.LENGTH_SHORT).show();
+                                                    startActivity(new Intent(EnterCodeActivity.this, NoCompanyActivity.class));
                                                 }
                                                 else {
                                                     Map<String, Object> addUser = new HashMap<>();
@@ -368,7 +368,7 @@ public class EnterCodeActivity extends AppCompatActivity {
                                                     }
                                                     else{
                                                         Toast.makeText(EnterCodeActivity.this, "Register a company or contact ur company's admin to join.", Toast.LENGTH_SHORT).show();
-                                                        startActivity(new Intent(EnterCodeActivity.this, CreateCompanyActivity.class));
+                                                        startActivity(new Intent(EnterCodeActivity.this, NoCompanyActivity.class));
                                                     }
                                                 }
                                                 else {

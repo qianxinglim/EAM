@@ -31,7 +31,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/image_profile"
@@ -40,8 +41,8 @@
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
             android:transitionName="image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_male_ph"/>
 
@@ -51,15 +52,7 @@
             android:orientation="vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:paddingTop="15dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="User Details"
-                android:textColor="@color/black"
-                android:textSize="17sp"
-                android:layout_marginBottom="15dp"/>
+            android:paddingTop="10dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tvName"
@@ -68,13 +61,16 @@
                 app:errorEnabled="true"
                 app:counterEnabled="true"
                 app:counterMaxLength="15"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Full Name"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:imeOptions="actionNext"
                     android:inputType="textPersonName"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -87,39 +83,39 @@
 
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/spCountryPicker"
-                    android:layout_width="0dp"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
                     android:gravity="center"
                     app:ccp_showNameCode="true"
                     app:ccp_autoDetectCountry="true"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tvPhoneNo"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPhoneNo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Phone Number"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
                         android:inputType="phone"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -127,6 +123,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Email Address (optional)"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:inputType="textEmailAddress"
                     android:imeOptions="actionNext"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -136,7 +134,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent"
                 android:layout_marginBottom="20dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -144,6 +143,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Title"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:inputType="text"
                     android:imeOptions="actionNext"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -153,7 +154,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent"
                 android:layout_marginBottom="20dp" >
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -161,6 +163,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Department"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:inputType="text"
                     android:imeOptions="actionNext"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -174,7 +178,8 @@
                     android:id="@+id/tvClockInTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent"
                     android:layout_weight="1"
                     app:errorEnabled="true"
                     android:layout_marginRight="7.5dp">
@@ -185,6 +190,8 @@
                         android:layout_height="wrap_content"
                         android:cursorVisible="false"
                         android:focusable="false"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
                         android:focusableInTouchMode="false"
                         android:hint="Start Time"
                         android:inputType="text"/>
@@ -194,7 +201,8 @@
                     android:id="@+id/tvClockOutTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent"
                     android:layout_weight="1"
                     app:errorEnabled="true"
                     android:layout_marginLeft="7.5dp">
@@ -205,6 +213,8 @@
                         android:layout_height="wrap_content"
                         android:cursorVisible="false"
                         android:focusable="false"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
                         android:focusableInTouchMode="false"
                         android:hint="End Time"
                         android:inputType="text"/>
@@ -216,6 +226,14 @@
 
         <Button
             android:id="@+id/btn_Save"
+            android:text="Save Changes"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!--<Button
+            android:id="@+id/btn_Save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save Changes"
@@ -224,7 +242,7 @@
             android:background="@android:color/transparent"
             android:textStyle="bold"
             android:textSize="15sp"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary"/>-->
 
         </LinearLayout>
         </ScrollView>

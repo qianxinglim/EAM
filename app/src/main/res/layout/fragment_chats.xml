@@ -168,7 +168,7 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_action"
-            android:src="@android:drawable/stat_notify_chat"
+            android:src="@drawable/ic_baseline_add_24"
             android:tint="@android:color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
