@@ -14,8 +14,6 @@
                     <stroke
                         android:width="3px"
                         android:color="#A8A8A8" />
-
-                    <size android:width="110dp" android:height="40dp" />
                 </shape>
             </item>
         </layer-list>

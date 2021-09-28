@@ -7,20 +7,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="15dp"
+    android:padding="20dp"
     tools:context=".EnterCodeActivity">
 
     <ImageView
+        android:src="@drawable/otp_orange"
         android:layout_gravity="center_horizontal"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="80dp"/>
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="50dp"/>
 
     <TextView
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"
         android:text="Enter the 6-digit code"/>
 
     <TextView
@@ -28,18 +31,22 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
         android:text="Sent to"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp">
 
         <EditText
             android:id="@+id/etOtp1"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
+            android:layout_width="52dp"
+            android:layout_height="58dp"
             android:imeOptions="actionNext"
             android:gravity="center"
             android:importantForAutofill="no"
@@ -49,8 +56,8 @@
 
         <EditText
             android:id="@+id/etOtp2"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
+            android:layout_width="52dp"
+            android:layout_height="58dp"
             android:imeOptions="actionNext"
             android:gravity="center"
             android:importantForAutofill="no"
@@ -60,8 +67,8 @@
 
         <EditText
             android:id="@+id/etOtp3"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
+            android:layout_width="52dp"
+            android:layout_height="58dp"
             android:imeOptions="actionNext"
             android:gravity="center"
             android:importantForAutofill="no"
@@ -71,8 +78,8 @@
 
         <EditText
             android:id="@+id/etOtp4"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
+            android:layout_width="52dp"
+            android:layout_height="58dp"
             android:imeOptions="actionNext"
             android:gravity="center"
             android:importantForAutofill="no"
@@ -82,8 +89,8 @@
 
         <EditText
             android:id="@+id/etOtp5"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
+            android:layout_width="52dp"
+            android:layout_height="58dp"
             android:imeOptions="actionNext"
             android:gravity="center"
             android:importantForAutofill="no"
@@ -93,8 +100,8 @@
 
         <EditText
             android:id="@+id/etOtp6"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
+            android:layout_width="52dp"
+            android:layout_height="58dp"
             android:imeOptions="actionNext"
             android:gravity="center"
             android:importantForAutofill="no"
@@ -103,17 +110,51 @@
             tools:ignore="LabelFor"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/lnTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:visibility="visible">
+
+        <TextView
+            android:text="Waiting"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvTimer"
+            android:background="@drawable/bg_layout_round_border"
+            android:text="10"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="17dp"
+            android:paddingRight="17dp"
+            android:gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
     <TextView
         android:id="@+id/btnResendOTP"
         android:text="Resend OTP"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:textColor="@color/colorPrimary"
-        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/btnVerify"
+        android:layout_marginTop="20dp"
         android:text="Verify Code"
+        android:background="@drawable/bg_layout_round"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

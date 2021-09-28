@@ -42,11 +42,11 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
     private static String TAG = "PhoneLoginActivity";
     private ActivityPhoneLoginBinding binding;
     private FirebaseAuth mAuth;
-    private String mVerificationId;
-    private PhoneAuthProvider.ForceResendingToken mResendToken;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+    protected static String mVerificationId;
+    protected static PhoneAuthProvider.ForceResendingToken mResendToken;
+    protected PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     //private ProgressBar progressBar;
-
+    protected static String phone;
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firestore;
 
@@ -61,35 +61,14 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        //progressBar = new ProgressBar(this);
-
         binding.btnNext.setOnClickListener(view -> {
-            String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.tvNext.setVisibility(View.GONE);
 
-            startActivity(new Intent(PhoneLoginActivity.this, EnterCodeActivity.class).putExtra("phoneNo", phone));
+            phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
 
-            /*if(binding.btnNext.getText().equals("Next")){
-                //progressBar.setMessage("Please wait");
-                binding.progressBar.setVisibility(View.VISIBLE);
-                String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
-                //Toast.makeText(this, "number: " + phone, Toast.LENGTH_SHORT).show();
-                //String phone = "+" + binding.edCodeCountry.getText().toString() + binding.edPhone.getText().toString();
-                startPhoneVerification(phone);
-            }
-            else{
-                verifyPhoneNumberWithCode(mVerificationId, binding.edCode.getText().toString());
-            }*/
-
+            startPhoneVerification(phone);
         });
-
-        /*binding.btnResendOTP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
-
-                resendVerificationCode(phone, mResendToken);
-            }
-        });*/
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
@@ -118,13 +97,9 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
                 mVerificationId = verificationId;
                 mResendToken = token;
 
-                binding.btnNext.setText("Continue");
-                binding.edCode.setVisibility(View.VISIBLE);
-                binding.spCountryPicker.setEnabled(false);
-                //binding.edCodeCountry.setEnabled(false);
-                binding.edPhone.setEnabled(false);
+                startActivity(new Intent(PhoneLoginActivity.this, EnterCodeActivity.class));
+                finish();
 
-                binding.progressBar.setVisibility(View.INVISIBLE);
                 //verifyPhoneNumberWithCode(mVerificationId,binding.edCode.getText().toString());
             }
         };

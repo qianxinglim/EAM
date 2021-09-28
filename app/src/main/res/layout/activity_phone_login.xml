@@ -1,91 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:padding="20dp"
         tools:context=".PhoneLoginActivity">
 
-        <LinearLayout
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:textColor="@color/colorAccent"
-                android:textSize="16sp"
-                android:text="Enter your phone number"/>
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_more_vert_black_24"/>
-        </LinearLayout>
+        <ImageView
+            android:src="@drawable/otp_red"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="160dp"
+            android:layout_height="160dp"/>
 
-        <LinearLayout
-            android:layout_below="@id/toolbar"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="20dp"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:textColor="@android:color/black"
-                android:text="Please verify your number"/>
+            android:textColor="@android:color/black"
+            android:text="What's your phone number"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <!--<TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:text="+"/>
-
-                <EditText
-                    android:id="@+id/ed_code_country"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:inputType="number"
-                    android:maxLength="5"
-                    android:maxLines="1"
-                    android:hint="60"/>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
 
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/spCountryPicker"
-                    android:layout_width="120dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
                     app:ccp_showNameCode="true"
                     app:ccp_autoDetectCountry="true"/>
 
                 <EditText
                     android:id="@+id/ed_phone"
-                    android:layout_width="200dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"
                     android:maxLines="1"
-                    android:layout_weight="1"
                     android:hint="phone number"/>
+
             </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_gravity="center_horizontal"
+            android:text="We will send you a code to verify your number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
             <!--<TextView
                 android:id="@+id/btnResendOTP"
                 android:layout_width="wrap_content"
@@ -95,7 +66,7 @@
                 android:text="Resend OTP"
                 android:textColor="@color/colorPrimary"/>-->
 
-            <EditText
+            <!--<EditText
                 android:id="@+id/ed_code"
                 android:layout_width="200dp"
                 android:gravity="center_horizontal"
@@ -103,26 +74,37 @@
                 android:maxLength="6"
                 android:inputType="number"
                 android:visibility="gone"
-                android:hint="Enter Code "/>
-        </LinearLayout>
+                android:hint="Enter Code "/>-->
 
-
-        <Button
+        <RelativeLayout
             android:id="@+id/btn_next"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp"
-            android:background="@color/colorAccent"
-            android:textColor="@android:color/white"
-            android:text="Next"/>
+            android:layout_marginTop="15dp"
+            android:background="@drawable/bg_layout_round">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"/>
-    </RelativeLayout>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_centerInParent="true"
+                android:progressTint="@color/white"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:indeterminate="true"
+                android:indeterminateTintMode="src_atop"
+                android:indeterminateTint="@color/white"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvNext"
+                android:layout_centerInParent="true"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="Verify"
+                android:visibility="visible"/>
+
+        </RelativeLayout>
+    </LinearLayout>
 
 </layout>

@@ -1,11 +1,16 @@
 package com.example.eam;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -40,12 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class EnterCodeActivity extends AppCompatActivity {
+public class EnterCodeActivity extends PhoneLoginActivity {
     private static String TAG = "EnterCodeActivity";
     private ActivityEnterCodeBinding binding;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
-    private String mVerificationId;
-    private PhoneAuthProvider.ForceResendingToken mResendToken;
+    //private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+    //private String mVerificationId;
+    //private PhoneAuthProvider.ForceResendingToken mResendToken;
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;
     private ArrayList<String> listCompanyid = new ArrayList<>();
@@ -55,11 +60,12 @@ public class EnterCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enter_code);
 
-        Intent intent = getIntent();
-        String phone = intent.getStringExtra("phoneNo");
-
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
+
+        binding.tvPhoneDisplay.setText("Sent to " + phone);
+
+        startTimer();
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
@@ -77,13 +83,12 @@ public class EnterCodeActivity extends AppCompatActivity {
             public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
                 Log.d(TAG, "onCodeSent:" + verificationId);
 
-                // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
                 mResendToken = token;
+
+                startTimer();
             }
         };
-
-        startPhoneVerification(phone);
 
         validateOtpInput();
 
@@ -104,9 +109,26 @@ public class EnterCodeActivity extends AppCompatActivity {
         binding.btnResendOTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resendVerificationCode(phone, mResendToken);
+                resendVerificationCode(mResendToken);
             }
         });
+    }
+
+    private void startTimer() {
+        new CountDownTimer(60000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                binding.lnTimer.setVisibility(View.VISIBLE);
+                binding.tvTimer.setText(String.valueOf(millisUntilFinished / 1000));
+                binding.btnResendOTP.setVisibility(View.GONE);
+            }
+
+            public void onFinish() {
+                binding.lnTimer.setVisibility(View.GONE);
+                binding.btnResendOTP.setVisibility(View.VISIBLE);
+            }
+
+        }.start();
     }
 
     private void validateOtpInput() {
@@ -120,8 +142,11 @@ public class EnterCodeActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!charSequence.toString().trim().isEmpty()){
                     binding.etOtp2.requestFocus();
+                    binding.etOtp1.setEnabled(false);
+                    binding.etOtp1.setTextColor(Color.BLACK);
                 }
                 else{
+                    binding.etOtp1.setEnabled(true);
                     binding.etOtp1.requestFocus();
                 }
             }
@@ -142,8 +167,11 @@ public class EnterCodeActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!charSequence.toString().trim().isEmpty()){
                     binding.etOtp3.requestFocus();
+                    binding.etOtp2.setEnabled(false);
+                    binding.etOtp2.setTextColor(Color.BLACK);
                 }
                 else{
+                    binding.etOtp1.setEnabled(true);
                     binding.etOtp1.requestFocus();
                 }
             }
@@ -164,8 +192,11 @@ public class EnterCodeActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!charSequence.toString().trim().isEmpty()){
                     binding.etOtp4.requestFocus();
+                    binding.etOtp3.setEnabled(false);
+                    binding.etOtp3.setTextColor(Color.BLACK);
                 }
                 else{
+                    binding.etOtp2.setEnabled(true);
                     binding.etOtp2.requestFocus();
                 }
             }
@@ -186,8 +217,11 @@ public class EnterCodeActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!charSequence.toString().trim().isEmpty()){
                     binding.etOtp5.requestFocus();
+                    binding.etOtp4.setEnabled(false);
+                    binding.etOtp4.setTextColor(Color.BLACK);
                 }
                 else{
+                    binding.etOtp3.setEnabled(true);
                     binding.etOtp3.requestFocus();
                 }
             }
@@ -208,8 +242,11 @@ public class EnterCodeActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!charSequence.toString().trim().isEmpty()){
                     binding.etOtp6.requestFocus();
+                    binding.etOtp5.setEnabled(false);
+                    binding.etOtp5.setTextColor(Color.BLACK);
                 }
                 else{
+                    binding.etOtp4.setEnabled(true);
                     binding.etOtp4.requestFocus();
                 }
             }
@@ -232,6 +269,7 @@ public class EnterCodeActivity extends AppCompatActivity {
                     binding.etOtp6.requestFocus();
                 }
                 else{
+                    binding.etOtp5.setEnabled(true);
                     binding.etOtp5.requestFocus();
                 }
             }
@@ -243,24 +281,14 @@ public class EnterCodeActivity extends AppCompatActivity {
         });
     }
 
-    private void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token) {
+    private void resendVerificationCode(PhoneAuthProvider.ForceResendingToken token) {
         PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions
                 .newBuilder(mAuth)
-                .setPhoneNumber(phoneNumber)       // Phone number to verify
+                .setPhoneNumber(phone)       // Phone number to verify
                 .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                 .setActivity(this)                 // Activity (for callback binding)
                 .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                 .setForceResendingToken(token)     // ForceResendingToken from callbacks
-                .build());
-    }
-
-    private void startPhoneVerification(String phoneNumber){
-        PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions
-                .newBuilder(FirebaseAuth.getInstance())
-                .setActivity(this)
-                .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setCallbacks(mCallbacks)
                 .build());
     }
 
@@ -436,8 +464,21 @@ public class EnterCodeActivity extends AppCompatActivity {
                 Log.w(TAG, "signInWithCredential:failure", task.getException());
                 if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                     // The verification code entered was invalid
+
+                    displayAlertBox();
                 }
             }
         });
+    }
+
+    private void displayAlertBox() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Incorrect verification code. Please enter your verification code again.");
+        builder.setCancelable(true);
+
+        builder.setPositiveButton("Ok", (dialog, id) -> dialog.cancel());
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

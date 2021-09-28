@@ -102,10 +102,11 @@
 
                     <com.hbb20.CountryCodePicker
                         android:id="@+id/spCountryPicker"
-                        android:layout_width="130dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:gravity="center"
+                        android:paddingTop="7dp"
                         app:ccp_showNameCode="true"
                         app:ccp_autoDetectCountry="true"/>
 
