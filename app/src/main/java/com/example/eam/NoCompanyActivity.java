@@ -20,7 +20,7 @@ public class NoCompanyActivity extends AppCompatActivity {
         binding.btnCreateCompany.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(NoCompanyActivity.this, CreateCompanyActivity.class));
+                startActivity(new Intent(NoCompanyActivity.this, CreateCompanyActivity.class).putExtra("pos", 1));
             }
         });
     }

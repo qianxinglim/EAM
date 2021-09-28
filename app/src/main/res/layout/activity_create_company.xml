@@ -1,234 +1,533 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CreateCompanyActivity"
-    android:orientation="vertical"
-    android:padding="15dp">
+    android:orientation="vertical">
 
     <TextView
-        android:text="1 of 3"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv1"
+        android:text="1 of 2"
+        android:layout_alignParentTop="true"
+        android:padding="20dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <TextView
-        android:text="Some basic details"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tvCompanyName"
-        android:layout_marginTop="20dp"
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_below="@+id/tv1"
+        android:layout_above="@+id/lnBtnCreate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:errorEnabled="true"
-        app:counterEnabled="true"
-        app:counterMaxLength="50"
-        app:boxBackgroundColor="@android:color/transparent"
-        android:background="@android:color/transparent">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etCompanyName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Company name"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:imeOptions="actionNext"
-            android:inputType="textPersonName"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="15dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tvCompanyAddress"
+            <TextView
+                android:text="Some basic details"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tvCompanyName"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true"
+                app:counterEnabled="true"
+                app:counterMaxLength="50"
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCompanyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Company name"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tvCompanyAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconMode="clear_text"
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Company Location"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:text="@string/createCompany1"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <!--<com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tvRange"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconMode="clear_text"
+                app:boxBackgroundColor="@android:color/transparent"
+                android:background="@android:color/transparent"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Company Location"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>-->
+
+            <!--<EditText
+                android:id="@+id/etLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:drawablePadding="16dp"
+                android:hint="Enter address"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>-->
+
+            <!--<EditText
+                android:id="@+id/etCompanyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etLocation" />-->
+
+            <com.example.eam.RadioGridGroup
+                android:id="@+id/rgStaffSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2">
+
+                <RadioButton
+                    android:text="1-10"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="11-20"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="21-50"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="51-150"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="151-300"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="301-500"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="501-1000"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="1000+"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+            </com.example.eam.RadioGridGroup>
+
+            <TextView
+                android:text="@string/createCompany2"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.example.eam.RadioGridGroup
+                android:id="@+id/rgIndustry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2">
+
+                <RadioButton
+                    android:text="Cleaning"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Security"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Healthcare"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Manufacturing"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Construction"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Retail"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="@string/fb"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Hospitality"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Transportation"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Events"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Staffing"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Real estate"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Entertainment"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Field services"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="@string/bs"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Gardening"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Fitness"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Logistics"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Education"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Religious"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Governmental"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Telecom"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="NPO"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_marginRight="7.5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+
+                <RadioButton
+                    android:text="Other"
+                    android:layout_marginLeft="7.5dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_layout_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:button="@drawable/bg_layout_radiopadding"/>
+            </com.example.eam.RadioGridGroup>
+
+            <!--<EditText
+                android:id="@+id/etIndustryType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etCompanyName" />
+
+            <EditText
+                android:id="@+id/etStaffSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etIndustryType" />
+
+            <EditText
+                android:id="@+id/etRange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etStaffSize" />-->
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/lnBtnCreate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:endIconMode="clear_text"
-        app:boxBackgroundColor="@android:color/transparent"
-        android:background="@android:color/transparent"
-        app:errorEnabled="true">
+        android:padding="15dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etLocation"
+        <Button
+            android:id="@+id/btnCreate"
+            android:background="@drawable/bg_layout_round"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Company Location"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:inputType="textEmailAddress"
-            android:imeOptions="actionNext"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:text="Next"/>
 
-    <!--<com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tvRange"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:endIconMode="clear_text"
-        app:boxBackgroundColor="@android:color/transparent"
-        android:background="@android:color/transparent"
-        app:errorEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etRange"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Company Location"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:inputType="textEmailAddress"
-            android:imeOptions="actionNext"/>
-    </com.google.android.material.textfield.TextInputLayout>-->
-
-    <!--<EditText
-        android:id="@+id/etLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:drawablePadding="16dp"
-        android:hint="Enter address"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>-->
-
-    <!--<EditText
-        android:id="@+id/etCompanyName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etLocation" />-->
-
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnOrderPreserved="false"
-        android:alignmentMode="alignMargins"
-        android:rowCount="3"
-        android:columnCount="2">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="12dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="10dp">
-
-            <RadioButton
-                android:text="1-10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="12dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp">
-
-            <RadioButton
-                android:text="1-10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="12dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="10dp">
-
-            <RadioButton
-                android:text="1-10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="12dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp">
-
-            <RadioButton
-                android:text="1-10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </androidx.cardview.widget.CardView>
-
-    </GridLayout>
-
-    <EditText
-        android:id="@+id/etIndustryType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etCompanyName" />
-
-    <EditText
-        android:id="@+id/etStaffSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etIndustryType" />
-
-    <EditText
-        android:id="@+id/etRange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etStaffSize" />
-
-    <Button
-        android:id="@+id/btnCreate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etStaffSize" />
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
 </layout>

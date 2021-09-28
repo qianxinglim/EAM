@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.eam.databinding.ActivityCreateCompanyBinding;
+import com.example.eam.model.Company;
 import com.example.eam.model.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -47,11 +49,15 @@ public class CreateCompanyActivity extends AppCompatActivity {
     private double latitude, longitude;
     private String address;
     private boolean userExists = false;
+    private int pos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_company);
+
+        Intent i = getIntent();
+        pos = i.getIntExtra("pos", 1);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
@@ -72,7 +78,31 @@ public class CreateCompanyActivity extends AppCompatActivity {
         binding.btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createCompany();
+                int staffSizeSelectedId = binding.rgStaffSize.getCheckedCheckableImageButtonId();
+                int industrySelectedId = binding.rgIndustry.getCheckedCheckableImageButtonId();
+
+                // find the radiobutton by returned id
+                RadioButton rbStaffSize = (RadioButton) findViewById(staffSizeSelectedId);
+                RadioButton rbIndustryType = (RadioButton) findViewById(industrySelectedId);
+
+                Company company = new Company();
+                company.setCompanyName(binding.etCompanyName.getText().toString());
+                company.setStaffSize(rbStaffSize.getText().toString());
+                company.setIndustryType(rbIndustryType.getText().toString());
+                company.setPunchRange(0.5);
+                company.setCreatorID(firebaseUser.getUid());
+
+                Map<String,Object> location = new HashMap<>();
+                location.put("latitude", latitude);
+                location.put("longitude", longitude);
+                company.setCompanyLocation(location);
+
+                startActivity(new Intent(CreateCompanyActivity.this, RegisterUserActivity.class)
+                        .putExtra("companyObj", company)
+                        .putExtra("pos", pos));
+
+
+                //createCompany();
             }
         });
     }
@@ -105,9 +135,9 @@ public class CreateCompanyActivity extends AppCompatActivity {
 
     private void createCompany() {
         String companyName = binding.etCompanyName.getText().toString();
-        String industryType = binding.etIndustryType.getText().toString();
-        int staffSize = Integer.parseInt(binding.etStaffSize.getText().toString());
-        double range = Double.parseDouble(binding.etRange.getText().toString());
+        //String industryType = binding.etIndustryType.getText().toString();
+        //int staffSize = Integer.parseInt(binding.etStaffSize.getText().toString());
+        //double range = Double.parseDouble(binding.etRange.getText().toString());
         //String companyID = UUID.randomUUID().toString();
 
         //DocumentReference documentReference = firestore.collection("Companies").document();
@@ -121,14 +151,14 @@ public class CreateCompanyActivity extends AppCompatActivity {
         Map<String,Object> location = new HashMap<>();
         company.put("companyID", companyID);
         company.put("companyName", companyName);
-        company.put("staffSize", staffSize);
-        company.put("industryType", industryType);
+        //company.put("staffSize", staffSize);
+        //company.put("industryType", industryType);
         location.put("latitude", latitude);
         location.put("longitude", longitude);
         company.put("companyLocation", location);
         company.put("company_address", address);
         company.put("creatorID", firebaseUser.getUid());
-        company.put("punchRange", range);
+        //company.put("punchRange", range);
         //batch.set(ref, company);
 
         DocumentReference ref2 = firestore.collection("Companies").document(companyID).collection("Users").document(firebaseUser.getUid());

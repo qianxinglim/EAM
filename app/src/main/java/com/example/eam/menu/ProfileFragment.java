@@ -187,7 +187,7 @@ public class ProfileFragment extends Fragment {
         bottomSheetView.findViewById(R.id.btnCreateCompany).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getContext(), CreateCompanyActivity.class));
+                startActivity(new Intent(getContext(), CreateCompanyActivity.class).putExtra("pos", 2));
             }
         });
 

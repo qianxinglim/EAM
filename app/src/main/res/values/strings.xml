@@ -11,6 +11,10 @@
     <string name="start_date">Start Date <font color='#FF0000'>*</font></string>
     <string name="end_date">End Date <font color='#FF0000'>*</font></string>
     <string name="date">Date <font color='#FF0000'>*</font></string>
+    <string name="createCompany1">How many employees do you have? <font color='#FF0000'>*</font></string>
+    <string name="createCompany2">What is your business industry? <font color='#FF0000'>*</font></string>
+    <string name="fb">F &amp; B</string>
+    <string name="bs">Beauty &amp; Spa</string>
 
     <string-array name="absence_arrays">
         <item>Vacation</item>

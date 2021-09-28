@@ -1,23 +1,29 @@
 package com.example.eam.model;
 
-public class Company {
+import java.io.Serializable;
+import java.util.Map;
+
+public class Company implements Serializable {
     private String companyID;
     private String companyName;
     private String industryType;
-    private int staffSize;
+    private String staffSize;
     private String creatorID;
     //private String companyLocation;
+    private Map<String, Object> companyLocation;
+    private double punchRange;
 
     public Company() {
     }
 
-    public Company(String companyID, String companyName, String industryType, int staffSize, String creatorID) {
+    public Company(String companyID, String companyName, String industryType, String staffSize, String creatorID, Map<String, Object> companyLocation, double punchRange) {
         this.companyID = companyID;
         this.companyName = companyName;
         this.industryType = industryType;
         this.staffSize = staffSize;
         this.creatorID = creatorID;
-        //this.companyLocation = companyLocation;
+        this.companyLocation = companyLocation;
+        this.punchRange = punchRange;
     }
 
     public String getCompanyID() {
@@ -44,11 +50,11 @@ public class Company {
         this.industryType = industryType;
     }
 
-    public int getStaffSize() {
+    public String getStaffSize() {
         return staffSize;
     }
 
-    public void setStaffSize(int staffSize) {
+    public void setStaffSize(String staffSize) {
         this.staffSize = staffSize;
     }
 
@@ -67,4 +73,20 @@ public class Company {
     public void setCompanyLocation(String companyLocation) {
         this.companyLocation = companyLocation;
     }*/
+
+    public Map<String, Object> getCompanyLocation() {
+        return companyLocation;
+    }
+
+    public void setCompanyLocation(Map<String, Object> companyLocation) {
+        this.companyLocation = companyLocation;
+    }
+
+    public double getPunchRange() {
+        return punchRange;
+    }
+
+    public void setPunchRange(double punchRange) {
+        this.punchRange = punchRange;
+    }
 }
