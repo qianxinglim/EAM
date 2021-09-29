@@ -16,8 +16,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.eam.IndvChatActivity;
+import com.example.eam.LeaveDetailActivity;
 import com.example.eam.R;
+import com.example.eam.WeeklyViewActivity;
 import com.example.eam.common.Common;
+import com.example.eam.menu.CalendarFragment;
 import com.example.eam.model.Attendance;
 import com.example.eam.model.Leave;
 import com.example.eam.model.User;
@@ -43,12 +46,16 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     private List<String> datelist;
     private List<Leave> leavelist;
     private Context context;
+    private String userName;
+    private String userProfilePic;
 
-    public ViewAttendanceAdapter(List<Attendance> list, List<String> datelist, List<Leave> leaveList, Context context) {
+    public ViewAttendanceAdapter(String userName, String userProfilePic, List<Attendance> list, List<String> datelist, List<Leave> leaveList, Context context) {
         this.list = list;
         this.datelist = datelist;
         this.context = context;
         this.leavelist = leaveList;
+        this.userName = userName;
+        this.userProfilePic = userProfilePic;
     }
 
     @NonNull
@@ -121,6 +128,14 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
                 holder.tvDailyTotal.setText("Present");
                 holder.tvDailyTotal.setTextColor(ContextCompat.getColor(context, R.color.black));
                 Log.d("TAG", "theDate: " + theDate + "clockInDate: " + attendance.getClockInDate());
+
+                holder.tvDailyTotal.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        context.startActivity(new Intent(context, WeeklyViewActivity.class)
+                                .putExtra("date", theDate));
+                    }
+                });
             }
             /*else{
                 holder.tvClockInStatus.setText("Absence");
@@ -152,6 +167,17 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
                             holder.tvView.setVisibility(View.VISIBLE);
                             holder.tvLeaveType.setVisibility(View.VISIBLE);
                             holder.tvLeaveType.setText(leave.getType());
+
+                            holder.tvLeaveType.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    context.startActivity(new Intent(context, LeaveDetailActivity.class)
+                                            .putExtra("leaveObj", leave)
+                                            .putExtra("Activity", "LeaveReview")
+                                            .putExtra("userName", userName)
+                                            .putExtra("profilePic", userProfilePic));
+                                }
+                            });
                         }
                     }
                 }
@@ -167,21 +193,22 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
                     holder.tvView.setVisibility(View.VISIBLE);
                     holder.tvLeaveType.setVisibility(View.VISIBLE);
                     holder.tvLeaveType.setText(leave.getType());
+
+                    holder.tvLeaveType.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            context.startActivity(new Intent(context, LeaveDetailActivity.class)
+                                    .putExtra("leaveObj", leave)
+                                    .putExtra("Activity", "LeaveReview")
+                                    .putExtra("userName", userName)
+                                    .putExtra("profilePic", userProfilePic));
+                        }
+                    });
                 }
             }
         }
 
         //Log.d("TAG", "attendancelist: " + list);
-
-        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                context.startActivity(new Intent(context, IndvChatActivity.class)
-                        .putExtra("userID", user.getID())
-                        .putExtra("userName", user.getName())
-                        .putExtra("userProfilePic", user.getProfilePic()));
-            }
-        });*/
     }
 
     @Override

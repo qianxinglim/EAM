@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +15,11 @@ import android.widget.Toast;
 import com.example.eam.adapter.CalendarAdapter;
 import com.example.eam.adapter.RecordAdapter;
 import com.example.eam.common.CalendarUtils;
+import com.example.eam.common.Common;
 import com.example.eam.databinding.ActivityWeeklyViewBinding;
 import com.example.eam.managers.SessionManager;
 import com.example.eam.model.Attendance;
+import com.example.eam.model.Leave;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static com.example.eam.common.CalendarUtils.daysInWeekArray;
 import static com.example.eam.common.CalendarUtils.monthYearFromDate;
@@ -46,6 +50,7 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
     private SessionManager sessionManager;
     private String companyID;
     private DatabaseReference reference;
+    private Attendance attendance;
     //private ListView eventListView;
 
     @Override
@@ -61,7 +66,19 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
 
-        CalendarUtils.selectedDate = LocalDate.now();
+        String date = getIntent().getExtras().getString("date");
+
+        if(date != null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate date2 = LocalDate.parse(date, formatter);
+
+            CalendarUtils.selectedDate = date2;
+        }
+        else{
+            CalendarUtils.selectedDate = LocalDate.now();
+        }
+
+        //CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
         initBtnClick();
     }
@@ -79,12 +96,6 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
             public void onClick(View view) {
                 CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusWeeks(1);
                 setWeekView();
-            }
-        });
-        binding.btnNewEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //startActivity(new Intent(this, EventEditActivity.class));
             }
         });
     }
@@ -105,7 +116,7 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
         CalendarUtils.selectedDate = date;
         if(!date.equals("")) {
             String message = "Selected Date " + date;
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         }
         setWeekView();
     }
@@ -155,9 +166,22 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
 
                 Log.d(TAG, "listSize: " + list.size());
 
-                binding.recyclerView.setLayoutManager(new LinearLayoutManager(WeeklyViewActivity.this));
-                RecordAdapter recordAdapter = new RecordAdapter(list, WeeklyViewActivity.this);
-                binding.recyclerView.setAdapter(recordAdapter);
+                if(list.size() > 0){
+                    binding.tvNoRecord.setVisibility(View.GONE);
+                    binding.recyclerView.setVisibility(View.VISIBLE);
+
+                    binding.recyclerView.setLayoutManager(new LinearLayoutManager(WeeklyViewActivity.this));
+                    RecordAdapter recordAdapter = new RecordAdapter(list, WeeklyViewActivity.this);
+                    binding.recyclerView.setAdapter(recordAdapter);
+                }
+                else{
+                    binding.tvNoRecord.setVisibility(View.VISIBLE);
+                    binding.recyclerView.setVisibility(View.GONE);
+                }
+
+                //binding.recyclerView.setLayoutManager(new LinearLayoutManager(WeeklyViewActivity.this));
+                //RecordAdapter recordAdapter = new RecordAdapter(list, WeeklyViewActivity.this);
+                //binding.recyclerView.setAdapter(recordAdapter);
             }
 
             @Override

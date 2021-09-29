@@ -192,7 +192,7 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                         linearLayoutManager.setReverseLayout(true);
                         linearLayoutManager.setStackFromEnd(true);
                         binding.recyclerView.setLayoutManager(linearLayoutManager);
-                        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(list, datelist, leavelist,ViewAttendanceActivity.this);
+                        ViewAttendanceAdapter viewAttendanceAdapter = new ViewAttendanceAdapter(userName, userProfilePic, list, datelist, leavelist,ViewAttendanceActivity.this);
                         binding.recyclerView.setAdapter(viewAttendanceAdapter);
 
                         if(viewAttendanceAdapter != null){

@@ -395,7 +395,7 @@ public class PunchFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    if(!currDate.equals(lastClockinDate) && lastClockinDate == null){
+                    if(!currDate.equals(lastClockinDate) || lastClockinDate == null){
                         //one hour before the oriClockInTime set by admin
                         if (currTimeNow.after(b4) && currTimeNow.before(oriClockOut)) {
                             Toast.makeText(getContext(), "can clock in", Toast.LENGTH_SHORT).show();
