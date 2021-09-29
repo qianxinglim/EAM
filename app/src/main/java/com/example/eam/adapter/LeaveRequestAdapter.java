@@ -76,6 +76,8 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
         }
         else{
             holder.tvLeaveDate.setText(leave.getDate());
+            holder.tvTo.setVisibility(View.GONE);
+            holder.tvLeaveDateTo.setVisibility(View.GONE);
         }
 
         if(leave.getStatus().equals("Approved")){
@@ -119,7 +121,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView tvType, tvStatus, tvLeaveDate, tvRequestDateTime, tvLeaveDateTo;
+        private TextView tvType, tvStatus, tvLeaveDate, tvRequestDateTime, tvLeaveDateTo, tvTo;
         private LinearLayout linearlayout;
 
         public ViewHolder(@NonNull View itemView) {
@@ -131,6 +133,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
             tvRequestDateTime = itemView.findViewById(R.id.tvRequestDateTime);
             linearlayout = itemView.findViewById(R.id.linearLayout);
             tvLeaveDateTo = itemView.findViewById(R.id.tvLeaveDateTo);
+            tvTo = itemView.findViewById(R.id.tvTo);
         }
     }
 }

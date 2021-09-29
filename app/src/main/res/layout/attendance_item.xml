@@ -10,46 +10,47 @@
         android:background="@drawable/bgitem"
         android:orientation="vertical"
         android:gravity="center_vertical"
-        android:layout_height="230dp"
-        android:weightSum="3">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="10dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <LinearLayout
                 android:id="@+id/btnlnClockIn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:paddingTop="14dp"
+                android:paddingBottom="5dp">
 
                     <TextView
                         android:id="@+id/tvClockInTime"
                         android:text="09:00"
-                        android:layout_width="wrap_content"
+                        android:layout_width="60dp"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
                         android:textColor="@color/black"
                         android:textSize="20sp"/>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1">
+                        android:paddingLeft="10dp">
 
                         <TextView
                             android:id="@+id/tvClockInStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             android:textColor="@color/black"
                             android:text="At Work"/>
 
@@ -58,7 +59,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:text="Not in punch area (08:47)"/>
 
                         <TextView
@@ -77,25 +78,34 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
-                    android:text="|"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
+                android:layout_height="30dp"
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="2">
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorDivider"/>
 
                 </LinearLayout>
+
+                <!--<TextView
+                    android:text="|"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_vertical"/>-->
+
+                <View
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorDivider"/>
 
             </LinearLayout>
 
@@ -104,33 +114,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_marginBottom="5dp">
+                android:paddingTop="5dp"
+                android:paddingBottom="22dp">
 
                     <TextView
                         android:id="@+id/tvClockOutTime"
                         android:text="18:00"
-                        android:layout_width="wrap_content"
+                        android:layout_width="60dp"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:layout_gravity="center_vertical"
                         android:textSize="20sp"
-                        android:textColor="@color/black"
-                        android:layout_weight="1"/>
+                        android:textColor="@color/black"/>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1">
+                        android:paddingLeft="10dp">
 
                         <TextView
                             android:id="@+id/tvClockOutStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             android:textColor="@color/black"
                             android:text="Off Work"/>
 
@@ -139,7 +147,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:text="Not in punch area (08:47)"/>
 
                         <TextView
@@ -159,10 +167,18 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:background="@color/colorDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
 
                 <TextView
-                    android:padding="5dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginBottom="13dp"
+                    android:layout_marginLeft="7dp"
                     android:id="@+id/tvDuration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

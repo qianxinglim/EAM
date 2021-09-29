@@ -375,33 +375,32 @@ public class PunchFragment extends Fragment {
                     Log.d(TAG, "cannot clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
                 }*/
 
-                if(clockOut){
+                if(clockOut) {
                     SimpleDateFormat df = new SimpleDateFormat("HH:mm");
                     DateTimeFormatter dtf = DateTimeFormat.forPattern("HH:mm");
 
                     DateTime oriClockIn = null;
 
                     oriClockIn = dtf.parseDateTime(oriClockInTime);
+                    dtf.parseDateTime(oriClockOutTime);
 
                     DateTime onehrb4 = oriClockIn.minusHours(1);
 
-                    Date b4 = null, currTimeNow = null;
+                    Date b4 = null, currTimeNow = null, oriClockOut = null;
                     try {
                         b4 = df.parse(dtf.print(onehrb4));
                         currTimeNow = df.parse(currTime);
+                        oriClockOut = df.parse(oriClockOutTime);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
 
-                    //one hour before the oriClockInTime set by admin
-                    if (currTimeNow.after(b4)) {
-                        Toast.makeText(getContext(), "can clock in", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "can clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
+                    if(!currDate.equals(lastClockinDate) && lastClockinDate == null){
+                        //one hour before the oriClockInTime set by admin
+                        if (currTimeNow.after(b4) && currTimeNow.before(oriClockOut)) {
+                            Toast.makeText(getContext(), "can clock in", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "can clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
 
-                        if(currDate.equals(lastClockinDate) && lastClockinDate != null){
-                            Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
                             Log.d(TAG, "date: " + currDate + ", time: " + currTime);
                             Log.d(TAG, "newdate: " + newDate + ", newtime: " + newTime);
 
@@ -433,11 +432,16 @@ public class PunchFragment extends Fragment {
                                     Log.d("addAttendance", "onFailure: " + e.getMessage());
                                 }
                             });
+
+                        } else if (!currTimeNow.after(b4)) {
+                            Toast.makeText(getContext(), "You are only allowed to clock in 1 hour before your work time.", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "cannot clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
+                        } else if (!currTimeNow.before(oriClockOut)) {
+                            Toast.makeText(getContext(), "You can't clock in now.", Toast.LENGTH_SHORT).show();
                         }
                     }
                     else{
-                        Toast.makeText(getContext(), "You are only allowed to clock in 1 hour before your work time.", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "cannot clock in" + b4 + ", " + currTimeNow + ", " + dtf.print(onehrb4));
+                        Toast.makeText(getContext(), "You already clocked in today", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{

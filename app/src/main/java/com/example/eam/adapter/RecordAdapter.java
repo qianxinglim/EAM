@@ -2,6 +2,7 @@ package com.example.eam.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,11 +59,12 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         String currDate = formatter2.format(dateTime);
 
         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-        Date clockInTime = null, oriClockInTime = null;
+        Date clockInTime = null, oriClockInTime = null, mustClockOutTime = null;
 
         try {
             oriClockInTime = df.parse(attendance.getOriClockInTime());
             clockInTime = df.parse(attendance.getClockInTime());
+            mustClockOutTime = df.parse(attendance.getMustClockOutTime());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -76,8 +78,12 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
                 if (clockInTime.after(oriClockInTime)) {
                     if (attendance.isClockIninRange()) {
                         holder.tvClockInLocation.setText("Within company area, punch in late (" + attendance.getClockInTime() + ")");
+                        holder.tvClockInLocation.setTextColor(Color.RED);
+                        holder.tvClockInStatus.setTextColor(Color.RED);
                     } else {
                         holder.tvClockInLocation.setText("Not in company area, punch in late (" + attendance.getClockInTime() + ")");
+                        holder.tvClockInLocation.setTextColor(Color.RED);
+                        holder.tvClockInStatus.setTextColor(Color.RED);
                     }
                 }
                 else{
@@ -101,8 +107,12 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
                     if (attendance.isClockIninRange()) {
                         holder.tvClockInLocation.setText("Within company area, punch in late (" + attendance.getClockInTime() + ")");
+                        holder.tvClockInLocation.setTextColor(Color.RED);
+                        holder.tvClockInStatus.setTextColor(Color.RED);
                     } else {
                         holder.tvClockInLocation.setText("Not in company area, punch in late (" + attendance.getClockInTime() + ")");
+                        holder.tvClockInLocation.setTextColor(Color.RED);
+                        holder.tvClockInStatus.setTextColor(Color.RED);
                     }
                 }
                 else{
@@ -116,22 +126,35 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
                 }
 
                 //Punch missed
-                holder.tvClockOutStatus.setText("Punch missed");
-                holder.tvClockOutLocation.setVisibility(View.GONE);
+                holder.tvClockOutLocation.setText("Punch missed");
+                holder.tvClockOutLocation.setTextColor(Color.RED);
+                holder.tvClockOutStatus.setTextColor(Color.RED);
+                //holder.tvClockOutLocation.setVisibility(View.GONE);
             }
 
-            holder.tvDuration.setText("Unavailable");
+            holder.tvDuration.setText("Working duration: 0 hours 0 minutes");
         }
         else { //If punch out
             //If clock in late
             if (clockInTime.after(oriClockInTime)) {
                 if (attendance.isClockIninRange()) {
                     holder.tvClockInLocation.setText("Within company area, punch in late (" + attendance.getClockInTime() + ")");
+                    holder.tvClockInLocation.setTextColor(Color.RED);
+                    holder.tvClockInStatus.setTextColor(Color.RED);
                 } else {
                     holder.tvClockInLocation.setText("Not in company area, punch in late (" + attendance.getClockInTime() + ")");
+                    holder.tvClockInLocation.setTextColor(Color.RED);
+                    holder.tvClockInStatus.setTextColor(Color.RED);
                 }
 
-                holder.tvClockOutTime.setText(attendance.getOriClockOutTime());
+                if(mustClockOutTime.before(oriClockInTime)){
+                    holder.tvClockOutTime.setText(attendance.getOriClockOutTime());
+                }
+                else{
+                    holder.tvClockOutTime.setText(attendance.getMustClockOutTime());
+                }
+
+                //holder.tvClockOutTime.setText(attendance.getMustClockOutTime());
                 holder.tvClockOutLocation.setVisibility(View.VISIBLE);
 
                 //If punch out that day
@@ -152,12 +175,16 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
                 }
                 else{ //If not
                     if (attendance.isClockOutInRange()) {
-                        holder.tvClockOutLocation.setText("Punch missed, Within company area (" + attendance.getClockOutTime() + ")");
+                        holder.tvClockOutLocation.setText("Punch missed");
+                        holder.tvClockOutLocation.setTextColor(Color.RED);
+                        holder.tvClockOutStatus.setTextColor(Color.RED);
                     } else {
-                        holder.tvClockOutLocation.setText("Punch missed, Not in company area (" + attendance.getClockOutTime() + ")");
+                        holder.tvClockOutLocation.setText("Punch missed");
+                        holder.tvClockOutLocation.setTextColor(Color.RED);
+                        holder.tvClockOutStatus.setTextColor(Color.RED);
                     }
 
-                    holder.tvDuration.setText("duration: 0 hours 0 minutes");
+                    holder.tvDuration.setText("Working duration: 0 hours 0 minutes");
                 }
 
                 /*long diff = attendance.getClockOutTimestamp() - attendance.getClockInTimestamp();
@@ -175,7 +202,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
                     holder.tvClockInLocation.setText("Not in company area (" + attendance.getClockInTime() + ")");
                 }
 
-                holder.tvClockOutTime.setText(attendance.getMustClockOutTime());
+                holder.tvClockOutTime.setText(attendance.getOriClockOutTime());
                 holder.tvClockOutLocation.setVisibility(View.VISIBLE);
 
                 if(attendance.getClockOutDate().equals(attendance.getClockInDate())){
@@ -184,23 +211,28 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
                     } else {
                         holder.tvClockOutLocation.setText("Not in company area (" + attendance.getClockOutTime() + ")");
                     }
+
+                    long diff = attendance.getClockOutTimestamp() - attendance.getClockInTimestamp();
+                    int workMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
+
+                    int hr = workMinutes / 60;
+                    int min = workMinutes % 60;
+
+                    holder.tvDuration.setText("Working duration: " + hr + " hour(s) " + min + " minutes ");
                 }
                 else{
                     if (attendance.isClockOutInRange()) {
-                        holder.tvClockOutLocation.setText("Punch missed, Within company area (" + attendance.getClockOutTime() + ")");
+                        holder.tvClockOutLocation.setText("Punch missed");
+                        holder.tvClockOutLocation.setTextColor(Color.RED);
+                        holder.tvClockOutStatus.setTextColor(Color.RED);
                     } else {
-                        holder.tvClockOutLocation.setText("Punch missed, Not in company area (" + attendance.getClockOutTime() + ")");
+                        holder.tvClockOutLocation.setText("Punch missed");
+                        holder.tvClockOutLocation.setTextColor(Color.RED);
+                        holder.tvClockOutStatus.setTextColor(Color.RED);
                     }
+
+                    holder.tvDuration.setText("Working duration: 0 hours 0 minutes");
                 }
-
-                long diff = attendance.getClockOutTimestamp() - attendance.getClockInTimestamp();
-                int workMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
-
-                int hr = workMinutes / 60;
-                int min = workMinutes % 60;
-
-                holder.tvDuration.setText("duration: " + hr + " hours " + min + " minutes ");
-
             }
         }
 
@@ -287,7 +319,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView tvClockInTime, tvClockOutTime, tvDuration, tvClockInLocation, tvClockOutLocation, tvClockOutStatus;
+        private TextView tvClockInTime, tvClockOutTime, tvDuration, tvClockInLocation, tvClockOutLocation, tvClockOutStatus, tvClockInStatus;
         private LinearLayout btnlnClockIn, btnlnClockOut;
 
         public ViewHolder(@NonNull View itemView) {
@@ -301,6 +333,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
             tvClockOutStatus = itemView.findViewById(R.id.tvClockOutStatus);
             btnlnClockIn = itemView.findViewById(R.id.btnlnClockIn);
             btnlnClockOut = itemView.findViewById(R.id.btnlnClockOut);
+            tvClockInStatus = itemView.findViewById(R.id.tvClockInStatus);
         }
     }
 }
