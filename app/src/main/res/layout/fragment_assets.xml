@@ -202,17 +202,16 @@
                             android:gravity="center">
 
                                 <ImageView
-                                    android:src="@drawable/ic_baseline_access_time_24"
-                                    app:tint="@color/colorPrimary"
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"/>
+                                    android:src="@drawable/clock"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"/>
 
                                 <TextView
-                                    android:layout_marginTop="15dp"
+                                    android:layout_marginTop="10dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"
+                                    android:textColor="@color/black"
                                     android:text="Clock In/Out"/>
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -237,14 +236,13 @@
                             android:gravity="center">
 
                                 <ImageView
-                                    android:src="@drawable/ic_baseline_event_note_24"
-                                    app:tint="@color/colorPrimary"
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"/>
+                                    android:src="@drawable/timesheet"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"/>
 
                                 <TextView
-                                    android:layout_marginTop="15dp"
-                                    android:textColor="@color/colorPrimary"
+                                    android:layout_marginTop="10dp"
+                                    android:textColor="@color/black"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
@@ -272,17 +270,16 @@
                             android:gravity="center">
 
                                 <ImageView
-                                    android:src="@drawable/ic_baseline_directions_run_24"
-                                    app:tint="@color/colorPrimary"
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"/>
+                                    android:src="@drawable/leave"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"/>
 
                                 <TextView
-                                    android:layout_marginTop="15dp"
+                                    android:layout_marginTop="10dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"
+                                    android:textColor="@color/black"
                                     android:text="Leave"/>
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -307,22 +304,22 @@
                             android:gravity="center">
 
                                 <ImageView
-                                    android:src="@drawable/ic_baseline_edit_note_24"
-                                    app:tint="@color/colorPrimary"
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"/>
+                                    android:src="@drawable/apply_leave"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"/>
 
                                 <TextView
-                                    android:layout_marginTop="15dp"
+                                    android:layout_marginTop="10dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"
+                                    android:textColor="@color/black"
                                     android:text="Apply Leave"/>
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/btnTask"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -341,18 +338,17 @@
                             android:gravity="center">
 
                                 <ImageView
-                                    android:src="@drawable/ic_baseline_event_note_24"
-                                    app:tint="@color/colorPrimary"
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"/>
+                                    android:src="@drawable/task"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"/>
 
                                 <TextView
-                                    android:layout_marginTop="15dp"
+                                    android:layout_marginTop="10dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"
-                                    android:text="Timesheet"/>
+                                    android:textColor="@color/black"
+                                    android:text="Project"/>
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -376,18 +372,17 @@
                             android:gravity="center">
 
                                 <ImageView
-                                    android:src="@drawable/ic_baseline_groups_24"
-                                    app:tint="@color/colorPrimary"
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"/>
+                                    android:src="@drawable/leave"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"/>
 
                                 <TextView
-                                    android:layout_marginTop="15dp"
+                                    android:layout_marginTop="10dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"
-                                    android:text="Contacts"/>
+                                    android:textColor="@color/black"
+                                    android:text="Directory"/>
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
 

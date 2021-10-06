@@ -11,6 +11,7 @@ import com.example.eam.AddCaptionPicActivity;
 import com.example.eam.EditProfileActivity;
 import com.example.eam.IndvChatActivity;
 import com.example.eam.LeaveFormActivity;
+import com.example.eam.TaskFormActivity;
 import com.example.eam.managers.SessionManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +56,9 @@ public class FirebaseService {
         }
         else if(context instanceof LeaveFormActivity){
             path = companyID + "/Leave/Documents/";
+        }
+        else if(context instanceof TaskFormActivity){
+            path = companyID + "/Task/Documents/";
         }
 
         StorageReference riversRef = FirebaseStorage.getInstance().getReference().child(path + System.currentTimeMillis() + "." + getFileExtension(uri));

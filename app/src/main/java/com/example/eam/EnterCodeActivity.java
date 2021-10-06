@@ -119,7 +119,7 @@ public class EnterCodeActivity extends PhoneLoginActivity {
 
             public void onTick(long millisUntilFinished) {
                 binding.lnTimer.setVisibility(View.VISIBLE);
-                binding.tvTimer.setText(String.valueOf(millisUntilFinished / 1000));
+                binding.tvTimer.setText(String.valueOf(millisUntilFinished / 1000) + "s");
                 binding.btnResendOTP.setVisibility(View.GONE);
             }
 

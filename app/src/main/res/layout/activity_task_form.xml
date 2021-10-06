@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".TaskFormActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#F4F4F4">
+
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/colorPrimary">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary">
+
+                    <ImageButton
+                        android:id="@+id/btn_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
+                        android:background="@android:color/transparent"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add task"
+                        android:textStyle="bold"
+                        android:layout_centerInParent="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"/>
+
+                </RelativeLayout>
+            </androidx.appcompat.widget.Toolbar>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:paddingRight="15dp"
+                        android:background="@color/white"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="Task title"
+                            android:padding="15dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"/>
+
+                        <LinearLayout
+                            android:id="@+id/btnTvType"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginLeft="15dp"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:gravity="center">
+
+                            <EditText
+                                android:id="@+id/tvTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Task title"
+                                android:background="@android:color/transparent"
+                                android:textSize="16sp"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!--Start Date-->
+                    <RelativeLayout
+                        android:id="@+id/lnStartDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:paddingRight="15dp"
+                        android:background="@color/white">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="Start Time"
+                            android:padding="15dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"/>
+
+                        <LinearLayout
+                            android:layout_alignParentRight="true"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvStartDate"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="September 30, 2021"
+                                android:textSize="16sp"
+                                android:layout_marginRight="15dp"/>
+
+                            <View
+                                android:background="@color/colorDivider"
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"/>
+
+                            <TextView
+                                android:id="@+id/tvStartTime"
+                                android:text="6:03 AM"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="16sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <!--End Date-->
+                    <RelativeLayout
+                        android:id="@+id/lnEndDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="15dp"
+                        android:layout_marginTop="1dp"
+                        android:background="@color/white">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Due Time"
+                            android:layout_alignParentLeft="true"
+                            android:padding="15dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"/>
+
+                        <LinearLayout
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvDueDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimary"
+                                android:text="September 30, 2021"
+                                android:textSize="16sp"
+                                android:layout_marginRight="15dp"/>
+
+                            <View
+                                android:background="@color/colorDivider"
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"/>
+
+                            <TextView
+                                android:id="@+id/tvDueTime"
+                                android:text="6:03 AM"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="16sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/assign_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:paddingRight="15dp"
+                        android:background="@color/white">
+
+                        <TextView
+                            android:id="@+id/tvAssign"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="Assigned to"
+                            android:layout_marginRight="15dp"
+                            android:padding="15dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"/>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/selectedUserRecyclerview"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:visibility="gone"
+                            android:layout_toRightOf="@+id/tvAssign"/>
+
+                        <LinearLayout
+                            android:id="@+id/tvPlsSelect"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:gravity="center"
+                            android:visibility="visible">
+
+                            <TextView
+                                android:id="@+id/btnAssign"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pls select"
+                                android:textSize="16sp"/>
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/ic_baseline_arrow_forward_ios_24"/>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="vertical"
+                        android:background="@android:color/white" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Task Description"
+                            android:layout_marginBottom="1dp"
+                            android:paddingTop="15dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp"
+                            android:paddingBottom="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"/>
+
+                        <EditText
+                            android:id="@+id/etDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:hint="Task Description"
+                            android:maxHeight="150dp"
+                            android:textSize="16sp"
+                            android:gravity="top"
+                            android:background="@android:color/transparent"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_marginBottom="15dp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="vertical"
+                        android:background="@android:color/white" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Attachment"
+                            android:layout_marginBottom="1dp"
+                            android:paddingTop="15dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp"
+                            android:paddingBottom="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"/>
+
+                        <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="115dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp">
+
+                            <HorizontalScrollView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal">
+
+                                    <androidx.recyclerview.widget.RecyclerView
+                                        android:id="@+id/attachmentRecyclerView"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="100dp"/>
+
+                                    <ImageButton
+                                        android:id="@+id/btnAddAttachment"
+                                        android:layout_width="100dp"
+                                        android:layout_height="100dp"
+                                        android:src="@drawable/ic_baseline_attachment_24"/>
+
+                                </LinearLayout>
+                            </HorizontalScrollView>
+                        </ScrollView>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnSubmit"
+                        android:layout_margin="15dp"
+                        android:text="Submit"
+                        android:textSize="16sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"/>
+
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

@@ -19,6 +19,7 @@ import com.example.eam.LeaveFormActivity;
 import com.example.eam.LeaveRecordActivity;
 import com.example.eam.PhoneLoginActivity;
 import com.example.eam.R;
+import com.example.eam.TaskActivity;
 import com.example.eam.ViewAttendanceActivity;
 import com.example.eam.databinding.FragmentAssetsBinding;
 import com.example.eam.managers.SessionManager;
@@ -95,6 +96,13 @@ public class AssetsFragment extends Fragment {
 
                     }
                 });
+            }
+        });
+
+        binding.btnTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), TaskActivity.class));
             }
         });
 
