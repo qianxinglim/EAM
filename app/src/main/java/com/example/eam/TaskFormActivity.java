@@ -447,8 +447,11 @@ public class TaskFormActivity extends AppCompatActivity {
         progressDialog.setMessage("Uploading file...");
         progressDialog.show();
 
-        if(binding.tvTitle.getText().toString().equals("Pls select")){
-            Toast.makeText(this, "Please select a leave type.", Toast.LENGTH_SHORT).show();
+        if(binding.tvTitle.getText().toString().equals("")){
+            Toast.makeText(this, "Please fill in title for the task.", Toast.LENGTH_SHORT).show();
+        }
+        else if(userList.size() == 0 || userList == null){
+            Toast.makeText(this, "Please assign the task to at least one person.", Toast.LENGTH_SHORT).show();
         }
         else{
             if(imageList.size() > 0){

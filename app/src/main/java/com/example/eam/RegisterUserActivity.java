@@ -130,7 +130,7 @@ public class RegisterUserActivity extends AppCompatActivity {
                                     batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            startActivity(new Intent(RegisterUserActivity.this, ProfileFragment.class));
+                                            startActivity(new Intent(RegisterUserActivity.this, MainActivity.class));
                                             Toast.makeText(RegisterUserActivity.this, "Successfully created company.", Toast.LENGTH_SHORT).show();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {

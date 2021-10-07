@@ -15,7 +15,7 @@
         android:layout_width="230dp"
         android:layout_height="230dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_error"
+        android:src="@drawable/error"
         android:layout_gravity="center_horizontal"/>
 
     <TextView

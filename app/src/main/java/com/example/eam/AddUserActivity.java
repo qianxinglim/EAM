@@ -191,7 +191,7 @@ public class AddUserActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(@NonNull Void aVoid) {
                                             finish();
-                                            Toast.makeText(AddUserActivity.this, "added to tempUsers successfully", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(AddUserActivity.this, "Successfully invited user.", Toast.LENGTH_SHORT).show();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override

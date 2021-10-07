@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.eam.AddUserActivity;
+import com.example.eam.EditCompanyActivity;
 import com.example.eam.EmployeeListActivity;
 import com.example.eam.R;
 import com.example.eam.ReviewLeaveActivity;
@@ -97,10 +98,10 @@ public class AdminFragment extends Fragment{
         HashMap<String, String> userDetail = sessionManager.getUserDetail();
         companyID = userDetail.get(sessionManager.COMPANYID);
 
-        binding.btnAddUser.setOnClickListener(new View.OnClickListener() {
+        binding.btnEditCompany.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), AddUserActivity.class));
+                startActivity(new Intent(getActivity(), EditCompanyActivity.class));
             }
         });
 

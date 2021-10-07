@@ -30,12 +30,12 @@
 
         <TextView
             android:layout_gravity="center_horizontal"
-            android:text="We found you in multiple companies, select which company you'd like to login to."
+            android:text="Select which company you'd like to login to."
             android:gravity="center"
             android:layout_marginBottom="10dp"
             android:textSize="14sp"
             android:textColor="@color/black"
-            android:layout_width="270dp"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"/>
 
         <LinearLayout

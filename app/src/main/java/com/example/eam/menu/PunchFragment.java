@@ -270,7 +270,7 @@ public class PunchFragment extends Fragment {
                 }
 
                 if (value != null && value.exists()) {
-                    range = (double) value.get("punchRange");
+                    range = value.getDouble("punchRange");
 
                     Map<String, Object> location = value.getData();
 

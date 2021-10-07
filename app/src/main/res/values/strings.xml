@@ -15,6 +15,7 @@
     <string name="createCompany2">What is your business industry? <font color='#FF0000'>*</font></string>
     <string name="fb">F &amp; B</string>
     <string name="bs">Beauty &amp; Spa</string>
+    <string name="card_admin">ADMINS &amp; USERS</string>
 
     <string-array name="absence_arrays">
         <item>Vacation</item>

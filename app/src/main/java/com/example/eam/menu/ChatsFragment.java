@@ -123,7 +123,7 @@ public class ChatsFragment extends Fragment {
 
     private void filter(String text) {
         binding.recyclerView.setVisibility(View.GONE);
-        //binding.progressBar.setVisibility(View.VISIBLE);
+        binding.progressCircular.setVisibility(View.VISIBLE);
 
         ArrayList<Chatlist> searchList = new ArrayList<>();
 
@@ -133,16 +133,26 @@ public class ChatsFragment extends Fragment {
             }
         }
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ChatListAdapter(searchList, getContext());
-        binding.recyclerView.setAdapter(adapter);
+        if(searchList.size() > 0) {
+            binding.recyclerView.setVisibility(View.VISIBLE);
+            binding.progressCircular.setVisibility(View.GONE);
+            binding.tvNoChat.setVisibility(View.GONE);
 
-        binding.recyclerView.setVisibility(View.VISIBLE);
-        //binding.progressBar.setVisibility(View.GONE);
+            binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            adapter = new ChatListAdapter(searchList, getContext());
+            binding.recyclerView.setAdapter(adapter);
+        }
+        else{
+            binding.tvNoChat.setVisibility(View.VISIBLE);
+            binding.progressCircular.setVisibility(View.GONE);
+            binding.recyclerView.setVisibility(View.GONE);
+        }
     }
 
     private void getChatList() {
         binding.progressCircular.setVisibility(View.VISIBLE);
+        binding.tvNoChat.setVisibility(View.GONE);
+        binding.recyclerView.setVisibility(View.GONE);
 
         reference.child(companyID).child("ChatList").child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -154,11 +164,17 @@ public class ChatsFragment extends Fragment {
                     String userID = Objects.requireNonNull(snapshot.child("chatID").getValue()).toString();
                     Log.d(TAG, "onDataChange: userid" + userID);
 
-                    binding.progressCircular.setVisibility(View.GONE);
                     allUserID.add(userID);
-                    //getUserData(userID);
                 }
-                getUserInfo();
+
+                if(allUserID.size() > 0){
+                    getUserInfo();
+                }
+                else{
+                    binding.progressCircular.setVisibility(View.GONE);
+                    binding.tvNoChat.setVisibility(View.VISIBLE);
+                    binding.recyclerView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -203,6 +219,10 @@ public class ChatsFragment extends Fragment {
                         }
                     });
                 }
+
+                binding.recyclerView.setVisibility(View.VISIBLE);
+                binding.tvNoChat.setVisibility(View.GONE);
+                binding.progressCircular.setVisibility(View.GONE);
             }
         });
     }

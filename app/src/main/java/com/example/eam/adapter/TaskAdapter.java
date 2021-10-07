@@ -86,7 +86,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
                 Log.e("TAG", "currTime: " + currTime1 + " " + currTime + ", dueTime: " + dueTime);
 
-                if(currDate.after(dueDate) || currTime.after(dueTime)) {
+                if(currDate.after(dueDate) && currTime.after(dueTime)) {
                     holder.tvTitle.setTextColor(Color.parseColor("#DB4437"));
                     holder.tvStatusX.setVisibility(View.VISIBLE);
                     holder.tvStatus.setVisibility(View.GONE);

@@ -362,14 +362,14 @@ public class EnterCodeActivity extends PhoneLoginActivity {
                                                                 batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> task) {
-                                                                        Toast.makeText(EnterCodeActivity.this, "Successfully committed", Toast.LENGTH_SHORT).show();
+                                                                        //Toast.makeText(EnterCodeActivity.this, "Successfully committed", Toast.LENGTH_SHORT).show();
                                                                         startActivity(new Intent(EnterCodeActivity.this, SelectCompanyActivity.class));
                                                                         finish();
                                                                     }
                                                                 }).addOnFailureListener(new OnFailureListener() {
                                                                     @Override
                                                                     public void onFailure(@NonNull Exception e) {
-                                                                        Toast.makeText(EnterCodeActivity.this, "Fail to commit: ", Toast.LENGTH_SHORT).show();
+                                                                        Toast.makeText(EnterCodeActivity.this, "Fail to login. Please try again later.", Toast.LENGTH_SHORT).show();
                                                                         Log.d(TAG, "Fail message: " + e.getMessage());
                                                                     }
                                                                 });

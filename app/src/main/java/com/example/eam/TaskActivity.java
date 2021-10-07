@@ -94,23 +94,46 @@ public class TaskActivity extends AppCompatActivity {
                 getCreatedTaskList(new OnCallBack() {
                     @Override
                     public void onSuccess() {
-                        if (taskList.size() > 0) {
-                            binding.progressBar.setVisibility(View.GONE);
-                            binding.recyclerView.setVisibility(View.VISIBLE);
-                            binding.tvNoRecord.setVisibility(View.GONE);
+                        if(isMyTasksChosen){
+                            if (taskList.size() > 0) {
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.recyclerView.setVisibility(View.VISIBLE);
+                                binding.tvNoRecord.setVisibility(View.GONE);
 
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TaskActivity.this);
-                            linearLayoutManager.setReverseLayout(true);
-                            linearLayoutManager.setStackFromEnd(true);
-                            binding.recyclerView.setLayoutManager(linearLayoutManager);
-                            TaskAdapter adapter = new TaskAdapter(taskList, TaskActivity.this);
-                            binding.recyclerView.setAdapter(adapter);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TaskActivity.this);
+                                linearLayoutManager.setReverseLayout(true);
+                                linearLayoutManager.setStackFromEnd(true);
+                                binding.recyclerView.setLayoutManager(linearLayoutManager);
+                                TaskAdapter adapter = new TaskAdapter(taskList, TaskActivity.this);
+                                binding.recyclerView.setAdapter(adapter);
 
-                        } else {
-                            binding.progressBar.setVisibility(View.GONE);
-                            binding.tvNoRecord.setVisibility(View.VISIBLE);
-                            binding.recyclerView.setVisibility(View.GONE);
+                            } else {
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.tvNoRecord.setVisibility(View.VISIBLE);
+                                binding.recyclerView.setVisibility(View.GONE);
+                            }
                         }
+                        else{
+                            if (taskList.size() > 0) {
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.recyclerView.setVisibility(View.VISIBLE);
+                                binding.tvNoRecord.setVisibility(View.GONE);
+
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TaskActivity.this);
+                                linearLayoutManager.setReverseLayout(true);
+                                linearLayoutManager.setStackFromEnd(true);
+                                binding.recyclerView.setLayoutManager(linearLayoutManager);
+                                TaskAdapter adapter = new TaskAdapter(createdTaskList, TaskActivity.this);
+                                binding.recyclerView.setAdapter(adapter);
+
+                            } else {
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.tvNoRecord.setVisibility(View.VISIBLE);
+                                binding.recyclerView.setVisibility(View.GONE);
+                            }
+                        }
+
+                        initBtn();
 
                         checkPassedDueTasks(new OnCallBack() {
                             @Override
@@ -149,7 +172,9 @@ public class TaskActivity extends AppCompatActivity {
                 startActivity(new Intent(TaskActivity.this, TaskFormActivity.class));
             }
         });
+    }
 
+    private void initBtn() {
         binding.btnMyTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -219,13 +244,13 @@ public class TaskActivity extends AppCompatActivity {
 //                                    binding.ivDue.setVisibility(View.GONE);
 //                                }
 //                            } else {
-                                if (isCreatedTasksDueSeen) {
-                                    binding.ivDue.setVisibility(View.GONE);
-                                } else if (passedDueAmt > 0) {
-                                    binding.ivDue.setVisibility(View.VISIBLE);
-                                } else {
-                                    binding.ivDue.setVisibility(View.GONE);
-                                }
+                            if (isCreatedTasksDueSeen) {
+                                binding.ivDue.setVisibility(View.GONE);
+                            } else if (passedDueAmt > 0) {
+                                binding.ivDue.setVisibility(View.VISIBLE);
+                            } else {
+                                binding.ivDue.setVisibility(View.GONE);
+                            }
                             //}
                         }
                     }
@@ -351,7 +376,7 @@ public class TaskActivity extends AppCompatActivity {
                     String currTime1 = sdf2.format(currDate);
                     Date currTime = sdf2.parse(currTime1);
 
-                    if (currDate.after(dueDate) || currTime.after(dueTime)) {
+                    if (currDate.after(dueDate) && currTime.after(dueTime)) {
                         if(project.getStatus().equals("Pending")){
                             passedDueAmt = passedDueAmt + 1;
                         }
@@ -373,7 +398,7 @@ public class TaskActivity extends AppCompatActivity {
                     String currTime1 = sdf2.format(currDate);
                     Date currTime = sdf2.parse(currTime1);
 
-                    if (currDate.after(dueDate) || currTime.after(dueTime)) {
+                    if (currDate.after(dueDate) && currTime.after(dueTime)) {
                         if(project.getStatus().equals("Pending")){
                             passedDueAmt = passedDueAmt + 1;
                         }
@@ -650,7 +675,7 @@ public class TaskActivity extends AppCompatActivity {
                                 String currTime1 = sdf2.format(currDate);
                                 Date currTime = sdf2.parse(currTime1);
 
-                                if(currDate.after(dueDate) || currTime.after(dueTime)) {
+                                if(currDate.after(dueDate) && currTime.after(dueTime)) {
                                     if(project.getStatus().equals("Pending")){
                                         filterList.add(project);
                                     }
@@ -703,7 +728,7 @@ public class TaskActivity extends AppCompatActivity {
                                 String currTime1 = sdf2.format(currDate);
                                 Date currTime = sdf2.parse(currTime1);
 
-                                if(currDate.after(dueDate) || currTime.after(dueTime)) {
+                                if(currDate.after(dueDate) && currTime.after(dueTime)) {
                                     if(project.getStatus().equals("Pending")){
                                         filterList.add(project);
                                     }
