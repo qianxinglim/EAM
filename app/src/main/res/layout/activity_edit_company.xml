@@ -616,7 +616,7 @@
                 android:background="@drawable/bg_layout_round"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Next"/>
+                android:text="Save"/>
 
         </LinearLayout>
     </RelativeLayout>

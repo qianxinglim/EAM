@@ -288,7 +288,7 @@ public class EditCompanyActivity extends AppCompatActivity {
         company.put("companyName", binding.etCompanyName.getText().toString());
         company.put("staffSize",rbStaffSize.getText().toString());
         company.put("industryType", rbIndustryType.getText().toString());
-        company.put("punchRange", binding.etPunchRange.getText().toString());
+        company.put("punchRange", Double.parseDouble(binding.etPunchRange.getText().toString()));
 
         Map<String,Object> location = new HashMap<>();
         location.put("latitude", latitude);
