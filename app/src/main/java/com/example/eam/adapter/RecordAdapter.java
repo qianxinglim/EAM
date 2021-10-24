@@ -133,6 +133,8 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
             }
 
             holder.tvDuration.setText("Working duration: 0 hours 0 minutes");
+            holder.btnlnClockOut.setEnabled(false);
+
         }
         else { //If punch out
             //If clock in late
