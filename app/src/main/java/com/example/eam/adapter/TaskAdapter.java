@@ -93,6 +93,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
                     holder.tvForward.setVisibility(View.GONE);
                     holder.cardview.setCardBackgroundColor(Color.parseColor("#33DB4437"));
                 }
+                else if(currDate.after(dueDate)){
+                    holder.tvTitle.setTextColor(Color.parseColor("#DB4437"));
+                    holder.tvStatusX.setVisibility(View.VISIBLE);
+                    holder.tvStatus.setVisibility(View.GONE);
+                    holder.tvForward.setVisibility(View.GONE);
+                    holder.cardview.setCardBackgroundColor(Color.parseColor("#33DB4437"));
+                }
 
             } catch (ParseException e) {
                 e.printStackTrace();

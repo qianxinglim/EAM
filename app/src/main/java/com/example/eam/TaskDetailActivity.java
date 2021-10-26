@@ -181,7 +181,13 @@ public class TaskDetailActivity extends AppCompatActivity {
                     binding.tvStatus.setVisibility(View.VISIBLE);
                     binding.tvStatus.setText("Task is overdue !");
                     binding.tvStatus.setTextColor(Color.RED);
-                } else {
+                }
+                else if(currDate.after(dueDate)){
+                    binding.tvStatus.setVisibility(View.VISIBLE);
+                    binding.tvStatus.setText("Task is overdue !");
+                    binding.tvStatus.setTextColor(Color.RED);
+                }
+                else {
                     binding.tvStatus.setVisibility(View.GONE);
                 }
 
@@ -319,11 +325,23 @@ public class TaskDetailActivity extends AppCompatActivity {
 
                         FirebaseDatabase.getInstance().getReference().child(companyID).child("Tasks").child(projectId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                progressDialog.setCanceledOnTouchOutside(true);
-                                progressDialog.dismiss();
-                                finish();
-                                Toast.makeText(TaskDetailActivity.this, "Successfully deleted Task.", Toast.LENGTH_SHORT).show();
+                            public void onComplete(@NonNull Task<Void> task1) {
+                                for(int i=0; i < task.getAssignTo().size(); i++){
+                                    FirebaseDatabase.getInstance().getReference().child(companyID).child("TaskList").child(task.getAssignTo().get(i)).child("taskID").child(projectId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            progressDialog.setCanceledOnTouchOutside(true);
+                                            progressDialog.dismiss();
+                                            finish();
+                                            Toast.makeText(TaskDetailActivity.this, "Successfully deleted Task.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(TaskDetailActivity.this, "Fail to delete task. Please try again later.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
