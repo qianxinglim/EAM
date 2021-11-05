@@ -57,6 +57,7 @@ public class ReviewLeaveActivity extends AppCompatActivity {
     private String companyID;
     private List<String> datelist;
     //private CalendarAdapter adapter;
+    private LeaveReviewAdapter adapter;
     private List<Leave> list = new ArrayList<>();
 
     @Override
@@ -74,6 +75,15 @@ public class ReviewLeaveActivity extends AppCompatActivity {
 
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.recyclerView.setVisibility(View.GONE);
+        binding.tvNoRecord.setVisibility(View.GONE);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReviewLeaveActivity.this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        binding.recyclerView.setLayoutManager(linearLayoutManager);
+        adapter = new LeaveReviewAdapter(list, ReviewLeaveActivity.this);
+        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.setVisibility(View.VISIBLE);
 
         setDate(new OnCallBack() {
             @Override
@@ -193,32 +203,26 @@ public class ReviewLeaveActivity extends AppCompatActivity {
                             list.add(leave);
                         }
 
-                        //list.add(leave);
-                        Log.d(TAG, "attachments: " + leave.getAttachments());
+                        list.sort(Comparator.comparing(Leave::getRequestDate));
+
+                        if (adapter!=null){
+                            adapter.notifyItemInserted(0);
+                            adapter.notifyDataSetChanged();
+
+                            if(list.size() > 0){
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.recyclerView.setVisibility(View.VISIBLE);
+                                binding.tvNoRecord.setVisibility(View.GONE);
+                            }
+                            else{
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.recyclerView.setVisibility(View.GONE);
+                                binding.tvNoRecord.setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
 
                     Log.d(TAG, "listSize: " + list.size());
-
-                    if (list.size() > 0) {
-                        //binding.tvNoRecord.setVisibility(View.GONE);
-
-                        list.sort(Comparator.comparing(Leave::getRequestDate));
-
-                        binding.recyclerView.setVisibility(View.VISIBLE);
-
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReviewLeaveActivity.this);
-                        linearLayoutManager.setReverseLayout(true);
-                        linearLayoutManager.setStackFromEnd(true);
-                        binding.recyclerView.setLayoutManager(linearLayoutManager);
-                        LeaveReviewAdapter adapter = new LeaveReviewAdapter(list, ReviewLeaveActivity.this);
-                        binding.recyclerView.setAdapter(adapter);
-
-                        binding.progressBar.setVisibility(View.GONE);
-                        binding.recyclerView.setVisibility(View.VISIBLE);
-                    } else {
-                        //binding.tvNoRecord.setVisibility(View.VISIBLE);
-                        //binding.recyclerView.setVisibility(View.GONE);
-                    }
                 }
 
                 @Override

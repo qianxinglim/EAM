@@ -95,6 +95,16 @@ public class TaskDetailActivity extends AppCompatActivity {
         //task = (Project) getIntent().getSerializableExtra("taskObj");
         projectId = getIntent().getExtras().getString("projectId");
 
+        binding.selectedUserRecyclerview.setLayoutManager(new GridLayoutManager(TaskDetailActivity.this, 2, GridLayoutManager.VERTICAL, false));
+        selectedUserAdapter = new SelectedUserAdapter(userList, TaskDetailActivity.this, new SelectedUserAdapter.OnClickListener() {
+            @Override
+            public void onBtnDeleteClick(View view, int position) {
+
+            }
+        });
+        binding.selectedUserRecyclerview.setAdapter(selectedUserAdapter);
+
+
         Log.e(TAG, "projectId: " + projectId);
 
         loadTask();
@@ -307,7 +317,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                                         }
                                     });
 
-                                    loadTask();
+                                    //loadTask();
                                 }
                             });
                         }
@@ -432,32 +442,15 @@ public class TaskDetailActivity extends AppCompatActivity {
             userList.clear();
 
             for(int i=0; i < task.getAssignTo().size(); i++) {
-                int finalI = i+1;
                 firestore.collection("Companies").document(companyID).collection("Users").document(task.getAssignTo().get(i)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
                         User user = new User(documentSnapshot.getString("id"), documentSnapshot.getString("name"), documentSnapshot.getString("phoneNo"), documentSnapshot.getString("profilePic"), documentSnapshot.getString("email"),"", documentSnapshot.getString("title"), documentSnapshot.getString("department"),documentSnapshot.getString("clockInTime"),documentSnapshot.getString("clockOutTime"),documentSnapshot.getLong("minutesOfWork").intValue());
                         userList.add(user);
 
-                        if(finalI == task.getAssignTo().size()) {
-
-                            Log.e(TAG, "finalI: " + finalI + ", taskList.size(): " + task.getAssignTo().size());
-
-                            if (userList.size() > 0) {
-                                binding.selectedUserRecyclerview.setLayoutManager(new GridLayoutManager(TaskDetailActivity.this, 2, GridLayoutManager.VERTICAL, false));
-                                selectedUserAdapter = new SelectedUserAdapter(userList, TaskDetailActivity.this, new SelectedUserAdapter.OnClickListener() {
-                                    @Override
-                                    public void onBtnDeleteClick(View view, int position) {
-
-                                    }
-                                });
-                                binding.selectedUserRecyclerview.setAdapter(selectedUserAdapter);
-
-                            }
-                            else {
-                                //binding.tvNoRecord.setVisibility(View.VISIBLE);
-                                //binding.recyclerView.setVisibility(View.GONE);
-                            }
+                        if (selectedUserAdapter!=null) {
+                            selectedUserAdapter.notifyItemInserted(0);
+                            selectedUserAdapter.notifyDataSetChanged();
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {

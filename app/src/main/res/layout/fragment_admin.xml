@@ -39,9 +39,12 @@
                     android:padding="15dp">
 
                     <ImageView
+                        android:padding="18dp"
+                        android:src="@drawable/ic_baseline_event_note_24"
                         android:layout_weight="1"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        app:tint="@color/white" />
 
                     <LinearLayout
                         android:layout_weight="2"
@@ -58,10 +61,11 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
-                            android:textSize="14sp"
+                            android:layout_marginTop="3dp"
+                            android:textSize="12sp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/white"
-                            android:text="Attendance"
+                            android:text="View company attendance chart, employee's attendance record and timesheet "
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -85,9 +89,15 @@
                     android:padding="15dp">
 
                     <ImageView
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="18dp"
+                        android:paddingRight="12dp"
+                        android:src="@drawable/ic_baseline_edit_note_24"
                         android:layout_weight="1"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        app:tint="@color/white" />
 
                     <LinearLayout
                         android:layout_weight="2"
@@ -104,10 +114,11 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
-                            android:textSize="14sp"
+                            android:textSize="12sp"
+                            android:layout_marginTop="3dp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/white"
-                            android:text="Attendance"
+                            android:text="Review, approve or reject \nemployees' leave requests \n"
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -131,9 +142,12 @@
                     android:padding="15dp">
 
                     <ImageView
+                        android:padding="18dp"
+                        android:src="@drawable/ic_baseline_supervisor_account_24"
                         android:layout_weight="1"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        app:tint="@color/white" />
 
                     <LinearLayout
                         android:layout_weight="2"
@@ -150,10 +164,11 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
-                            android:textSize="14sp"
+                            android:layout_marginTop="3dp"
+                            android:textSize="12sp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/white"
-                            android:text="Attendance"
+                            android:text="View, edit or invite employee to the company \n"
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -176,9 +191,12 @@
                     android:padding="15dp">
 
                     <ImageView
+                        android:src="@drawable/ic_baseline_business_24"
+                        android:padding="18dp"
                         android:layout_weight="1"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        app:tint="@color/white" />
 
                     <LinearLayout
                         android:layout_weight="2"
@@ -195,10 +213,11 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
-                            android:textSize="14sp"
+                            android:textSize="12sp"
+                            android:layout_marginTop="3dp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/white"
-                            android:text="Attendance"
+                            android:text="Edit company info such as company name, company location, punch range and etc."
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
                 </LinearLayout>
