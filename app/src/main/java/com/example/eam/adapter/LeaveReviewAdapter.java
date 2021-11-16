@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,10 +57,15 @@ import androidx.recyclerview.widget.RecyclerView;
 public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.ViewHolder>{
     private List<Leave> list;
     private Context context;
+    private String companyID;
 
     public LeaveReviewAdapter(List<Leave> list, Context context) {
         this.list = list;
         this.context = context;
+
+        SessionManager sessionManager = new SessionManager(context);
+        HashMap<String, String> userDetail = sessionManager.getUserDetail();
+        companyID = userDetail.get(sessionManager.COMPANYID);
     }
 
     @NonNull
@@ -74,9 +80,28 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Leave leave = list.get(position);
 
-        SessionManager sessionManager = new SessionManager(context);
-        HashMap<String, String> userDetail = sessionManager.getUserDetail();
-        String companyID = userDetail.get(sessionManager.COMPANYID);
+        holder.tvStatus.setText(leave.getStatus());
+
+        if(leave.getStatus().equals("Approved")){
+            holder.tvStatus.setText(leave.getStatus());
+            DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googgreen));
+            holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+        }
+        else if(leave.getStatus().equals("Declined")){
+            holder.tvStatus.setText(leave.getStatus());
+            DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googred));
+            holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+        }
+        else{
+            holder.tvStatus.setText(leave.getStatus());
+            DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.colorDivider));
+        }
+
+        if(leave.getRequestDate() != null && leave.getRequestTime() != null){
+            holder.tvLeaveDate.setText("Requested absence on " + leave.getRequestDate());
+        }
+
+        Log.e("LeaveReviewAdapter", "requester: " + leave.getRequester());
 
         FirebaseFirestore.getInstance().collection("Companies").document(companyID).collection("Users").document(leave.getRequester()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -85,34 +110,6 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
                 String userProfilePic = documentSnapshot.get("profilePic").toString();
 
                 holder.tvRequesterName.setText(userName);
-                holder.tvStatus.setText(leave.getStatus());
-                //holder.tvType.setText(leave.getType());
-
-                if(leave.getStatus().equals("Approved")){
-                    holder.tvStatus.setText(leave.getStatus());
-                    DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googgreen));
-                    holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
-                }
-                else if(leave.getStatus().equals("Declined")){
-                    holder.tvStatus.setText(leave.getStatus());
-                    DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.quantum_googred));
-                    holder.tvStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
-                }
-                else{
-                    holder.tvStatus.setText(leave.getStatus());
-                    DrawableCompat.setTint(holder.tvStatus.getBackground(), ContextCompat.getColor(context, R.color.colorDivider));
-                }
-
-                if(leave.getRequestDate() != null && leave.getRequestTime() != null){
-                    holder.tvLeaveDate.setText("Requested absence on " + leave.getRequestDate());
-                }
-
-                /*if(leave.isFullDay()){
-                    holder.tvLeaveDate.setText(leave.getDateFrom());
-                }
-                else{
-                    holder.tvLeaveDate.setText(leave.getDate());
-                }*/
 
                 if(userProfilePic!=null && !userProfilePic.equals("")) {
                     Glide.with(context).load(userProfilePic).into(holder.tvProfilePic);
@@ -129,7 +126,6 @@ public class LeaveReviewAdapter extends RecyclerView.Adapter<LeaveReviewAdapter.
                                 .putExtra("profilePic", userProfilePic)
                                 .putExtra("userName", userName)
                                 .putExtra("Activity", "LeaveReview"));
-                        //bottomSheetLeaveDetail(userName, userProfilePic, leave, companyID);
                     }
                 });
             }

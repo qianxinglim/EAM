@@ -67,6 +67,13 @@ public class LeaveDetailActivity extends AppCompatActivity {
             finish();
             Toast.makeText(this, "Error viewing leave detail.", Toast.LENGTH_SHORT).show();
         }
+
+        binding.btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private void displayLeaveDetailsUser() {

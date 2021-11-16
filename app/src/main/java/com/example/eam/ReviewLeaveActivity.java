@@ -128,6 +128,20 @@ public class ReviewLeaveActivity extends AppCompatActivity {
         //getLeaveApplications();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        list.clear();
+
+        if (adapter!=null) {
+            adapter.notifyItemInserted(0);
+            adapter.notifyDataSetChanged();
+        }
+
+        getLeaveApplications();
+    }
+
     private void bottomSheetShow() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(ReviewLeaveActivity.this, R.style.BottomSheetDialogTheme);
 
@@ -204,22 +218,22 @@ public class ReviewLeaveActivity extends AppCompatActivity {
                         }
 
                         list.sort(Comparator.comparing(Leave::getRequestDate));
+
+                        if (adapter!=null) {
+                            adapter.notifyItemInserted(0);
+                            adapter.notifyDataSetChanged();
+                        }
                     }
 
-                    if (adapter!=null){
-                        adapter.notifyItemInserted(0);
-                        adapter.notifyDataSetChanged();
-
-                        if(list.size() > 0){
-                            binding.progressBar.setVisibility(View.GONE);
-                            binding.recyclerView.setVisibility(View.VISIBLE);
-                            binding.tvNoRecord.setVisibility(View.GONE);
-                        }
-                        else{
-                            binding.progressBar.setVisibility(View.GONE);
-                            binding.recyclerView.setVisibility(View.GONE);
-                            binding.tvNoRecord.setVisibility(View.VISIBLE);
-                        }
+                    if(list.size() > 0){
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.recyclerView.setVisibility(View.VISIBLE);
+                        binding.tvNoRecord.setVisibility(View.GONE);
+                    }
+                    else{
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.recyclerView.setVisibility(View.GONE);
+                        binding.tvNoRecord.setVisibility(View.VISIBLE);
                     }
 
                     Log.d(TAG, "listSize: " + list.size());
