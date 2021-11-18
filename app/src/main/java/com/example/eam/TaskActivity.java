@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import com.example.eam.adapter.ContactsAdapter;
 import com.example.eam.adapter.TaskAdapter;
 import com.example.eam.databinding.ActivityTaskBinding;
 import com.example.eam.managers.SessionManager;
+import com.example.eam.model.Leave;
 import com.example.eam.model.Project;
 import com.example.eam.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,6 +65,7 @@ public class TaskActivity extends AppCompatActivity {
     private boolean filtered;
     private int passedDueAmt;
     private boolean isMyTasksDueSeen = false, isCreatedTasksDueSeen = false;
+    private TaskAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,25 @@ public class TaskActivity extends AppCompatActivity {
         binding.recyclerView.setVisibility(View.GONE);
         binding.tvNoRecord.setVisibility(View.GONE);
 
+        getTasks();
+
+        binding.btnAddTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(TaskActivity.this, TaskFormActivity.class));
+            }
+        });
+
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getTasks();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    private void getTasks() {
         getTaskList(new OnCallBack() {
             @Override
             public void onSuccess() {
@@ -104,7 +126,7 @@ public class TaskActivity extends AppCompatActivity {
                                 linearLayoutManager.setReverseLayout(true);
                                 linearLayoutManager.setStackFromEnd(true);
                                 binding.recyclerView.setLayoutManager(linearLayoutManager);
-                                TaskAdapter adapter = new TaskAdapter(taskList, TaskActivity.this);
+                                adapter = new TaskAdapter(taskList, TaskActivity.this);
                                 binding.recyclerView.setAdapter(adapter);
 
                             } else {
@@ -123,7 +145,7 @@ public class TaskActivity extends AppCompatActivity {
                                 linearLayoutManager.setReverseLayout(true);
                                 linearLayoutManager.setStackFromEnd(true);
                                 binding.recyclerView.setLayoutManager(linearLayoutManager);
-                                TaskAdapter adapter = new TaskAdapter(createdTaskList, TaskActivity.this);
+                                adapter = new TaskAdapter(createdTaskList, TaskActivity.this);
                                 binding.recyclerView.setAdapter(adapter);
 
                             } else {
@@ -163,13 +185,6 @@ public class TaskActivity extends AppCompatActivity {
             @Override
             public void onFailed(Exception e) {
 
-            }
-        });
-
-        binding.btnAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(TaskActivity.this, TaskFormActivity.class));
             }
         });
     }
@@ -352,7 +367,7 @@ public class TaskActivity extends AppCompatActivity {
             linearLayoutManager.setReverseLayout(true);
             linearLayoutManager.setStackFromEnd(true);
             binding.recyclerView.setLayoutManager(linearLayoutManager);
-            TaskAdapter adapter = new TaskAdapter(searchList, TaskActivity.this);
+            adapter = new TaskAdapter(searchList, TaskActivity.this);
             binding.recyclerView.setAdapter(adapter);
         }
         else{
@@ -381,6 +396,11 @@ public class TaskActivity extends AppCompatActivity {
                             passedDueAmt = passedDueAmt + 1;
                         }
                     }
+                    else if(currDate.after(dueDate)){
+                        if(project.getStatus().equals("Pending")){
+                            passedDueAmt = passedDueAmt + 1;
+                        }
+                    }
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -399,6 +419,11 @@ public class TaskActivity extends AppCompatActivity {
                     Date currTime = sdf2.parse(currTime1);
 
                     if (currDate.after(dueDate) && currTime.after(dueTime)) {
+                        if(project.getStatus().equals("Pending")){
+                            passedDueAmt = passedDueAmt + 1;
+                        }
+                    }
+                    else if(currDate.after(dueDate)){
                         if(project.getStatus().equals("Pending")){
                             passedDueAmt = passedDueAmt + 1;
                         }
@@ -477,51 +502,73 @@ public class TaskActivity extends AppCompatActivity {
     }
 
     private void getTaskInfo() {
-        taskList.clear();
+        //taskList.clear();
 
-        for(int i=0; i < taskKeyList.size(); i++) {
-            int finalI = i+1;
-            reference.child(companyID).child("Tasks").child(taskKeyList.get(i)).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if(task.isSuccessful()){
-                        DataSnapshot snapshot = task.getResult();
+        //for(int i=0; i < taskKeyList.size(); i++) {
+        reference.child(companyID).child("Tasks").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                taskList.clear();
 
-                        Project project = snapshot.getValue(Project.class);
-                        project.setTaskId(snapshot.getKey());
-                        //String projectId = snapshot.getKey();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    for (String taskKey : taskKeyList) {
+                        Project project = dataSnapshot.getValue(Project.class);
+                        project.setTaskId(dataSnapshot.getKey());
 
-                        //Log.e(TAG, "projectId: " + projectId);
-
-                        taskList.add(project);
-
-//                        if(finalI == taskKeyList.size()) {
-//
-//                            Log.e(TAG, "finalI: " + finalI + ", taskKeyList.size(): " +taskKeyList.size());
-//
-//                            if (taskList.size() > 0) {
-//                                binding.recyclerView.setVisibility(View.VISIBLE);
-//
-//                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TaskActivity.this);
-//                                linearLayoutManager.setReverseLayout(true);
-//                                linearLayoutManager.setStackFromEnd(true);
-//                                binding.recyclerView.setLayoutManager(linearLayoutManager);
-//                                TaskAdapter adapter = new TaskAdapter(taskList, TaskActivity.this);
-//                                binding.recyclerView.setAdapter(adapter);
-//                            } else {
-//                                //binding.tvNoRecord.setVisibility(View.VISIBLE);
-//                                //binding.recyclerView.setVisibility(View.GONE);
-//                            }
-//                        }
+                        if(taskKey.equals(project.getTaskId())){
+                            taskList.add(project);
+                        }
                     }
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+            }
 
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+//            reference.child(companyID).child("Tasks").child(taskKeyList.get(i)).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                    if(task.isSuccessful()){
+//                        DataSnapshot snapshot = task.getResult();
+//
+//                        Project project = snapshot.getValue(Project.class);
+//                        project.setTaskId(snapshot.getKey());
+//                        //String projectId = snapshot.getKey();
+//
+//                        //Log.e(TAG, "projectId: " + projectId);
+//
+//                        taskList.add(project);
+//
+////                        if(finalI == taskKeyList.size()) {
+////
+////                            Log.e(TAG, "finalI: " + finalI + ", taskKeyList.size(): " +taskKeyList.size());
+////
+////                            if (taskList.size() > 0) {
+////                                binding.recyclerView.setVisibility(View.VISIBLE);
+////
+////                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TaskActivity.this);
+////                                linearLayoutManager.setReverseLayout(true);
+////                                linearLayoutManager.setStackFromEnd(true);
+////                                binding.recyclerView.setLayoutManager(linearLayoutManager);
+////                                TaskAdapter adapter = new TaskAdapter(taskList, TaskActivity.this);
+////                                binding.recyclerView.setAdapter(adapter);
+////                            } else {
+////                                //binding.tvNoRecord.setVisibility(View.VISIBLE);
+////                                //binding.recyclerView.setVisibility(View.GONE);
+////                            }
+////                        }
+//                    }
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//
+//                }
+//            });
+        //}
     }
 
     private void bottomSheetShow() {
@@ -680,6 +727,11 @@ public class TaskActivity extends AppCompatActivity {
                                         filterList.add(project);
                                     }
                                 }
+                                else if(currDate.after(dueDate)){
+                                    if(project.getStatus().equals("Pending")){
+                                        filterList.add(project);
+                                    }
+                                }
 
                             } catch (ParseException e) {
                                 e.printStackTrace();
@@ -733,6 +785,12 @@ public class TaskActivity extends AppCompatActivity {
                                         filterList.add(project);
                                     }
                                 }
+                                else if(currDate.after(dueDate)){
+                                    if(project.getStatus().equals("Pending")){
+                                        filterList.add(project);
+                                    }
+                                }
+
 
                             } catch (ParseException e) {
                                 e.printStackTrace();
@@ -754,7 +812,7 @@ public class TaskActivity extends AppCompatActivity {
                 linearLayoutManager.setReverseLayout(true);
                 linearLayoutManager.setStackFromEnd(true);
                 binding.recyclerView.setLayoutManager(linearLayoutManager);
-                TaskAdapter adapter = new TaskAdapter(filterList, TaskActivity.this);
+                adapter = new TaskAdapter(filterList, TaskActivity.this);
                 binding.recyclerView.setAdapter(adapter);
             } else {
                 binding.progressBar.setVisibility(View.GONE);
@@ -774,7 +832,7 @@ public class TaskActivity extends AppCompatActivity {
                     linearLayoutManager.setReverseLayout(true);
                     linearLayoutManager.setStackFromEnd(true);
                     binding.recyclerView.setLayoutManager(linearLayoutManager);
-                    TaskAdapter adapter = new TaskAdapter(taskList, TaskActivity.this);
+                    adapter = new TaskAdapter(taskList, TaskActivity.this);
                     binding.recyclerView.setAdapter(adapter);
                 }
                 else{
@@ -793,7 +851,7 @@ public class TaskActivity extends AppCompatActivity {
                     linearLayoutManager.setReverseLayout(true);
                     linearLayoutManager.setStackFromEnd(true);
                     binding.recyclerView.setLayoutManager(linearLayoutManager);
-                    TaskAdapter adapter = new TaskAdapter(createdTaskList, TaskActivity.this);
+                    adapter = new TaskAdapter(createdTaskList, TaskActivity.this);
                     binding.recyclerView.setAdapter(adapter);
                 }
                 else{

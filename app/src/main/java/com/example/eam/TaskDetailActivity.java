@@ -111,12 +111,27 @@ public class TaskDetailActivity extends AppCompatActivity {
     }
 
     private void loadTask() {
+//        reference.child(companyID).child("Tasks").child(projectId).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+//            @Override
+//            public void onSuccess(@NonNull DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.exists()){
+//                    Project task = dataSnapshot.getValue(Project.class);
+//                    displayTaskDetails(task);
+//                }
+//            }
+//        });
+
         reference.child(companyID).child("Tasks").child(projectId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
                     Project task = snapshot.getValue(Project.class);
                     displayTaskDetails(task);
+
+                    if(selectedUserAdapter != null){
+                        selectedUserAdapter.notifyItemInserted(0);
+                        selectedUserAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 

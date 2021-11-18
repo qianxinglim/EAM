@@ -73,15 +73,23 @@ public class Attachment2Adapter extends RecyclerView.Adapter<Attachment2Adapter.
         }
         else if(extension.equals("ppt") || extension.equals("pptx")){
             holder.imageview.setImageResource(R.drawable.ppt);
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setImageResource(R.drawable.ic_baseline_arrow_circle_down_24);
         }
         else if(extension.equals("xls") || extension.equals("xlsx")){
             holder.imageview.setImageResource(R.drawable.xls);
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setImageResource(R.drawable.ic_baseline_arrow_circle_down_24);
         }
         else if(extension.equals("txt")){
             holder.imageview.setImageResource(R.drawable.txt);
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setImageResource(R.drawable.ic_baseline_arrow_circle_down_24);
         }
         else if(extension.equals("zip")){
             holder.imageview.setImageResource(R.drawable.zip);
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setImageResource(R.drawable.ic_baseline_arrow_circle_down_24);
         }
 
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {

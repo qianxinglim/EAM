@@ -128,19 +128,19 @@ public class ReviewLeaveActivity extends AppCompatActivity {
         //getLeaveApplications();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        list.clear();
-
-        if (adapter!=null) {
-            adapter.notifyItemInserted(0);
-            adapter.notifyDataSetChanged();
-        }
-
-        getLeaveApplications();
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//
+//        list.clear();
+//
+//        if (adapter!=null) {
+//            adapter.notifyItemInserted(0);
+//            adapter.notifyDataSetChanged();
+//        }
+//
+//        getLeaveApplications();
+//    }
 
     private void bottomSheetShow() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(ReviewLeaveActivity.this, R.style.BottomSheetDialogTheme);
@@ -188,40 +188,41 @@ public class ReviewLeaveActivity extends AppCompatActivity {
     }
 
     private void getLeaveApplications(){
-        list.clear();
-
-        for(String dates : datelist) {
-            reference.child(companyID).child("Leaves").orderByChild("requestDate").equalTo(dates).addValueEventListener(new ValueEventListener() {
+        //for(String dates : datelist) {
+            reference.child(companyID).child("Leaves").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    list.clear();
+
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Leave leave = snapshot.getValue(Leave.class);
-                        leave.setLeaveId(snapshot.getKey());
+                        for(String dates : datelist) {
+                            Leave leave = snapshot.getValue(Leave.class);
+                            leave.setLeaveId(snapshot.getKey());
 
-                        if(binding.btnFilter.getText().toString().equals("Approved")){
-                            if(leave.getStatus().equals("Approved")){
-                                list.add(leave);
-                            }
-                        }
-                        else if(binding.btnFilter.getText().toString().equals("Declined")){
-                            if(leave.getStatus().equals("Declined")){
-                                list.add(leave);
-                            }
-                        }
-                        else if(binding.btnFilter.getText().toString().equals("Pending")){
-                            if(leave.getStatus().equals("Pending")){
-                                list.add(leave);
-                            }
-                        }
-                        else{
-                            list.add(leave);
-                        }
+                            if(dates.equals(leave.getRequestDate())){
+                                if (binding.btnFilter.getText().toString().equals("Approved")) {
+                                    if (leave.getStatus().equals("Approved")) {
+                                        list.add(leave);
+                                    }
+                                } else if (binding.btnFilter.getText().toString().equals("Declined")) {
+                                    if (leave.getStatus().equals("Declined")) {
+                                        list.add(leave);
+                                    }
+                                } else if (binding.btnFilter.getText().toString().equals("Pending")) {
+                                    if (leave.getStatus().equals("Pending")) {
+                                        list.add(leave);
+                                    }
+                                } else {
+                                    list.add(leave);
+                                }
 
-                        list.sort(Comparator.comparing(Leave::getRequestDate));
+                                list.sort(Comparator.comparing(Leave::getRequestDate));
 
-                        if (adapter!=null) {
-                            adapter.notifyItemInserted(0);
-                            adapter.notifyDataSetChanged();
+                                if (adapter != null) {
+                                    adapter.notifyItemInserted(0);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }
                         }
                     }
 
@@ -244,7 +245,7 @@ public class ReviewLeaveActivity extends AppCompatActivity {
 
                 }
             });
-        }
+        //}
     }
 
     private void setDate(final OnCallBack onCallBack) {

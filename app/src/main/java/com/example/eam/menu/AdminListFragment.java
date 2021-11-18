@@ -78,6 +78,11 @@ public class AdminListFragment extends Fragment {
 
         getEmployeeList();
 
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        list.sort(Comparator.comparing(User::getDepartment));
+        adapter = new EmployeeListAdapter(list, getContext());
+        binding.recyclerView.setAdapter(adapter);
+
         binding.etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -138,6 +143,13 @@ public class AdminListFragment extends Fragment {
                 }
 
                 getUserInfo();
+
+                if(adapter != null){
+                    adapter.notifyItemInserted(0);
+                    adapter.notifyDataSetChanged();
+
+                    Log.d(TAG, "onSuccess: adapter" + adapter.getItemCount());
+                }
             }
         });
     }
@@ -160,24 +172,12 @@ public class AdminListFragment extends Fragment {
                                 }catch(Exception e){
                                     Log.d(TAG, "onSuccess: s" + e.getMessage());
                                 }
-
-                                if(adapter != null){
-                                    adapter.notifyItemInserted(0);
-                                    adapter.notifyDataSetChanged();
-
-                                    Log.d(TAG, "onSuccess: adapter" + adapter.getItemCount());
-                                }
                             }
                             else{
 
                             }
                         }
                     });
-
-                    binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                    list.sort(Comparator.comparing(User::getDepartment));
-                    adapter = new EmployeeListAdapter(list, getContext());
-                    binding.recyclerView.setAdapter(adapter);
 
                     /*firestore.collection("Companies").document(companyID).collection("Users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
