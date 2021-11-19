@@ -450,7 +450,7 @@ public class TaskFormActivity extends AppCompatActivity {
         if(binding.tvTitle.getText().toString().equals("")){
             Toast.makeText(this, "Please fill in title for the task.", Toast.LENGTH_SHORT).show();
         }
-        else if(userList.size() == 0 || userList == null){
+        else if(userList.size() == 0 || userList == null || selectedUserIdList == null || selectedUserIdList.size() == 0){
             Toast.makeText(this, "Please assign the task to at least one person.", Toast.LENGTH_SHORT).show();
         }
         else{

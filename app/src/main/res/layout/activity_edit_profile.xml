@@ -493,7 +493,7 @@
                                     android:layout_weight="1"
                                     android:layout_height="wrap_content"
                                     android:textSize="14sp"
-                                    android:text="Start Time"/>
+                                    android:text="End Time"/>
                             </LinearLayout>
 
 

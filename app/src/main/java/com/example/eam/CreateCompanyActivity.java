@@ -7,6 +7,8 @@ import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
@@ -65,6 +67,8 @@ public class CreateCompanyActivity extends AppCompatActivity {
 
         Places.initialize(getApplicationContext(), "AIzaSyDQymcPSWVISf1RAmlmRHwf0MaIrc_5sXU");
 
+        validation();
+
         binding.etLocation.setFocusable(false);
         binding.etLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,24 +89,84 @@ public class CreateCompanyActivity extends AppCompatActivity {
                 RadioButton rbStaffSize = (RadioButton) findViewById(staffSizeSelectedId);
                 RadioButton rbIndustryType = (RadioButton) findViewById(industrySelectedId);
 
-                Company company = new Company();
-                company.setCompanyName(binding.etCompanyName.getText().toString());
-                company.setStaffSize(rbStaffSize.getText().toString());
-                company.setIndustryType(rbIndustryType.getText().toString());
-                company.setPunchRange(0.5);
-                company.setCreatorID(firebaseUser.getUid());
+                if(binding.etCompanyName.getText().toString().equals("")){
+                    binding.tvCompanyName.setError("This field is required");
+                    //Toast.makeText(this, "Please fill in company title.", Toast.LENGTH_SHORT).show();
+                }
+                else if(latitude == 0.0 || longitude == 0.0 || binding.etLocation.getText().toString().equals("") || binding.etLocation.getText().toString() == null){
+                    binding.tvCompanyAddress.setError("This field is required");
+                    //Toast.makeText(this, "Please fill in company location.", Toast.LENGTH_SHORT).show();
+                }
+                else if(rbStaffSize == null || rbStaffSize.getText().toString().equals("")){
+                    Toast.makeText(CreateCompanyActivity.this, "Please select an approximate staff size.", Toast.LENGTH_SHORT).show();
+                }
+                else if(rbIndustryType == null || rbIndustryType.getText().toString().equals("")){
+                    Toast.makeText(CreateCompanyActivity.this, "Please select company industry type.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Company company = new Company();
+                    company.setCompanyName(binding.etCompanyName.getText().toString());
+                    company.setStaffSize(rbStaffSize.getText().toString());
+                    company.setIndustryType(rbIndustryType.getText().toString());
+                    company.setPunchRange(0.5);
+                    company.setCreatorID(firebaseUser.getUid());
 
-                Map<String,Object> location = new HashMap<>();
-                location.put("latitude", latitude);
-                location.put("longitude", longitude);
-                company.setCompanyLocation(location);
+                    Map<String,Object> location = new HashMap<>();
+                    location.put("latitude", latitude);
+                    location.put("longitude", longitude);
+                    company.setCompanyLocation(location);
 
-                startActivity(new Intent(CreateCompanyActivity.this, RegisterUserActivity.class)
-                        .putExtra("companyObj", company)
-                        .putExtra("pos", pos));
-
-
+                    startActivity(new Intent(CreateCompanyActivity.this, RegisterUserActivity.class)
+                            .putExtra("companyObj", company)
+                            .putExtra("pos", pos));
+                }
                 //createCompany();
+            }
+        });
+    }
+
+    private void validation() {
+        binding.etCompanyName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().isEmpty()){
+                    binding.tvCompanyName.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvCompanyName.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        binding.etLocation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    binding.tvCompanyAddress.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvCompanyAddress.setError(null);
+                }
             }
         });
     }

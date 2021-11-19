@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -61,6 +62,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -71,6 +75,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class EmployeeProfileActivity extends AppCompatActivity {
     private static final String TAG = "EmployeeProfileActivity";
@@ -160,56 +165,81 @@ public class EmployeeProfileActivity extends AppCompatActivity {
 
 
     private void updateUserInfo() {
-        final ProgressDialog progressDialog = new ProgressDialog(EmployeeProfileActivity.this);
-        progressDialog.setMessage("Updating user profile...");
-        progressDialog.show();
-
-        String phoneNo = binding.etPhoneNo.getText().toString();
-        String name = binding.etName.getText().toString();
-        String department = binding.etDepartment.getText().toString();
-        String email = binding.etEmail.getText().toString();
-        String title = binding.etTitle.getText().toString();
-        String clockInTime = binding.etClockInTime.getText().toString();
-        String clockOutTime = binding.etClockOutTime.getText().toString();
-        int workMinutes = 0;
-
-        SimpleDateFormat f24Hours = new SimpleDateFormat("HH:mm");
-
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         try {
-            Date clockIn = f24Hours.parse(clockInTime);
-            Date clockOut = f24Hours.parse(clockOutTime);
-            long diff = clockOut.getTime() - clockIn.getTime();
-            workMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            Date timeFrom = sdf.parse(binding.etClockInTime.getText().toString());
+            Date timeTo = sdf.parse(binding.etClockOutTime.getText().toString());
+
+            if (timeFrom.after(timeTo)) {
+                Toast.makeText(this, "Work end time cannot be earlier than work start time.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                submitUpdate();
+            }
         }
+        catch (ParseException e){
+            e.printStackTrace();
+            Toast.makeText(this, "Fail to update user profile. Please try again.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        //User user = new User("",name,phoneNo,"",email,"",title,department, clockInTime, clockOutTime, workMinutes);
+    private void submitUpdate() {
+        if(binding.tvName.getError() != null || binding.tvEmail.getError() != null || binding.tvPhoneNo.getError() != null || binding.tvDepartment.getError() != null || binding.tvTitle.getError() != null){
+            Toast.makeText(this, "Please enter the correct information.", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            final ProgressDialog progressDialog = new ProgressDialog(EmployeeProfileActivity.this);
+            progressDialog.setMessage("Updating user profile...");
+            progressDialog.show();
 
-        Map<String, Object> updateInfo = new HashMap<>();
-        updateInfo.put("phoneNo", phoneNo);
-        updateInfo.put("name", name);
-        updateInfo.put("email", email);
-        updateInfo.put("department", department);
-        updateInfo.put("title", title);
-        updateInfo.put("clockInTime", clockInTime);
-        updateInfo.put("clockOutTime", clockOutTime);
-        updateInfo.put("minutesOfWork", workMinutes);
+            String phoneNo = binding.etPhoneNo.getText().toString();
+            String name = binding.etName.getText().toString();
+            String department = binding.etDepartment.getText().toString();
+            String email = binding.etEmail.getText().toString();
+            String title = binding.etTitle.getText().toString();
+            String clockInTime = binding.etClockInTime.getText().toString();
+            String clockOutTime = binding.etClockOutTime.getText().toString();
+            int workMinutes = 0;
 
-        firestore.collection("Companies").document(companyID).collection("Users").document(userId).update(updateInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(@NonNull Void aVoid) {
-                Toast.makeText(EmployeeProfileActivity.this, "user info updated successfully", Toast.LENGTH_SHORT).show();
+            SimpleDateFormat f24Hours = new SimpleDateFormat("HH:mm");
+
+            try {
+                Date clockIn = f24Hours.parse(clockInTime);
+                Date clockOut = f24Hours.parse(clockOutTime);
+                long diff = clockOut.getTime() - clockIn.getTime();
+                workMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "fail to update user info");
-            }
-        });
 
-        progressDialog.dismiss();
-        finish();
+            //User user = new User("",name,phoneNo,"",email,"",title,department, clockInTime, clockOutTime, workMinutes);
+
+            Map<String, Object> updateInfo = new HashMap<>();
+            updateInfo.put("phoneNo", phoneNo);
+            updateInfo.put("name", name);
+            updateInfo.put("email", email);
+            updateInfo.put("department", department);
+            updateInfo.put("title", title);
+            updateInfo.put("clockInTime", clockInTime);
+            updateInfo.put("clockOutTime", clockOutTime);
+            updateInfo.put("minutesOfWork", workMinutes);
+
+            firestore.collection("Companies").document(companyID).collection("Users").document(userId).update(updateInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(@NonNull Void aVoid) {
+                    Toast.makeText(EmployeeProfileActivity.this, "User info updated successfully.", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                    finish();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(EmployeeProfileActivity.this, "Fail to update user profile. Please try again.", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Fail to update user info.");
+                }
+            });
+        }
     }
 
     private void getTime(TextView tvTime) {
@@ -242,9 +272,11 @@ public class EmployeeProfileActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(!s.toString().isEmpty() && !s.toString().matches("[a-zA-Z]+")){
-                    //When value is not equal to empty and contain numeric value
-                    binding.tvName.setError("Allow only character");
+                if(!s.toString().isEmpty() && !s.toString().matches("[a-zA-Z ]*")){
+                    binding.tvName.setError("Allows only character");
+                }
+                else if(s.toString().isEmpty()){
+                    binding.tvName.setError("Field cannot be empty");
                 }
                 else{
                     binding.tvName.setError(null);
@@ -254,6 +286,104 @@ public class EmployeeProfileActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+
+        binding.etEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Pattern ptr = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+                if(s.toString().isEmpty()){
+                    binding.tvEmail.setError("Field cannot be empty");
+                }
+                else if(!ptr.matcher(s.toString()).matches()){
+                    binding.tvEmail.setError("Please enter a valid email address.");
+                }
+                else{
+                    binding.tvEmail.setError(null);
+                }
+            }
+        });
+
+        binding.etTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    binding.tvTitle.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvTitle.setError(null);
+                }
+            }
+        });
+
+        binding.etDepartment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    binding.tvDepartment.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvDepartment.setError(null);
+                }
+            }
+        });
+
+        binding.etPhoneNo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Pattern ptr = Pattern.compile("^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$");
+
+                if(s.toString().isEmpty()){
+                    binding.tvPhoneNo.setError("Field cannot be empty");
+                }
+                else if(!ptr.matcher(s.toString()).matches()){
+                    binding.tvPhoneNo.setError("Please enter a valid phone number.");
+                }
+                else{
+                    binding.tvPhoneNo.setError(null);
+                }
             }
         });
     }

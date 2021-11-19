@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -22,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -30,10 +34,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class AddUserActivity extends AppCompatActivity {
     private static final String TAG = "AdminUserActivity";
@@ -73,6 +80,133 @@ public class AddUserActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getTime(binding.etClockOutTime);
+            }
+        });
+
+        validation();
+    }
+
+    private void validation() {
+        binding.etName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!s.toString().isEmpty() && !s.toString().matches("[a-zA-Z ]*")){
+                    binding.tvName.setError("Allows only character");
+                }
+                else if(s.toString().isEmpty()){
+                    binding.tvName.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvName.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        binding.etEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Pattern ptr = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+                if(s.toString().isEmpty()){
+                    binding.tvEmail.setError("Field cannot be empty");
+                }
+                else if(!ptr.matcher(s.toString()).matches()){
+                    binding.tvEmail.setError("Please enter a valid email address.");
+                }
+                else{
+                    binding.tvEmail.setError(null);
+                }
+            }
+        });
+
+        binding.etTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    binding.tvTitle.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvTitle.setError(null);
+                }
+            }
+        });
+
+        binding.etDepartment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    binding.tvDepartment.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvDepartment.setError(null);
+                }
+            }
+        });
+
+        binding.etPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Pattern ptr = Pattern.compile("^[0-9]*$");
+
+                if(s.toString().isEmpty()){
+                    binding.tvPhoneNo.setError("Field cannot be empty");
+                }
+                else if(!ptr.matcher(s.toString()).matches()){
+                    binding.tvPhoneNo.setError("Please enter a valid phone number.");
+                }
+                else{
+                    binding.tvPhoneNo.setError(null);
+                }
             }
         });
     }
@@ -139,32 +273,90 @@ public class AddUserActivity extends AppCompatActivity {
     }*/
 
     private void addUser(){
-        String phoneNo = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.etPhone.getText().toString();
-        String name = binding.etName.getText().toString();
-        String department = binding.etDepartment.getText().toString();
-        String email = binding.etEmail.getText().toString();
-        String title = binding.etTitle.getText().toString();
-        String clockInTime = binding.etClockInTime.getText().toString();
-        String clockOutTime = binding.etClockOutTime.getText().toString();
-        //double durationHour = Double.parseDouble(binding.etHour.getText().toString());
-        //double durationMinute = Double.parseDouble(binding.etMinute.getText().toString());
-        int workMinutes = 0;
+        List<EditText> etlist = new ArrayList<>();
+        etlist.add(binding.etName);
+        etlist.add(binding.etPhone);
+        etlist.add(binding.etEmail);
+        etlist.add(binding.etTitle);
+        etlist.add(binding.etDepartment);
 
-        SimpleDateFormat f24Hours = new SimpleDateFormat("HH:mm");
+        List<TextInputLayout> tvlist = new ArrayList<>();
+        tvlist.add(binding.tvName);
+        tvlist.add(binding.tvPhoneNo);
+        tvlist.add(binding.tvEmail);
+        tvlist.add(binding.tvTitle);
+        tvlist.add(binding.tvDepartment);
 
-        try {
-            Date clockIn = f24Hours.parse(clockInTime);
-            Date clockOut = f24Hours.parse(clockOutTime);
-            long diff = clockOut.getTime() - clockIn.getTime();
-            workMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
+        if(binding.etName.getText().toString().equals("") || binding.etName.getText().toString() == null ||
+                binding.etPhone.getText().toString().equals("") || binding.etPhone.getText().toString() == null ||
+                binding.etEmail.getText().toString().equals("") || binding.etEmail.getText().toString() == null ||
+                binding.etTitle.getText().toString().equals("") || binding.etTitle.getText().toString() == null ||
+                binding.etDepartment.getText().toString().equals("") || binding.etDepartment.getText().toString() == null){
 
-            //Log.d(TAG, "clockIn: " + clockIn.getTime() + ", clockOut: " + clockOut.getTime() + ", diff: " + workHours);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
+                for(int i=0; i < etlist.size() ; i++){
+                    if(etlist.get(i).getText().toString().equals("") || etlist.get(i).getText().toString() == null){
+                        tvlist.get(i).setError("This field is required.");
+                    }
+                }
         }
+        else if(binding.etClockInTime.getText().toString().equals("") || binding.etClockInTime.getText().toString() == null || binding.etClockOutTime.getText().toString().equals("") || binding.etClockOutTime.getText().toString() == null){
+            Toast.makeText(this, "Please select work time.", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            try {
+                Date timeFrom = sdf.parse(binding.etClockInTime.getText().toString());
+                Date timeTo = sdf.parse(binding.etClockOutTime.getText().toString());
 
-        User user = new User("",name,phoneNo,"",email,"",title,department, clockInTime, clockOutTime, workMinutes);
+                if (timeFrom.after(timeTo)) {
+                    Toast.makeText(this, "Work end time cannot be earlier than work start time.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    submitUpdate();
+                }
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+                Toast.makeText(this, "Fail to update user profile. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void submitUpdate() {
+        if(binding.tvName.getError() != null || binding.tvEmail.getError() != null || binding.tvPhoneNo.getError() != null || binding.tvDepartment.getError() != null || binding.tvTitle.getError() != null){
+            Toast.makeText(this, "Please fill in.", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            final ProgressDialog progressDialog = new ProgressDialog(AddUserActivity.this);
+            progressDialog.setMessage("Updating user profile...");
+            progressDialog.show();
+
+            String phoneNo = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.etPhone.getText().toString();
+            String name = binding.etName.getText().toString();
+            String department = binding.etDepartment.getText().toString();
+            String email = binding.etEmail.getText().toString();
+            String title = binding.etTitle.getText().toString();
+            String clockInTime = binding.etClockInTime.getText().toString();
+            String clockOutTime = binding.etClockOutTime.getText().toString();
+            //double durationHour = Double.parseDouble(binding.etHour.getText().toString());
+            //double durationMinute = Double.parseDouble(binding.etMinute.getText().toString());
+            int workMinutes = 0;
+
+            SimpleDateFormat f24Hours = new SimpleDateFormat("HH:mm");
+
+            try {
+                Date clockIn = f24Hours.parse(clockInTime);
+                Date clockOut = f24Hours.parse(clockOutTime);
+                long diff = clockOut.getTime() - clockIn.getTime();
+                workMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(diff);
+
+                //Log.d(TAG, "clockIn: " + clockIn.getTime() + ", clockOut: " + clockOut.getTime() + ", diff: " + workHours);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            User user = new User("",name,phoneNo,"",email,"",title,department, clockInTime, clockOutTime, workMinutes);
 
         /*Map<String, Object> addUser = new HashMap<>();
         addUser.put("phoneNo", phoneNo);
@@ -175,42 +367,46 @@ public class AddUserActivity extends AppCompatActivity {
         addUser.put("addedBy", firebaseUser.getUid());*/
 
 
-        firestore.collection("Companies").document(companyID).collection("Users").whereEqualTo("phoneNo", phoneNo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.getResult().isEmpty()){
+            firestore.collection("Companies").document(companyID).collection("Users").whereEqualTo("phoneNo", phoneNo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.getResult().isEmpty()){
 
-                    firestore.collection("tempUsers").document(phoneNo).collection("Companies").document(companyID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if(task.isSuccessful()){
-                                DocumentSnapshot document = task.getResult();
+                        firestore.collection("tempUsers").document(phoneNo).collection("Companies").document(companyID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.isSuccessful()){
+                                    DocumentSnapshot document = task.getResult();
 
-                                if(!document.exists()){
-                                    firestore.collection("tempUsers").document(phoneNo).collection("Companies").document(companyID).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(@NonNull Void aVoid) {
-                                            finish();
-                                            Toast.makeText(AddUserActivity.this, "Successfully invited user.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.d(TAG, "fail to add user");
-                                        }
-                                    });
-                                }
-                                else{
-                                    Toast.makeText(AddUserActivity.this, "Invitation has already been sent to the user (Pending)", Toast.LENGTH_SHORT).show();
+                                    if(!document.exists()){
+                                        firestore.collection("tempUsers").document(phoneNo).collection("Companies").document(companyID).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(@NonNull Void aVoid) {
+                                                progressDialog.dismiss();
+                                                finish();
+                                                Toast.makeText(AddUserActivity.this, "Successfully invited user.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d(TAG, "fail to add user");
+                                            }
+                                        });
+                                    }
+                                    else{
+                                        progressDialog.dismiss();
+                                        Toast.makeText(AddUserActivity.this, "Invitation has already been sent to the user (Pending)", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
+                    else{
+                        progressDialog.dismiss();
+                        Toast.makeText(AddUserActivity.this, "User already exists in your company", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else{
-                    Toast.makeText(AddUserActivity.this, "User already exists in your company", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+            });
+        }
     }
 }

@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
@@ -88,6 +90,54 @@ public class EditCompanyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 updateCompanyInfo();
+            }
+        });
+
+        validation();
+    }
+
+    private void validation() {
+        binding.etCompanyName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().isEmpty()){
+                    binding.tvCompanyName.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvCompanyName.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        binding.etPunchRange.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().isEmpty()){
+                    binding.tvPunchRange.setError("Field cannot be empty");
+                }
+                else{
+                    binding.tvPunchRange.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -273,10 +323,6 @@ public class EditCompanyActivity extends AppCompatActivity {
     }
 
     private void updateCompanyInfo() {
-        final ProgressDialog progressDialog = new ProgressDialog(EditCompanyActivity.this);
-        progressDialog.setMessage("Updating Company Info...");
-        progressDialog.show();
-
         int staffSizeSelectedId = binding.rgStaffSize.getCheckedCheckableImageButtonId();
         int industrySelectedId = binding.rgIndustry.getCheckedCheckableImageButtonId();
 
@@ -284,25 +330,17 @@ public class EditCompanyActivity extends AppCompatActivity {
         RadioButton rbStaffSize = (RadioButton) findViewById(staffSizeSelectedId);
         RadioButton rbIndustryType = (RadioButton) findViewById(industrySelectedId);
 
-        Map<String,Object> company = new HashMap<>();
-        company.put("companyName", binding.etCompanyName.getText().toString());
-        company.put("staffSize",rbStaffSize.getText().toString());
-        company.put("industryType", rbIndustryType.getText().toString());
-        company.put("punchRange", Double.parseDouble(binding.etPunchRange.getText().toString()));
-
-        Map<String,Object> location = new HashMap<>();
-        location.put("latitude", latitude);
-        location.put("longitude", longitude);
-        company.put("companyLocation", location);
-
         if(binding.etCompanyName.getText().toString().equals("")){
-            Toast.makeText(this, "Please fill in company title.", Toast.LENGTH_SHORT).show();
+            binding.tvCompanyName.setError("This field is required");
+            //Toast.makeText(this, "Please fill in company title.", Toast.LENGTH_SHORT).show();
         }
-        else if(latitude == 0.0 || longitude == 0.0 || binding.etLocation.getText().toString().equals("")){
-            Toast.makeText(this, "Please fill in company location.", Toast.LENGTH_SHORT).show();
+        else if(latitude == 0.0 || longitude == 0.0 || binding.etLocation.getText().toString().equals("") || binding.etLocation.getText().toString() == null){
+            binding.tvCompanyAddress.setError("This field is required");
+            //Toast.makeText(this, "Please fill in company location.", Toast.LENGTH_SHORT).show();
         }
         else if(binding.etPunchRange.getText().toString().equals("")){
-            Toast.makeText(this, "Please fill in employee allowed punch range.", Toast.LENGTH_SHORT).show();
+            binding.tvPunchRange.setError("This field is required");
+            //Toast.makeText(this, "Please fill in employee allowed punch range.", Toast.LENGTH_SHORT).show();
         }
         else if(rbStaffSize.getText().toString() == null || rbStaffSize.getText().toString().equals("")){
             Toast.makeText(this, "Please select an approximate staff size.", Toast.LENGTH_SHORT).show();
@@ -311,16 +349,33 @@ public class EditCompanyActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select company industry type.", Toast.LENGTH_SHORT).show();
         }
         else{
+            final ProgressDialog progressDialog = new ProgressDialog(EditCompanyActivity.this);
+            progressDialog.setMessage("Updating Company Info...");
+            progressDialog.show();
+
+            Map<String,Object> company = new HashMap<>();
+            company.put("companyName", binding.etCompanyName.getText().toString());
+            company.put("staffSize",rbStaffSize.getText().toString());
+            company.put("industryType", rbIndustryType.getText().toString());
+            company.put("punchRange", Double.parseDouble(binding.etPunchRange.getText().toString()));
+
+            Map<String,Object> location = new HashMap<>();
+            location.put("latitude", latitude);
+            location.put("longitude", longitude);
+            company.put("companyLocation", location);
+
             firestore.collection("Companies").document(companyID).update(company).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(@NonNull Void aVoid) {
                     progressDialog.dismiss();
                     finish();
-                    Toast.makeText(EditCompanyActivity.this, "company info updated successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditCompanyActivity.this, "Company info updated successfully.", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(EditCompanyActivity.this, "Fail to update company info. Please try again.", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "fail to update company info");
                 }
             });

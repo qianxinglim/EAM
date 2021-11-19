@@ -62,12 +62,22 @@ public class PhoneLoginActivity extends AppCompatActivity implements AdapterView
         firestore = FirebaseFirestore.getInstance();
 
         binding.btnNext.setOnClickListener(view -> {
-            binding.progressBar.setVisibility(View.VISIBLE);
-            binding.tvNext.setVisibility(View.GONE);
+            if(binding.edPhone.getText().toString().equals("")){
+                Toast.makeText(this, "Please enter your phone number.", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                binding.progressBar.setVisibility(View.VISIBLE);
+                binding.tvNext.setVisibility(View.GONE);
 
-            phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
+                phone = "+" + binding.spCountryPicker.getSelectedCountryCode() + binding.edPhone.getText().toString();
 
-            startPhoneVerification(phone);
+                binding.edPhone.setEnabled(false);
+                binding.edPhone.setFocusable(false);
+
+                startPhoneVerification(phone);
+            }
+
+
         });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {

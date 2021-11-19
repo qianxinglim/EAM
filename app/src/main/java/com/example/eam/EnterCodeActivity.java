@@ -110,6 +110,7 @@ public class EnterCodeActivity extends PhoneLoginActivity {
             @Override
             public void onClick(View view) {
                 resendVerificationCode(mResendToken);
+                binding.btnResendOTP.setEnabled(false);
             }
         });
     }
@@ -126,6 +127,7 @@ public class EnterCodeActivity extends PhoneLoginActivity {
             public void onFinish() {
                 binding.lnTimer.setVisibility(View.GONE);
                 binding.btnResendOTP.setVisibility(View.VISIBLE);
+                binding.btnResendOTP.setEnabled(true);
             }
 
         }.start();

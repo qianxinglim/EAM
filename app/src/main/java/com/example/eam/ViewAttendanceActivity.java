@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.eam.adapter.RecordAdapter;
@@ -340,9 +341,33 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                     month1 = "0" + month;
                 }
 
+                String chosenDate = tvDate.getText().toString();
+
                 String date = day1 + "-" + month1 + "-" + year;
                 tvDate.setText(date);
 
+                validateDates(chosenDate, tvDate);
+            }
+        }, year, month, day);
+
+        datePickerDialog.show();
+    }
+
+    private void validateDates(String chosenDate, TextView tvDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        try{
+            Date dateFrom = sdf.parse(binding.tvStartDate.getText().toString());
+            Date dateTo = sdf.parse(binding.tvEndDate.getText().toString());
+
+            int days = Days.daysBetween(new LocalDate(dateFrom), new LocalDate(dateTo)).getDays();
+
+            if(days <= 0){
+                tvDate.setText(chosenDate);
+                Toast.makeText(this, "End date cannot be earlier than start date.", Toast.LENGTH_SHORT).show();
+//                binding.tvStartDate.setText(chosenDate);
+//                binding.tvEndDate.setText(chosenDate);
+            }
+            else{
                 binding.progressBar.setVisibility(View.VISIBLE);
                 binding.recyclerView.setVisibility(View.GONE);
 
@@ -358,9 +383,9 @@ public class ViewAttendanceActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, year, month, day);
-
-        datePickerDialog.show();
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
     }
 
     private void resetDate(final OnCallBack onCallBack) {

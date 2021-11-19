@@ -280,7 +280,7 @@
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
                                     android:textColor="@color/black"
-                                    android:text="Leave"/>
+                                    android:text="Leave Records"/>
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
