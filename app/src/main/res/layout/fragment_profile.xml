@@ -52,7 +52,7 @@
 
                     <TextView
                         android:id="@+id/tvCompany"
-                        android:text="Ikea"
+                        android:text="Loading..."
                         android:textColor="@color/grey"
                         android:textStyle="bold"
                         android:textSize="17sp"
@@ -80,7 +80,7 @@
                     android:id="@+id/tvUsername"
                     android:textSize="23sp"
                     android:textColor="@color/black"
-                    android:text="Susan"
+                    android:text="Loading..."
                     android:textFontWeight="700"
                     android:layout_marginTop="20dp"
                     android:layout_width="wrap_content"
@@ -88,7 +88,7 @@
 
                 <TextView
                     android:id="@+id/tvTitle"
-                    android:text="CEO"
+                    android:text="Loading..."
                     android:textSize="14sp"
                     android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"

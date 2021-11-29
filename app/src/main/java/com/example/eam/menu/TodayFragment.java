@@ -297,11 +297,20 @@ public class TodayFragment extends Fragment {
         if(userList.size() > 0 && list.size() > 0) {
             for (User user : userList) {
                 for (Attendance attendance : list) {
+                    Log.e(TAG, "attendance user id: " + attendance.getUserId() + ", user id: " + user.getID());
+
                     if (user.getID().equals(attendance.getUserId())) {
                         clockedInUserList.add(user);
-                    } else {
-                        noClockedInUserList.add(user);
                     }
+//                    else {
+//                        noClockedInUserList.add(user);
+//                    }
+                }
+            }
+
+            for(User user : userList){
+                if(!clockedInUserList.contains(user)){
+                    noClockedInUserList.add(user);
                 }
             }
         }
@@ -310,6 +319,7 @@ public class TodayFragment extends Fragment {
             noClockedInUserList = new ArrayList<>(userList);
         }
 
+        Log.e(TAG, "yoyoyo, " + "clockedInUserList: " + clockedInUserList + ", noClockedInUserList: " + noClockedInUserList + ", userList: " + userList + ", list: " + list);
         onCallBack.onSuccess();
     }
 

@@ -58,7 +58,6 @@
                             android:id="@+id/tvClockInLocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
                             android:textSize="14sp"
                             android:text="Not in punch area (08:47)"/>
 
@@ -146,7 +145,6 @@
                             android:id="@+id/tvClockOutLocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
                             android:textSize="14sp"
                             android:text="Not in punch area (08:47)"/>
 

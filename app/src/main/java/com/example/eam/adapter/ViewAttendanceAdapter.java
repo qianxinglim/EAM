@@ -46,14 +46,16 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
     private List<String> datelist;
     private List<Leave> leavelist;
     private Context context;
+    private String userId;
     private String userName;
     private String userProfilePic;
 
-    public ViewAttendanceAdapter(String userName, String userProfilePic, List<Attendance> list, List<String> datelist, List<Leave> leaveList, Context context) {
+    public ViewAttendanceAdapter(String userId, String userName, String userProfilePic, List<Attendance> list, List<String> datelist, List<Leave> leaveList, Context context) {
         this.list = list;
         this.datelist = datelist;
         this.context = context;
         this.leavelist = leaveList;
+        this.userId = userId;
         this.userName = userName;
         this.userProfilePic = userProfilePic;
     }
@@ -133,7 +135,8 @@ public class ViewAttendanceAdapter extends RecyclerView.Adapter<ViewAttendanceAd
                     @Override
                     public void onClick(View view) {
                         context.startActivity(new Intent(context, WeeklyViewActivity.class)
-                                .putExtra("date", theDate));
+                                .putExtra("date", theDate)
+                                .putExtra("userId", userId));
                     }
                 });
             }

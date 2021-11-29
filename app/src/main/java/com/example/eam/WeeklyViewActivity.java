@@ -51,6 +51,7 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
     private String companyID;
     private DatabaseReference reference;
     private Attendance attendance;
+    private String userID;
     //private ListView eventListView;
 
     @Override
@@ -67,15 +68,20 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
         companyID = userDetail.get(sessionManager.COMPANYID);
 
         String date = getIntent().getExtras().getString("date");
+        String userId = getIntent().getExtras().getString("userId");
 
-        if(date != null){
+        if(date != null && userId != null){
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             LocalDate date2 = LocalDate.parse(date, formatter);
 
             CalendarUtils.selectedDate = date2;
+
+            userID = userId;
         }
         else{
             CalendarUtils.selectedDate = LocalDate.now();
+
+            userID = firebaseUser.getUid();
         }
 
         //CalendarUtils.selectedDate = LocalDate.now();
@@ -136,7 +142,7 @@ public class WeeklyViewActivity extends AppCompatActivity implements CalendarAda
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-        reference.child(companyID).child("Attendance").orderByChild("userId").equalTo(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+        reference.child(companyID).child("Attendance").orderByChild("userId").equalTo(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list.clear();
